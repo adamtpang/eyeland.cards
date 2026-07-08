@@ -1,0 +1,655 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="dark">
+<meta name="theme-color" content="#060a1a">
+<title>eyeland.cards — open-world card-combat MMORPG</title>
+<meta name="description" content="An open-world card-combat MMORPG across a world of floating islands. Collect spell-cards, raise creature companions, and duel — the spell-battles of Wizard101, the deckbuilding of Hearthstone, the open world of Pokémon.">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/favicon.svg">
+<link rel="canonical" href="https://eyeland.cards/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="eyeland.cards">
+<meta property="og:title" content="eyeland.cards — explore the Eyeland, one card at a time">
+<meta property="og:description" content="An open-world card-combat MMORPG across a world of floating islands. Wizard101 × Hearthstone × Pokémon.">
+<meta property="og:url" content="https://eyeland.cards/">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="eyeland.cards — explore the Eyeland, one card at a time">
+<meta name="twitter:description" content="An open-world card-combat MMORPG. Wizard101 × Hearthstone × Pokémon.">
+<style>
+  :root {
+    /* deliberate single visual world: a magical night-sky archipelago */
+    color-scheme: dark;
+
+    --abyss:      #060a1a;
+    --abyss-2:    #0a1128;
+    --deep:       #101a3f;
+    --panel:      rgba(20, 30, 66, 0.55);
+    --panel-solid:#0e1735;
+    --line:       rgba(150, 170, 235, 0.16);
+    --line-soft:  rgba(150, 170, 235, 0.09);
+
+    --arcane:     #35e3d0;   /* primary magic glow (teal) */
+    --arcane-lo:  #12a99a;
+    --ember:      #ffb765;   /* spell energy accent (amber) */
+    --ember-hi:   #ff8a5c;
+    --violet:     #9b7bff;
+
+    --mist:       #eaeefb;   /* headings */
+    --fog:        #b3bbdd;   /* body */
+    --muted:      #838ebc;   /* labels / small print */
+
+    --serif: "Iowan Old Style", "Palatino Linotype", Palatino, "Book Antiqua", Georgia, "Times New Roman", serif;
+    --sans:  ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    --mono:  ui-monospace, "SF Mono", "Cascadia Code", "Roboto Mono", Consolas, monospace;
+
+    --maxw: 1140px;
+    --radius: 16px;
+  }
+
+  * { box-sizing: border-box; }
+  img, svg { max-width: 100%; display: block; }
+
+  .page {
+    position: relative;
+    min-height: 100vh;
+    width: 100%;
+    overflow-x: clip;
+    background: var(--abyss);
+    color: var(--fog);
+    font-family: var(--sans);
+    font-size: clamp(1rem, 0.96rem + 0.2vw, 1.075rem);
+    line-height: 1.62;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ---------- fixed atmosphere layers ---------- */
+  .bg {
+    position: fixed;
+    inset: 0;
+    z-index: -3;
+    background:
+      radial-gradient(120% 90% at 78% -8%, rgba(53, 227, 208, 0.16), transparent 55%),
+      radial-gradient(90% 70% at 12% 8%, rgba(155, 123, 255, 0.14), transparent 55%),
+      radial-gradient(120% 80% at 50% 118%, rgba(255, 138, 92, 0.10), transparent 60%),
+      linear-gradient(180deg, var(--abyss) 0%, var(--abyss-2) 55%, var(--abyss) 100%);
+  }
+  .aurora {
+    position: fixed;
+    inset: -20% -10% auto -10%;
+    height: 90vh;
+    z-index: -2;
+    filter: blur(70px);
+    opacity: 0.5;
+    background:
+      radial-gradient(40% 55% at 25% 40%, rgba(53,227,208,0.30), transparent 70%),
+      radial-gradient(38% 50% at 72% 30%, rgba(155,123,255,0.28), transparent 70%),
+      radial-gradient(34% 46% at 55% 60%, rgba(255,183,101,0.16), transparent 70%);
+    animation: drift 26s ease-in-out infinite alternate;
+  }
+  @keyframes drift {
+    from { transform: translate3d(-3%, 0, 0) scale(1); }
+    to   { transform: translate3d(4%, 2%, 0) scale(1.08); }
+  }
+  #sky {
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+  }
+
+  /* ---------- shared layout ---------- */
+  .container { width: min(var(--maxw), 100% - 3rem); margin-inline: auto; }
+  .section { padding: clamp(4.5rem, 9vw, 8rem) 0; position: relative; }
+  .section + .section { padding-top: clamp(3rem, 6vw, 5rem); }
+
+  .eyebrow {
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: var(--arcane);
+    margin: 0 0 1.1rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+  }
+  .eyebrow::before {
+    content: "";
+    width: 26px; height: 1px;
+    background: linear-gradient(90deg, transparent, var(--arcane));
+  }
+
+  h1, h2, h3 { font-family: var(--serif); color: var(--mist); font-weight: 600; margin: 0; text-wrap: balance; }
+  h2 { font-size: clamp(1.9rem, 1.2rem + 2.6vw, 3rem); line-height: 1.08; letter-spacing: -0.015em; }
+  .lede { max-width: 60ch; color: var(--fog); }
+
+  /* ---------- nav ---------- */
+  .nav {
+    position: sticky; top: 0; z-index: 50;
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 1rem;
+    padding: 0.9rem 0;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border-bottom: 1px solid transparent;
+    transition: border-color 0.3s ease, background 0.3s ease;
+  }
+  .nav.scrolled { border-bottom-color: var(--line-soft); background: rgba(6, 10, 26, 0.6); }
+  .nav__inner { width: min(var(--maxw), 100% - 3rem); margin-inline: auto; display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
+
+  .wordmark {
+    font-family: var(--serif);
+    font-size: 1.35rem;
+    font-weight: 600;
+    color: var(--mist);
+    letter-spacing: -0.01em;
+    text-decoration: none;
+    display: inline-flex; align-items: baseline; gap: 0.05em;
+    transition: text-shadow 0.3s ease;
+  }
+  .wordmark .dot { font-family: var(--mono); font-size: 0.72em; color: var(--arcane); letter-spacing: 0; }
+  .wordmark:hover { text-shadow: 0 0 22px rgba(53, 227, 208, 0.55); }
+
+  .nav__links { display: flex; align-items: center; gap: 1.9rem; }
+  .nav__links a {
+    color: var(--fog); text-decoration: none; font-size: 0.9rem;
+    letter-spacing: 0.01em; transition: color 0.2s ease;
+  }
+  .nav__links a:hover { color: var(--mist); }
+  .nav__cta { display: inline-flex; }
+  @media (max-width: 720px) { .nav__link-hide { display: none; } }
+
+  /* ---------- buttons ---------- */
+  .btn {
+    --bg: var(--arcane);
+    display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem;
+    font-family: var(--sans); font-size: 0.95rem; font-weight: 600;
+    padding: 0.72em 1.35em; border-radius: 999px;
+    text-decoration: none; cursor: pointer; border: 1px solid transparent;
+    transition: transform 0.18s ease, box-shadow 0.25s ease, background 0.25s ease, border-color 0.2s ease;
+    white-space: nowrap;
+  }
+  .btn--primary {
+    background: linear-gradient(180deg, #4defdd, var(--arcane-lo));
+    color: #04211e;
+    box-shadow: 0 8px 26px rgba(53, 227, 208, 0.28), inset 0 1px 0 rgba(255,255,255,0.45);
+  }
+  .btn--primary:hover { transform: translateY(-2px); box-shadow: 0 12px 34px rgba(53, 227, 208, 0.42), inset 0 1px 0 rgba(255,255,255,0.5); }
+  .btn--ghost { background: rgba(255,255,255,0.02); color: var(--mist); border-color: var(--line); }
+  .btn--ghost:hover { transform: translateY(-2px); border-color: rgba(53,227,208,0.5); box-shadow: 0 10px 30px rgba(0,0,0,0.35); }
+  .btn--small { padding: 0.55em 1.05em; font-size: 0.86rem; }
+  .btn:focus-visible { outline: 2px solid var(--arcane); outline-offset: 3px; }
+
+  /* ---------- hero ---------- */
+  .hero { position: relative; min-height: 92vh; display: flex; align-items: center; padding: 6rem 0 4rem; }
+  .hero__grid { display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr); gap: 2rem; align-items: center; width: 100%; }
+  @media (max-width: 900px) { .hero { min-height: auto; padding-top: 5rem; } .hero__grid { grid-template-columns: 1fr; } .hero__art { display: none; } }
+
+  .hero h1 {
+    font-size: clamp(2.6rem, 1.4rem + 5.2vw, 5rem);
+    line-height: 1.02;
+    letter-spacing: -0.025em;
+    margin: 0 0 1.3rem;
+  }
+  .hero h1 .glow { color: var(--arcane); text-shadow: 0 0 34px rgba(53, 227, 208, 0.5); font-style: italic; }
+  .hero .lede { font-size: clamp(1.05rem, 0.98rem + 0.4vw, 1.22rem); margin: 0 0 2.1rem; }
+  .hero__actions { display: flex; flex-wrap: wrap; gap: 0.9rem; align-items: center; }
+  .hero__meta { margin-top: 2.2rem; display: flex; align-items: center; gap: 0.7rem; color: var(--muted); font-family: var(--mono); font-size: 0.75rem; letter-spacing: 0.06em; }
+  .hero__meta .pulse { width: 8px; height: 8px; border-radius: 50%; background: var(--arcane); box-shadow: 0 0 0 0 rgba(53,227,208,0.6); animation: pulse 2.4s ease-out infinite; }
+  @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(53,227,208,0.5); } 70% { box-shadow: 0 0 0 10px rgba(53,227,208,0); } 100% { box-shadow: 0 0 0 0 rgba(53,227,208,0); } }
+
+  /* floating islands art */
+  .hero__art { position: relative; height: 460px; }
+  .island { position: absolute; filter: drop-shadow(0 26px 30px rgba(0,0,0,0.55)); animation: float var(--dur, 9s) ease-in-out infinite; will-change: transform; }
+  .island::after { content: ""; }
+  @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(calc(-1 * var(--lift, 14px))); } }
+  .i1 { width: 250px; top: 120px; left: 24%; --dur: 10s; --lift: 16px; z-index: 3; }
+  .i2 { width: 150px; top: 20px;  left: 2%;  --dur: 13s; --lift: 12px; animation-delay: -3s; z-index: 2; opacity: 0.96; }
+  .i3 { width: 120px; top: 250px; left: 62%; --dur: 11s; --lift: 18px; animation-delay: -6s; z-index: 2; opacity: 0.9; }
+  .i4 { width: 78px;  top: 70px;  left: 70%; --dur: 15s; --lift: 10px; animation-delay: -2s; z-index: 1; opacity: 0.8; }
+
+  .scrollcue { position: absolute; bottom: 1.4rem; left: 50%; transform: translateX(-50%); color: var(--muted); font-family: var(--mono); font-size: 0.68rem; letter-spacing: 0.24em; text-transform: uppercase; display: flex; flex-direction: column; align-items: center; gap: 0.5rem; }
+  .scrollcue .line { width: 1px; height: 34px; background: linear-gradient(var(--arcane), transparent); animation: cue 2.2s ease-in-out infinite; transform-origin: top; }
+  @keyframes cue { 0%,100% { transform: scaleY(0.4); opacity: 0.4; } 50% { transform: scaleY(1); opacity: 1; } }
+
+  /* ---------- pillars ---------- */
+  .pillars { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.2rem; margin-top: 3rem; }
+  @media (max-width: 820px) { .pillars { grid-template-columns: 1fr; } }
+  .pillar {
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 1.7rem 1.6rem 1.9rem;
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+  }
+  .pillar::before { content: ""; position: absolute; inset: 0 0 auto 0; height: 2px; background: linear-gradient(90deg, var(--arcane), transparent); opacity: 0.6; }
+  .pillar:hover { transform: translateY(-5px); border-color: rgba(53,227,208,0.4); box-shadow: 0 18px 44px rgba(0,0,0,0.4); }
+  .pillar__icon { width: 46px; height: 46px; display: grid; place-items: center; border-radius: 12px; background: rgba(53,227,208,0.08); border: 1px solid var(--line); margin-bottom: 1.1rem; color: var(--arcane); }
+  .pillar__tag { font-family: var(--mono); font-size: 0.68rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); margin-bottom: 0.5rem; }
+  .pillar__tag b { color: var(--ember); font-weight: 600; }
+  .pillar h3 { font-size: 1.4rem; margin-bottom: 0.55rem; }
+  .pillar p { margin: 0; font-size: 0.96rem; color: var(--fog); }
+
+  /* ---------- cards showcase ---------- */
+  .cards-head { max-width: 62ch; }
+  .cards-head .hint { display: inline-block; margin-top: 1rem; font-family: var(--mono); font-size: 0.72rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); }
+  .cards-rail { display: flex; flex-wrap: wrap; gap: 1.4rem; justify-content: center; margin-top: 3rem; perspective: 1400px; }
+
+  .game-card {
+    --el: var(--arcane); --el2: var(--arcane-lo); --glow: rgba(53,227,208,0.5);
+    width: 236px; aspect-ratio: 5 / 7;
+    border-radius: 18px;
+    padding: 7px;
+    background:
+      linear-gradient(160deg, var(--el), var(--el2) 62%, #05070f);
+    box-shadow: 0 22px 48px rgba(0,0,0,0.5);
+    position: relative;
+    transform-style: preserve-3d;
+    transform: rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg));
+    transition: transform 0.2s ease, box-shadow 0.3s ease;
+    will-change: transform;
+  }
+  .game-card:hover { box-shadow: 0 30px 60px rgba(0,0,0,0.6), 0 0 40px var(--glow); }
+  .game-card--fire  { --el: #ff9a4d; --el2: #b8362a; --glow: rgba(255,122,60,0.55); }
+  .game-card--water { --el: #4fd6e6; --el2: #245fce; --glow: rgba(79,214,230,0.5); }
+  .game-card--storm { --el: #b48bff; --el2: #6b34cf; --glow: rgba(180,139,255,0.55); }
+
+  .gc__inner {
+    height: 100%; border-radius: 12px;
+    background: radial-gradient(120% 80% at 50% 0%, #16204a, var(--panel-solid) 60%, #070b1a);
+    border: 1px solid rgba(255,255,255,0.06);
+    display: flex; flex-direction: column;
+    padding: 12px 12px 10px;
+    position: relative;
+  }
+  .gc__cost {
+    position: absolute; top: -12px; left: -12px;
+    width: 42px; height: 42px; border-radius: 50%;
+    background: radial-gradient(circle at 35% 30%, #fff, var(--el) 55%, var(--el2));
+    color: #08111f; font-family: var(--serif); font-weight: 700; font-size: 1.35rem;
+    display: grid; place-items: center;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.5), inset 0 1px 2px rgba(255,255,255,0.6);
+    border: 2px solid rgba(255,255,255,0.75);
+  }
+  .gc__name { font-family: var(--serif); color: var(--mist); font-size: 1.12rem; text-align: center; margin: 2px 0 8px; letter-spacing: -0.01em; }
+  .gc__art {
+    height: 40%; border-radius: 8px;
+    background:
+      radial-gradient(70% 90% at 50% 40%, var(--glow), transparent 70%),
+      linear-gradient(180deg, #0a1130, #060a17);
+    background-color: #070c1c;
+    display: grid; place-items: center;
+    border: 1px solid rgba(255,255,255,0.05);
+    overflow: hidden;
+  }
+  .gc__art svg { width: 62%; filter: drop-shadow(0 0 10px var(--glow)); }
+  .gc__type { text-align: center; font-family: var(--mono); font-size: 0.6rem; letter-spacing: 0.16em; color: var(--el); text-transform: uppercase; margin: 9px 0 6px; position: relative; }
+  .gc__type::before, .gc__type::after { content: ""; position: absolute; top: 50%; width: 22px; height: 1px; background: linear-gradient(90deg, transparent, var(--el)); opacity: 0.6; }
+  .gc__type::before { left: 8px; transform: scaleX(-1); }
+  .gc__type::after { right: 8px; }
+  .gc__text { flex: 1; font-family: var(--serif); font-size: 0.82rem; line-height: 1.4; color: #d6ddf5; text-align: center; padding: 2px 4px; display: flex; align-items: center; justify-content: center; }
+  .gc__foot { display: flex; align-items: center; justify-content: space-between; margin-top: 6px; }
+  .gc__rarity { font-family: var(--mono); font-size: 0.58rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); display: inline-flex; align-items: center; gap: 5px; }
+  .gc__gem { width: 9px; height: 9px; transform: rotate(45deg); border-radius: 2px; background: var(--el); box-shadow: 0 0 8px var(--glow); }
+  .gc__stats { display: flex; gap: 6px; }
+  .gc__stat { width: 30px; height: 30px; border-radius: 50%; display: grid; place-items: center; font-family: var(--serif); font-weight: 700; font-size: 1rem; color: #fff; }
+  .gc__stat--atk { background: radial-gradient(circle at 35% 30%, #ffd9a0, #d98b2c 60%, #8a4c12); }
+  .gc__stat--hp  { background: radial-gradient(circle at 35% 30%, #ffb3ac, #d64535 60%, #7d1f18); }
+
+  /* ---------- waitlist ---------- */
+  .waitlist { text-align: center; }
+  .waitlist__card {
+    max-width: 680px; margin: 0 auto;
+    background: linear-gradient(180deg, var(--panel), rgba(10,17,40,0.7));
+    border: 1px solid var(--line);
+    border-radius: 24px;
+    padding: clamp(2.2rem, 5vw, 3.4rem);
+    position: relative; overflow: hidden;
+  }
+  .waitlist__card::before { content: ""; position: absolute; inset: -40% 30% auto; height: 200px; background: radial-gradient(50% 100% at 50% 0, rgba(53,227,208,0.22), transparent 70%); }
+  .waitlist h2 { position: relative; margin-bottom: 0.9rem; }
+  .waitlist p.lede { margin: 0 auto 2rem; }
+  .signup { display: flex; gap: 0.6rem; max-width: 460px; margin: 0 auto; flex-wrap: wrap; justify-content: center; }
+  .signup input {
+    flex: 1 1 240px; min-width: 0;
+    background: rgba(6,10,26,0.7); border: 1px solid var(--line);
+    border-radius: 999px; padding: 0.72em 1.2em;
+    color: var(--mist); font-family: var(--sans); font-size: 0.95rem;
+  }
+  .signup input::placeholder { color: var(--muted); }
+  .signup input:focus-visible { outline: none; border-color: var(--arcane); box-shadow: 0 0 0 3px rgba(53,227,208,0.18); }
+  .signup__note { min-height: 1.2em; margin: 1rem 0 0; font-family: var(--mono); font-size: 0.78rem; letter-spacing: 0.03em; color: var(--arcane); }
+  .fineprint { margin: 1.4rem 0 0; font-size: 0.78rem; color: var(--muted); }
+
+  /* ---------- footer ---------- */
+  .footer { border-top: 1px solid var(--line-soft); padding: 2.6rem 0 3rem; margin-top: 2rem; }
+  .footer__inner { display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap; }
+  .footer p { margin: 0; font-size: 0.82rem; color: var(--muted); }
+  .footer a { color: var(--fog); text-decoration: none; }
+  .footer a:hover { color: var(--arcane); }
+
+  /* ---------- reveal / motion ---------- */
+  .js .reveal { opacity: 0; transform: translateY(22px); transition: opacity 0.7s ease, transform 0.7s cubic-bezier(0.2, 0.7, 0.2, 1); }
+  .js .reveal.in { opacity: 1; transform: none; }
+  .js .stagger > * { opacity: 0; transform: translateY(16px); }
+  .js .stagger.in > * { opacity: 1; transform: none; transition: opacity 0.6s ease, transform 0.6s ease; }
+  .js .stagger.in > *:nth-child(2) { transition-delay: 0.08s; }
+  .js .stagger.in > *:nth-child(3) { transition-delay: 0.16s; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .aurora, .island, .pulse, .scrollcue .line { animation: none !important; }
+    .js .reveal, .js .stagger > * { opacity: 1 !important; transform: none !important; transition: none !important; }
+    html { scroll-behavior: auto; }
+    .game-card { transition: none; }
+  }
+  @media (prefers-reduced-motion: no-preference) { html { scroll-behavior: smooth; } }
+
+  :where(section, div)[id] { scroll-margin-top: 84px; }
+</style>
+</head>
+<body>
+
+<div class="page">
+  <div class="bg"></div>
+  <div class="aurora"></div>
+  <canvas id="sky"></canvas>
+
+  <!-- islands sprite defs -->
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <defs>
+      <linearGradient id="grass" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#57e0b0"/>
+        <stop offset="1" stop-color="#1c7d78"/>
+      </linearGradient>
+      <linearGradient id="rock" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#2b356a"/>
+        <stop offset="1" stop-color="#080b1e"/>
+      </linearGradient>
+      <symbol id="isle" viewBox="0 0 200 172">
+        <path d="M18 54 C24 100 60 150 100 152 C140 150 176 100 182 54 C150 74 50 74 18 54 Z" fill="url(#rock)"/>
+        <path d="M18 54 C24 66 40 78 60 82 C80 86 78 96 96 96 C112 96 112 84 132 82 C156 79 176 66 182 54 C150 74 50 74 18 54 Z" fill="#0a0f28" opacity="0.5"/>
+        <ellipse cx="100" cy="52" rx="82" ry="24" fill="url(#grass)"/>
+        <path d="M18 52 Q100 30 182 52" fill="none" stroke="#8affe6" stroke-width="1.4" opacity="0.55"/>
+        <circle cx="76" cy="49" r="2.4" fill="#c7fff2" opacity="0.8"/>
+        <circle cx="118" cy="53" r="1.8" fill="#c7fff2" opacity="0.7"/>
+        <circle cx="100" cy="118" r="7" fill="#35e3d0" opacity="0.35"/>
+      </symbol>
+    </defs>
+  </svg>
+
+  <!-- nav -->
+  <nav class="nav" id="nav">
+    <div class="nav__inner">
+      <a class="wordmark" href="#top">eyeland<span class="dot">.cards</span></a>
+      <div class="nav__links">
+        <a class="nav__link-hide" href="#world">The World</a>
+        <a class="nav__link-hide" href="#cards">The Cards</a>
+        <a class="btn btn--ghost btn--small nav__cta" href="#waitlist">Join the waitlist</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- hero -->
+  <header class="hero" id="top">
+    <div class="container">
+      <div class="hero__grid">
+        <div class="hero__copy">
+          <p class="eyebrow">Open&nbsp;World · Card&nbsp;Combat · MMORPG</p>
+          <h1>Explore the Eyeland,<br><span class="glow">one card at a time.</span></h1>
+          <p class="lede">A world of floating islands where you collect spell-cards, raise creature companions, and settle every encounter in a duel. The spell-battles of Wizard101, the deckbuilding of Hearthstone, the open world of Pokémon — woven into one.</p>
+          <div class="hero__actions">
+            <a class="btn btn--primary" href="#waitlist">Join the waitlist</a>
+            <a class="btn btn--ghost" href="#cards">See the cards</a>
+          </div>
+          <div class="hero__meta"><span class="pulse"></span> In development · built in the open with Unity + Claude</div>
+        </div>
+        <div class="hero__art" aria-hidden="true">
+          <svg class="island i2"><use href="#isle"/></svg>
+          <svg class="island i4"><use href="#isle"/></svg>
+          <svg class="island i1"><use href="#isle"/></svg>
+          <svg class="island i3"><use href="#isle"/></svg>
+        </div>
+      </div>
+    </div>
+    <div class="scrollcue" aria-hidden="true"><span class="line"></span>Scroll</div>
+  </header>
+
+  <!-- pillars -->
+  <section class="section" id="world">
+    <div class="container">
+      <p class="eyebrow reveal">How it plays</p>
+      <h2 class="reveal">Three games in its blood.</h2>
+      <p class="lede reveal" style="margin-top:1rem">Every great world borrows from the ones that shaped you. The Eyeland wears its lineage proudly — then makes it one thing.</p>
+      <div class="pillars">
+        <article class="pillar reveal">
+          <div class="pillar__icon">
+            <svg width="26" height="26" viewBox="0 0 28 28" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round"><circle cx="14" cy="14" r="11"/><path d="M14 5 L16.5 14 L14 23 L11.5 14 Z"/><circle cx="14" cy="14" r="1.4" fill="currentColor" stroke="none"/></svg>
+          </div>
+          <p class="pillar__tag">Open world · <b>like Pokémon</b></p>
+          <h3>Explore the Eyeland</h3>
+          <p>Wander a living archipelago of biomes, hidden coves, and wild encounters — every island its own little world, waiting past the horizon.</p>
+        </article>
+        <article class="pillar reveal">
+          <div class="pillar__icon">
+            <svg width="26" height="26" viewBox="0 0 28 28" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round"><rect x="5" y="8" width="12" height="16" rx="2" transform="rotate(-9 11 16)"/><rect x="11" y="6" width="12" height="16" rx="2" transform="rotate(9 17 14)"/></svg>
+          </div>
+          <p class="pillar__tag">Deckbuilding · <b>like Hearthstone</b></p>
+          <h3>Build your spellbook</h3>
+          <p>Collect spell-cards and creature companions across the world, then craft the deck that fits your style. Every card you earn is a new way to play.</p>
+        </article>
+        <article class="pillar reveal">
+          <div class="pillar__icon">
+            <svg width="26" height="26" viewBox="0 0 28 28" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round"><rect x="8" y="5" width="15" height="20" rx="2"/><path d="M16 9 L12 16 L15.5 16 L13.5 23 L20 14 L16.5 14 Z" fill="currentColor" stroke="none"/></svg>
+          </div>
+          <p class="pillar__tag">Card duels · <b>like Wizard101</b></p>
+          <h3>Win the duel</h3>
+          <p>Combat is a hand of cards. Bank your pips, chain your spells, and read your opponent. Turn-based, tactical, and yours to master.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- cards showcase -->
+  <section class="section" id="cards">
+    <div class="container">
+      <div class="cards-head">
+        <p class="eyebrow reveal">The deck</p>
+        <h2 class="reveal">Your spellbook is a deck.</h2>
+        <p class="lede reveal" style="margin-top:1rem">No menus of stats to memorize — just cards in your hand. Spend pips to cast, combo spells together, and summon creatures to fight beside you. Three from the starter set:</p>
+        <span class="hint reveal">↓ Hover a card</span>
+      </div>
+
+      <div class="cards-rail stagger reveal">
+        <!-- Ember Bolt -->
+        <div class="game-card game-card--fire tilt" tabindex="0" aria-label="Ember Bolt, cost 2, Fire spell">
+          <div class="gc__inner">
+            <div class="gc__cost">2</div>
+            <div class="gc__name">Ember Bolt</div>
+            <div class="gc__art">
+              <svg viewBox="0 0 64 64" aria-hidden="true"><path d="M34 4 C40 18 26 22 30 34 C31 38 28 40 24 38 C22 46 30 60 44 54 C58 48 54 30 42 22 C46 30 42 36 38 34 C42 24 34 14 34 4 Z" fill="#ffb765"/><path d="M36 30 C40 38 36 44 32 46 C28 44 28 38 32 34 C32 40 36 40 36 30 Z" fill="#fff1d0"/></svg>
+            </div>
+            <div class="gc__type">Spell · Fire</div>
+            <div class="gc__text">Deal 3 damage. If it's the first spell you've cast this turn, draw a card.</div>
+            <div class="gc__foot"><span class="gc__rarity"><span class="gc__gem"></span>Common</span></div>
+          </div>
+        </div>
+
+        <!-- Tidewisp -->
+        <div class="game-card game-card--water tilt" tabindex="0" aria-label="Tidewisp, cost 3, Water creature, 3 attack 4 health">
+          <div class="gc__inner">
+            <div class="gc__cost">3</div>
+            <div class="gc__name">Tidewisp</div>
+            <div class="gc__art">
+              <svg viewBox="0 0 64 64" aria-hidden="true"><path d="M32 8 C22 24 16 34 22 44 A12 12 0 0 0 46 42 C48 32 42 24 32 8 Z" fill="#4fd6e6"/><path d="M30 20 C24 30 22 36 26 42 A7 7 0 0 0 38 40 C40 34 36 28 30 20 Z" fill="#bff3fb" opacity="0.55"/><circle cx="28" cy="38" r="2.4" fill="#06283a"/><circle cx="38" cy="38" r="2.4" fill="#06283a"/><path d="M30 45 Q33 47 36 45" fill="none" stroke="#06283a" stroke-width="1.6" stroke-linecap="round"/></svg>
+            </div>
+            <div class="gc__type">Creature · Water</div>
+            <div class="gc__text">When Tidewisp appears, restore 2 health to your caster.</div>
+            <div class="gc__foot">
+              <span class="gc__rarity"><span class="gc__gem"></span>Rare</span>
+              <span class="gc__stats"><span class="gc__stat gc__stat--atk">3</span><span class="gc__stat gc__stat--hp">4</span></span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Eye of the Storm -->
+        <div class="game-card game-card--storm tilt" tabindex="0" aria-label="Eye of the Storm, cost 5, Storm spell, Legendary">
+          <div class="gc__inner">
+            <div class="gc__cost">5</div>
+            <div class="gc__name">Eye of the Storm</div>
+            <div class="gc__art">
+              <svg viewBox="0 0 64 64" aria-hidden="true"><path d="M8 32 Q32 12 56 32 Q32 52 8 32 Z" fill="#100a2e" stroke="#b48bff" stroke-width="2"/><circle cx="32" cy="32" r="10" fill="#b48bff"/><circle cx="32" cy="32" r="4.5" fill="#0a0620"/><circle cx="34" cy="29" r="1.6" fill="#fff"/><path d="M32 4 C36 12 30 14 33 20" fill="none" stroke="#b48bff" stroke-width="2" stroke-linecap="round"/><path d="M52 46 L47 50 L50 50 L48 55" fill="none" stroke="#e2d3ff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M12 46 L15 50 L12 50 L14 55" fill="none" stroke="#e2d3ff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <div class="gc__type">Spell · Storm</div>
+            <div class="gc__text">Deal 2 damage to all enemies, then draw 2 cards.</div>
+            <div class="gc__foot"><span class="gc__rarity"><span class="gc__gem"></span>Legendary</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- waitlist -->
+  <section class="section waitlist" id="waitlist">
+    <div class="container">
+      <div class="waitlist__card reveal">
+        <p class="eyebrow" style="justify-content:center">Pre-alpha</p>
+        <h2>Be there when the Eyeland opens.</h2>
+        <p class="lede">Join the waitlist for early invites and dev updates as the world comes together.</p>
+        <form class="signup" id="signup" novalidate>
+          <label for="email" class="sr-only" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)">Email address</label>
+          <input id="email" type="email" name="email" placeholder="you@example.com" autocomplete="email" required>
+          <button class="btn btn--primary" type="submit">Join the waitlist</button>
+        </form>
+        <p class="signup__note" id="note" role="status" aria-live="polite"></p>
+        <p class="fineprint">No spam — just launch news. Built in the open with Unity + Claude.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- footer -->
+  <footer class="footer">
+    <div class="container footer__inner">
+      <p><a class="wordmark" href="#top" style="font-size:1.1rem">eyeland<span class="dot">.cards</span></a></p>
+      <p>An open-world card-combat MMORPG · in development</p>
+      <p>An Anchor Marianas project · 2026 · <a href="mailto:adamtpang@gmail.com">Contact</a></p>
+    </div>
+  </footer>
+</div>
+
+<script>
+  (function () {
+    var root = document.querySelector(".page");
+    document.documentElement.classList.add("js");
+    var reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    /* nav shadow on scroll */
+    var nav = document.getElementById("nav");
+    var onScroll = function () { nav.classList.toggle("scrolled", window.scrollY > 12); };
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+
+    /* reveal on view */
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) { if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); } });
+    }, { threshold: 0.15 });
+    document.querySelectorAll(".reveal").forEach(function (el) { io.observe(el); });
+
+    /* card tilt */
+    if (!reduce) {
+      document.querySelectorAll(".tilt").forEach(function (card) {
+        card.addEventListener("pointermove", function (ev) {
+          var r = card.getBoundingClientRect();
+          var px = (ev.clientX - r.left) / r.width - 0.5;
+          var py = (ev.clientY - r.top) / r.height - 0.5;
+          card.style.setProperty("--ry", (px * 16).toFixed(2) + "deg");
+          card.style.setProperty("--rx", (-py * 18).toFixed(2) + "deg");
+        });
+        card.addEventListener("pointerleave", function () {
+          card.style.setProperty("--ry", "0deg");
+          card.style.setProperty("--rx", "0deg");
+        });
+      });
+    }
+
+    /* hero parallax on islands */
+    var art = document.querySelector(".hero__art");
+    if (art && !reduce && window.matchMedia("(pointer:fine)").matches) {
+      window.addEventListener("pointermove", function (ev) {
+        var cx = ev.clientX / window.innerWidth - 0.5;
+        var cy = ev.clientY / window.innerHeight - 0.5;
+        var isles = art.querySelectorAll(".island");
+        isles.forEach(function (isle, i) {
+          var depth = (i + 1) * 6;
+          isle.style.marginLeft = (cx * depth).toFixed(1) + "px";
+          isle.style.marginTop = (cy * depth).toFixed(1) + "px";
+        });
+      }, { passive: true });
+    }
+
+    /* waitlist -> compose email (honest: no backend yet) */
+    var form = document.getElementById("signup");
+    var note = document.getElementById("note");
+    form.addEventListener("submit", function (e) {
+      e.preventDefault();
+      var email = document.getElementById("email").value.trim();
+      var ok = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+      if (!ok) { note.textContent = "Enter a valid email and we'll take it from there."; return; }
+      var subject = encodeURIComponent("eyeland.cards waitlist");
+      var body = encodeURIComponent("Add me to the eyeland.cards waitlist: " + email);
+      note.textContent = "Opening your email to confirm — see you in the Eyeland.";
+      window.location.href = "mailto:adamtpang@gmail.com?subject=" + subject + "&body=" + body;
+    });
+
+    /* starfield */
+    var canvas = document.getElementById("sky");
+    var ctx = canvas.getContext("2d");
+    var stars = [], dust = [], w = 0, h = 0, dpr = Math.min(window.devicePixelRatio || 1, 2);
+    function resize() {
+      w = canvas.clientWidth; h = canvas.clientHeight;
+      canvas.width = w * dpr; canvas.height = h * dpr;
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      var count = Math.min(150, Math.floor(w * h / 9000));
+      stars = [];
+      for (var i = 0; i < count; i++) {
+        stars.push({ x: Math.random() * w, y: Math.random() * h, r: Math.random() * 1.3 + 0.2, a: Math.random() * 0.5 + 0.2, tw: Math.random() * 0.02 + 0.004, ph: Math.random() * 6.28 });
+      }
+      dust = [];
+      for (var j = 0; j < 22; j++) {
+        dust.push({ x: Math.random() * w, y: Math.random() * h, r: Math.random() * 1.4 + 0.6, sp: Math.random() * 0.18 + 0.05, hue: Math.random() > 0.5 ? "53,227,208" : "255,183,101" });
+      }
+    }
+    var t = 0;
+    function frame() {
+      ctx.clearRect(0, 0, w, h);
+      for (var i = 0; i < stars.length; i++) {
+        var s = stars[i];
+        var a = reduce ? s.a : s.a + Math.sin(t * s.tw + s.ph) * 0.28;
+        ctx.globalAlpha = Math.max(0.05, a);
+        ctx.fillStyle = "#dfe7ff";
+        ctx.beginPath(); ctx.arc(s.x, s.y, s.r, 0, 6.2832); ctx.fill();
+      }
+      for (var k = 0; k < dust.length; k++) {
+        var d = dust[k];
+        ctx.globalAlpha = 0.5;
+        ctx.fillStyle = "rgba(" + d.hue + ",0.7)";
+        ctx.beginPath(); ctx.arc(d.x, d.y, d.r, 0, 6.2832); ctx.fill();
+        if (!reduce) { d.y -= d.sp; d.x += Math.sin(d.y * 0.01) * 0.12; if (d.y < -4) { d.y = h + 4; d.x = Math.random() * w; } }
+      }
+      ctx.globalAlpha = 1;
+      t += 1;
+      if (!reduce) requestAnimationFrame(frame);
+    }
+    resize();
+    frame();
+    window.addEventListener("resize", function () { resize(); if (reduce) frame(); });
+  })();
+</script>
+</body>
+</html>
