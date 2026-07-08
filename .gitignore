@@ -12,3 +12,5 @@ npm-debug.log*
 
 # Unity project (added when the game project lands)
 # [Ll]ibrary/  [Tt]emp/  [Oo]bj/  [Bb]uild/  [Ll]ogs/  [Uu]serSettings/
+
+.vercel
