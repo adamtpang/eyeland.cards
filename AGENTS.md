@@ -1,27 +1,13 @@
-<!-- BEGIN:claude-chat-continuation -->
-# Continue From Claude Chats
-
-Claude Code transcripts for this project have been indexed for Codex in `CODEX_CONTINUE_FROM_CLAUDE.md`. Read that file when the user asks to continue work from Claude, resume a Claude session, or understand what Claude already tried.
-<!-- END:claude-chat-continuation -->
-
-<!-- BEGIN:claude-codex-sync -->
-# Claude/Codex sync
-
-Before making changes, read `CLAUDE.md` in this project if it exists. It is the live handoff from Claude Code and the source of truth for current project progress, design decisions, constraints, and open tasks. Keep future progress updates there so Claude and Codex stay in sync.
-
-If this file contains older project context that conflicts with `CLAUDE.md`, prefer `CLAUDE.md` unless the user says otherwise.
-<!-- END:claude-codex-sync -->
-
-<!-- BEGIN:imported-claude-context -->
-# Imported Claude context
-
-Copied from `CLAUDE.md` on 2026-07-08 so Codex starts with the same project context Claude Code used. Keep `CLAUDE.md` as the source of truth and refresh this block after meaningful Claude-side progress.
-
-<!-- SOURCE: CLAUDE.md -->
-
 # CLAUDE.md - eyeland.cards
 
 Context for Claude Code, Codex, and humans working in this folder.
+
+> **2026-07-11:** Read `HANDOFF.md` next — it has the current deploy report,
+> the domain decision (stay on eyeland.cards), and the continuation context.
+> The Hearthstone deckbuilding project now **lives in this repo** at
+> `hearthstone/` (read its own CLAUDE.md before Hearthstone work); the Unity
+> card game (via Unity MCP) comes after. Career note: HSReplay is hiring —
+> the tooling here doubles as portfolio material.
 
 ## What this is
 
@@ -85,4 +71,3 @@ This repo currently hosts the **pre-launch landing page** (`index.html`), a self
 
 - Update this file when Claude or Codex learns new project facts.
 - Keep `AGENTS.md` synchronized so Codex sees the same context inline.
-<!-- END:imported-claude-context -->

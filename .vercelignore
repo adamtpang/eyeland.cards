@@ -1,0 +1,6 @@
+# Deploy only the landing page — keep repo docs & tooling off the public site.
+# (They stay visible in the GitHub repo, which is the intended portfolio surface.)
+*.md
+hearthstone/
+.agents/
+.gitignore

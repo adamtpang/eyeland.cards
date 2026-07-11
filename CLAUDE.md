@@ -2,6 +2,13 @@
 
 Context for Claude Code, Codex, and humans working in this folder.
 
+> **2026-07-11:** Read `HANDOFF.md` next — it has the current deploy report,
+> the domain decision (stay on eyeland.cards), and the continuation context.
+> The Hearthstone deckbuilding project now **lives in this repo** at
+> `hearthstone/` (read its own CLAUDE.md before Hearthstone work); the Unity
+> card game (via Unity MCP) comes after. Career note: HSReplay is hiring —
+> the tooling here doubles as portfolio material.
+
 ## What this is
 
 This handoff was generated on 2026-07-08 during the new-day Claude/Codex sync.
