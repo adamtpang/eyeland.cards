@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://eyeland.cards/sitemap.xml
