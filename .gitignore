@@ -14,3 +14,7 @@ npm-debug.log*
 # [Ll]ibrary/  [Tt]emp/  [Oo]bj/  [Bb]uild/  [Ll]ogs/  [Uu]serSettings/
 
 .vercel
+# Cross-agent handoff files: generated from raw AI transcripts, so they embed
+# verbatim prompts. Keep them local rather than in this public repo.
+*_CONTINUE_FROM_*.md
+*_SYNC_*.md
