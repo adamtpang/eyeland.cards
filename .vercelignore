@@ -2,5 +2,6 @@
 # (They stay visible in the GitHub repo, which is the intended portfolio surface.)
 *.md
 hearthstone/
+game/
 .agents/
 .gitignore

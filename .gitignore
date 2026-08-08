@@ -10,8 +10,12 @@ Thumbs.db
 node_modules/
 npm-debug.log*
 
-# Unity project (added when the game project lands)
+# Unity project (added when the Unity editor project lands)
 # [Ll]ibrary/  [Tt]emp/  [Oo]bj/  [Bb]uild/  [Ll]ogs/  [Uu]serSettings/
+
+# .NET build output (game/ — the plain C# duel engine, pre-Unity)
+game/**/bin/
+game/**/obj/
 
 .vercel
 # Cross-agent handoff files: generated from raw AI transcripts, so they embed
