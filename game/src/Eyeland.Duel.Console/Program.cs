@@ -1,5 +1,10 @@
 using Eyeland.Duel;
 
+int? seed = null;
+var seedArgIndex = Array.IndexOf(args, "--seed");
+if (seedArgIndex >= 0 && seedArgIndex + 1 < args.Length && int.TryParse(args[seedArgIndex + 1], out var s))
+    seed = s;
+
 if (args.Length > 0 && args[0] == "--simulate")
 {
     var rounds = args.Length > 1 && int.TryParse(args[1], out var n) ? n : 100;
@@ -7,7 +12,7 @@ if (args.Length > 0 && args[0] == "--simulate")
     return;
 }
 
-PlayInteractive();
+PlayInteractive(seed);
 return;
 
 // ---------------------------------------------------------------------
@@ -38,25 +43,35 @@ static void Simulate(int rounds)
     Console.WriteLine($"  Average game length: {turnCounts.Average():F1} turns (min {turnCounts.Min()}, max {turnCounts.Max()})");
 }
 
-static DuelState NewGame()
+static DuelState NewGame(int? seed = null)
 {
-    var a = new Caster { Name = "Player A", Deck = Shuffled(CardSet.StarterDeck()) };
-    var b = new Caster { Name = "Player B", Deck = Shuffled(CardSet.StarterDeck()) };
-    return new DuelState { A = a, B = b };
+    // Same seed -> same two shuffled decks, so a run can be replayed from turn 1 with a
+    // longer command sequence each time — a stand-in for a live REPL when driving this
+    // over piped stdin (no way to react mid-process without one).
+    const int OpeningHandSize = 3;
+
+    var rng = seed is { } s ? new Random(s) : new Random();
+    var a = new Caster { Name = "Player A", Deck = Shuffled(CardSet.StarterDeck(), rng) };
+    var b = new Caster { Name = "Player B", Deck = Shuffled(CardSet.StarterDeck(), rng) };
+
+    var openingLog = new ResolutionLog();
+    a.DealOpeningHand(OpeningHandSize, openingLog);
+    b.DealOpeningHand(OpeningHandSize, openingLog);
+
+    var state = new DuelState { A = a, B = b };
+    state.Log.AddRange(openingLog.Lines);
+    return state;
 }
 
-static List<CardDef> Shuffled(List<CardDef> deck)
-{
-    var rng = new Random();
-    return deck.OrderBy(_ => rng.Next()).ToList();
-}
+static List<CardDef> Shuffled(List<CardDef> deck, Random rng) =>
+    deck.OrderBy(_ => rng.Next()).ToList();
 
 // ---------------------------------------------------------------------
 // Interactive human-vs-GreedyAI console duel.
 // ---------------------------------------------------------------------
-static void PlayInteractive()
+static void PlayInteractive(int? seed = null)
 {
-    var state = NewGame();
+    var state = NewGame(seed);
     var human = new ConsoleController();
     var ai = new GreedyAI("the Warden");
 

@@ -22,6 +22,10 @@ Commands during a duel:
 - `end` — pass the turn
 - `help` / `quit`
 
+Pass `--seed <n>` for a deterministic shuffle — useful for replaying a run from turn 1
+with a longer command sequence each time (how the playtest below was driven over piped
+stdin, with no way to react mid-process without one).
+
 ## Balance-test it
 
 ```bash
@@ -33,11 +37,26 @@ draw rate, and average game length. This is the same tool to reach for once deck
 stop being symmetric — Ben Brode-style, iterate from ladder data, not theorycraft
 (see `../hearthstone/CLAUDE.md`, same philosophy already run there).
 
-**Known v0 finding:** going first currently wins ~71% of symmetric AI-vs-AI games.
-Real card games compensate the player on the draw (an extra card, a "coin"); v0 has
-no such mechanic yet. Flagging honestly rather than fixing blind — needs a real
-decision (extra starting card? excess pips?) before v1's asymmetric decks make the
-signal harder to isolate.
+**Known v0 findings:**
+
+- **Fixed:** no starting hand. `StartTurn` always drew exactly one card, with no
+  separate deal before turn 1 — found by actually playing a full 10-turn game
+  (`--seed 42`), not by code review. Turn 1 was a single random card at 1 pip,
+  usually unaffordable, so the opening move was almost always a forced pass.
+  `Caster.DealOpeningHand` now deals 3 cards to each side before turn 1, separate
+  from the per-turn draw.
+- **Still open:** going first wins ~71-73% of symmetric AI-vs-AI games (measured
+  both before and after the opening-hand fix — the two are independent; fixing the
+  empty turn 1 didn't move this number). Real card games compensate the player on
+  the draw (an extra card, a "coin"); v0 has no such mechanic yet. Flagging honestly
+  rather than fixing blind — needs a real decision (extra starting card on the draw?
+  excess pips?) before v1's asymmetric decks make the signal harder to isolate.
+- Taunt behaves correctly under real play: it absorbs attacks (even multiple weaker
+  ones) until it dies, then stops forcing — confirmed live when a 1/4 Tide Guard ate
+  two attacks in one enemy turn before the rest went face.
+- Hand indices shift after every play (list, not stable IDs) — fine for a scripted
+  or careful player, mildly error-prone for a fast one. Worth stable per-card handles
+  before this becomes a real UI, not urgent for v0.
 
 ## Structure
 

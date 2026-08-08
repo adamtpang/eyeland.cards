@@ -53,6 +53,18 @@ public sealed class Caster
         log.Add($"{Name} draws {card.Name}.");
     }
 
+    /// <summary>
+    /// Deals the opening hand before turn 1 — distinct from the per-turn draw in
+    /// StartTurn. Without this, turn 1 is a single random card at 1 pip and almost
+    /// always a forced pass; every real card game deals a multi-card starting hand
+    /// so the opening turn is a real decision.
+    /// </summary>
+    public void DealOpeningHand(int count, ResolutionLog log)
+    {
+        for (var i = 0; i < count; i++)
+            DrawCard(log);
+    }
+
     public void StartTurn(ResolutionLog log)
     {
         MaxPips = Math.Min(MaxPips + 1, PipCap);
