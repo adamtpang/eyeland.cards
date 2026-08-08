@@ -10,8 +10,19 @@ Thumbs.db
 node_modules/
 npm-debug.log*
 
-# Unity project (added when the Unity editor project lands)
-# [Ll]ibrary/  [Tt]emp/  [Oo]bj/  [Bb]uild/  [Ll]ogs/  [Uu]serSettings/
+# Unity project (game/unity/) — generated/local, never source
+game/unity/[Ll]ibrary/
+game/unity/[Tt]emp/
+game/unity/[Oo]bj/
+game/unity/[Bb]uild/
+game/unity/[Bb]uilds/
+game/unity/[Ll]ogs/
+game/unity/[Uu]ser[Ss]ettings/
+game/unity/*.csproj
+game/unity/*.sln
+game/unity-create.log
+game/unity-resolve.log
+game/unity/.firecrawl/
 
 # .NET build output (game/ — the plain C# duel engine, pre-Unity)
 game/**/bin/
