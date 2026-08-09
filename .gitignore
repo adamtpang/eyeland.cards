@@ -20,8 +20,7 @@ game/unity/[Ll]ogs/
 game/unity/[Uu]ser[Ss]ettings/
 game/unity/*.csproj
 game/unity/*.sln
-game/unity-create.log
-game/unity-resolve.log
+game/unity-*.log
 game/unity/.firecrawl/
 
 # .NET build output (game/ — the plain C# duel engine, pre-Unity)

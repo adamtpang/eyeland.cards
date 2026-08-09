@@ -9,6 +9,10 @@ as a portable class library on purpose: these same files drop into a Unity proje
 The three cards are the same three from the eyeland.cards landing page — Ember Bolt,
 Tidewisp, Eye of the Storm — this is the same game, not a separate prototype.
 
+Read [`DESIGN.md`](DESIGN.md) before designing any new card, boss, or system —
+concrete rules distilled from real research into why the greatest games actually
+work, not inspirational quotes.
+
 ## Run it
 
 ```bash

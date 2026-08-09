@@ -20,6 +20,14 @@ Continuation context for Claude Code / Codex sessions. Updated 2026-07-11
    `v0 Duel → v1 Deck → v2 Island → v3 World → v4 Online`.
    The Hearthstone work is deliberate practice: archetypes, curve theory,
    card economy, ladder-driven iteration all feed the card-duel core design.
+   **`game/`** now holds real progress on this phase — `game/README.md` (the
+   v0 Duel C# engine, playable, no Unity needed) and **`game/DESIGN.md`**
+   (concrete design rules distilled from researched origin stories of the
+   greatest games — read before designing any new card, boss, or system).
+   `game/unity/` is a real Unity 6 project with the MCP-for-Unity bridge wired
+   in — this repo's own root `CLAUDE.md`/this file predate that work; treat
+   `game/README.md` and `game/DESIGN.md` as more current on anything they
+   cover.
 
 ## Career angle (noted 2026-07-11)
 
