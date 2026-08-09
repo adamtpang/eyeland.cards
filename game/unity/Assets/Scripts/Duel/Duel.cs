@@ -1,3 +1,7 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+
 namespace Eyeland.Duel;
 
 /// <summary>A live creature on the board — its own Attack/Health, independent of the CardDef it came from.</summary>
