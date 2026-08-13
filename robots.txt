@@ -16,4 +16,4 @@ Allow: /
 User-agent: Google-Extended
 Allow: /
 
-Sitemap: https://eyelandcards.vercel.app/sitemap.xml
+Sitemap: https://eyeland.cards/sitemap.xml
