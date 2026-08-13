@@ -1,0 +1,20 @@
+# eyeland.cards
+
+> An open-world card-combat MMORPG across a floating archipelago: explore islands like Pokemon, build a deck like Hearthstone, and duel with a hand of cards like Wizard101.
+
+eyeland.cards is the landing page for a game currently in Unity pre-alpha, built in the open with Unity and Claude. The plan ships in order: a readable card duel first (pips, hands, turns, spell resolution, win state), then a starter spellbook and deck-building, then a walkable island with wild encounters, then more islands and a collection loop, and only then the online/MMO layer (friends, trading, duels). The first public build is a pre-alpha itch.io release, not yet shipped. The page shows three sample cards from the starter set (Ember Bolt, Tidewisp, Eye of the Storm) and a five-step build ladder (Duel, Deck, Island, World, Online), with "Duel" as the current step.
+
+There is no payment, account, or download yet. The only action on the page is an email signup that opens a pre-filled mailto to adamtpang@gmail.com requesting the first itch.io build link when it exists; there is no backend capture.
+
+## Key links
+- [Home](https://eyelandcards.vercel.app/): hero, how-it-plays pillars, card showcase, build ladder, and the itch.io signup.
+- [The World](https://eyelandcards.vercel.app/#world): the open-world / island-hopping pillar.
+- [The Cards](https://eyelandcards.vercel.app/#cards): the deckbuilding and card-duel pillars, with sample cards.
+- [First Build](https://eyelandcards.vercel.app/#build): the v0-v4 build ladder from duel prototype to full MMO.
+- [Get the build](https://eyelandcards.vercel.app/#waitlist): join to get the first itch.io pre-alpha link.
+
+Note: the brand and eventual domain is eyeland.cards; the site is currently deployed at eyelandcards.vercel.app (matches robots.txt, sitemap.xml, and canonical tag).
+
+## About
+- Part of adam.inc, the internet portfolio of Adam Pangelinan (Anchor Marianas LLC).
+- Builder: https://adampang.com
