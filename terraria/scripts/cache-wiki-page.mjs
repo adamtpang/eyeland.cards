@@ -72,6 +72,32 @@ const SEED_PAGES = [
   "Solar Eclipse",
   "Dreadnautilus",
   "Torch God",
+  // NPCs named in questbook.md
+  "Guide",
+  "Merchant",
+  "Nurse",
+  "Arms Dealer",
+  "Goblin Tinkerer",
+  "Demolitionist",
+  "Old Man",
+  "Mechanic",
+  "Witch Doctor",
+  "Tavernkeep",
+  // Biomes named in questbook.md
+  "Corruption",
+  "Crimson",
+  "Dungeon",
+  "Hallow",
+  "Cavern",
+  "Underground Jungle",
+  "Underworld",
+  // Named in this session's actual play (King Slime kill next)
+  "King Slime",
+  "Slime Crown",
+  "Lens",
+  "Demon Eye",
+  "Gel",
+  "Gold Crown",
 ];
 
 function slugify(title) {
