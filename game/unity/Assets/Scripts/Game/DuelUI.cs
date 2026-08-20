@@ -48,10 +48,18 @@ namespace Eyeland.Game
             return ui;
         }
 
+        // Fisher-Yates -- see game/src/Eyeland.Duel.Console/Program.cs's Shuffled() for why
+        // this replaced OrderBy(_ => rng.Next()), same fix applied on both sides.
         private static List<T> Shuffled<T>(List<T> list)
         {
             var rng = new System.Random();
-            return list.OrderBy(_ => rng.Next()).ToList();
+            var result = new List<T>(list);
+            for (var i = result.Count - 1; i > 0; i--)
+            {
+                var j = rng.Next(i + 1);
+                (result[i], result[j]) = (result[j], result[i]);
+            }
+            return result;
         }
 
         private void StartDuel(List<CardDef> playerDeck)

@@ -36,12 +36,29 @@ namespace Eyeland.Game
             return ui;
         }
 
+        // Fixed reading width for the deckbuilder column, independent of the actual screen's
+        // aspect ratio. Anchoring rows to a fraction of the full canvas (the old approach)
+        // meant a wide/ultrawide window stretched every row edge-to-edge, leaving the
+        // left-aligned label swimming in blank space on the right — this is the bug Adam
+        // found ("too wide with a lot of blank space"). A fixed-width, centered column
+        // fixes it regardless of window shape.
+        private const float ContentWidth = 640f;
+
         private void BuildLayout(RectTransform root)
         {
             var bg = UIFactory.CreatePanel(root, UIFactory.Abyss);
             UIFactory.SetFullStretch(bg);
 
-            var title = UIFactory.CreateText(root, "Build your deck", 32, UIFactory.Mist, TextAnchor.MiddleLeft);
+            var content = new GameObject("Content", typeof(RectTransform));
+            var contentRt = (RectTransform)content.transform;
+            contentRt.SetParent(root, false);
+            contentRt.anchorMin = new Vector2(0.5f, 0f);
+            contentRt.anchorMax = new Vector2(0.5f, 1f);
+            contentRt.pivot = new Vector2(0.5f, 0.5f);
+            contentRt.sizeDelta = new Vector2(ContentWidth, 0);
+            contentRt.anchoredPosition = Vector2.zero;
+
+            var title = UIFactory.CreateText(contentRt, "Build your deck", 32, UIFactory.Mist, TextAnchor.MiddleLeft);
             var titleRt = (RectTransform)title.transform;
             titleRt.anchorMin = new Vector2(0, 1);
             titleRt.anchorMax = new Vector2(1, 1);
@@ -50,7 +67,7 @@ namespace Eyeland.Game
             titleRt.anchoredPosition = new Vector2(0, -20);
             title.alignment = TextAnchor.MiddleCenter;
 
-            var subtitle = UIFactory.CreateText(root,
+            var subtitle = UIFactory.CreateText(contentRt,
                 $"Pick at least {MinDeckSize} cards — up to {MaxCopiesCommon} copies each, {MaxCopiesLegendary} for the Legendary.",
                 16, UIFactory.Fog, TextAnchor.MiddleCenter);
             var subRt = (RectTransform)subtitle.transform;
@@ -63,9 +80,9 @@ namespace Eyeland.Game
             // scrollable card list
             var listArea = new GameObject("CardList", typeof(RectTransform));
             var listRt = (RectTransform)listArea.transform;
-            listRt.SetParent(root, false);
-            listRt.anchorMin = new Vector2(0.05f, 0.14f);
-            listRt.anchorMax = new Vector2(0.95f, 0.86f);
+            listRt.SetParent(contentRt, false);
+            listRt.anchorMin = new Vector2(0f, 0.14f);
+            listRt.anchorMax = new Vector2(1f, 0.86f);
             listRt.offsetMin = Vector2.zero;
             listRt.offsetMax = Vector2.zero;
             UIFactory.AddVerticalLayout(listArea, spacing: 4, padding: new RectOffset(0, 0, 0, 0));
@@ -79,16 +96,26 @@ namespace Eyeland.Game
             // footer: deck size + start button
             var footer = new GameObject("Footer", typeof(RectTransform));
             var footerRt = (RectTransform)footer.transform;
-            footerRt.SetParent(root, false);
-            footerRt.anchorMin = new Vector2(0.05f, 0f);
-            footerRt.anchorMax = new Vector2(0.95f, 0.12f);
+            footerRt.SetParent(contentRt, false);
+            footerRt.anchorMin = new Vector2(0f, 0f);
+            footerRt.anchorMax = new Vector2(1f, 0.12f);
             footerRt.offsetMin = Vector2.zero;
             footerRt.offsetMax = Vector2.zero;
             UIFactory.AddHorizontalLayout(footer, spacing: 16);
 
             _deckSizeText = UIFactory.CreateText(footerRt, "Deck size: 0", 20, UIFactory.Mist, TextAnchor.MiddleLeft);
             var sizeLe = UIFactory.SetPreferredHeight(_deckSizeText.gameObject, 48);
-            sizeLe.preferredWidth = 220;
+            sizeLe.preferredWidth = 180;
+
+            // Building a deck by hand shouldn't be the only way in -- most people just want
+            // to play. Quick Play hands them the same starter deck the AI opponent already
+            // uses (CardSet.StarterDeck(), see DuelUI.cs) and skips this screen entirely.
+            // The manual builder stays for anyone who wants to actually customize.
+            // Violet, not Panel -- Panel is nearly the same dark navy as the screen's own
+            // background and the card rows, so the button rendered but was invisible against
+            // it. Needs a color that reads as a distinct button the way Arcane does for Start Duel.
+            var quickPlay = UIFactory.CreateButton(footerRt, "Quick Play", UIFactory.Violet, OnQuickPlayClicked, 18);
+            UIFactory.SetPreferredHeight(quickPlay.gameObject, 48);
 
             _startButton = UIFactory.CreateButton(footerRt, "Start Duel", UIFactory.Arcane, OnStartClicked, 20);
             UIFactory.SetPreferredHeight(_startButton.gameObject, 48);
@@ -159,6 +186,12 @@ namespace Eyeland.Game
                     deck.Add(kv.Key);
 
             _onReady?.Invoke(deck);
+            Destroy(gameObject);
+        }
+
+        private void OnQuickPlayClicked()
+        {
+            _onReady?.Invoke(CardSet.StarterDeck());
             Destroy(gameObject);
         }
     }
