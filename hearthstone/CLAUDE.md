@@ -1,11 +1,21 @@
-# CLAUDE.md — Rafaam Warlock ladder project
+# CLAUDE.md: Rafaam Warlock ladder project
 
 ## Goal
 
 Build and iterate a competitive **Rafaam Warlock** list for current Standard,
-optimized for **ladder winrate within Adam's collection** — not theorycraft.
+optimized for **ladder winrate within Adam's collection**: not theorycraft.
 The collection lives in [collection.md](collection.md); treat unchecked cards as
 not owned.
+
+**collection.md is auto-generated, don't hand-edit the checkboxes.** Run
+`node hearthstone/scripts/refresh-collection.mjs` to regenerate them from
+Adam's real HSReplay collection export (see the script's header comment for
+the fetch step — it needs a fresh `collection-raw.json`, HSReplay's API is
+tied to Adam's logged-in session, not a stable API key). The script also
+writes `collection-full.json`, every owned card general-purpose, useful for
+scoping a future archetype beyond Rafaamlock. Both raw/full JSON files are
+gitignored (personal data). If collection.md looks stale, ask Adam to
+re-fetch `collection-raw.json` rather than editing checkboxes by hand.
 
 ## Home
 
@@ -13,22 +23,22 @@ This is the Hearthstone-tooling arm of the **eyeland.cards** game project
 (repo root: `../`, see `../HANDOFF.md` for the full picture). Sequence:
 Hearthstone tooling now → Adam's own Unity card game later. This deck work is
 deliberate practice for the game's card-duel core. Career angle: HSReplay is
-hiring — this tooling doubles as a portfolio piece (their platform skews
+hiring: this tooling doubles as a portfolio piece (their platform skews
 Battlegrounds, which is not Adam's focus; constructed Standard is).
 
 ## Archetype context (2026-07-11)
 
 HSGuru tracks the archetype as **"Rafaamlock"**. Build-arounds: **Timethief
-Rafaam** (10-mana 10/10, Fabled+ — deck size 40 but 10 of it is Rafaams;
+Rafaam** (10-mana 10/10, Fabled+, deck size 40 but 10 of it is Rafaams;
 Battlecry destroys enemy hero if you played the other 9) + **Godfrey the
 Betrayer** (Start of Game: overdraw becomes free card advantage). Two known
-shapes: the "big" consensus build and a cheaper "cycle" build — see
+shapes: the "big" consensus build and a cheaper "cycle" build: see
 lists/v01 and collection.md. Project started week 1 of Escape from Violet
-Hold, when the archetype was at 44% winrate — the job is to beat that.
+Hold, when the archetype was at 44% winrate: the job is to beat that.
 
 ## Card facts: hearthstone-oracle MCP only
 
-Use the `hearthstone-oracle` MCP for **all** card facts — card text, mana cost,
+Use the `hearthstone-oracle` MCP for **all** card facts: card text, mana cost,
 stats, rarity, set legality, deck-code decode/encode, curve breakdowns, and
 archetype analysis. **Never state card details from memory**; cards get changed
 by balance patches and memory goes stale.
@@ -46,20 +56,20 @@ Tool gotchas learned so far:
 
 The Oracle has **no meta data**. For winrates, matchup tables, popularity, and
 mulligan stats, web-search **HSReplay.net** and **ViciousSyndicate.com** (vS
-Data Reaper Report). **Always check the publication date** — balance patches
+Data Reaper Report). **Always check the publication date**: balance patches
 invalidate meta data fast. If a source predates the latest patch, say so and
 discount it. HSGuru (hsguru.com / d0nkey.top) proved the best live archetype
 source in week-1 conditions when vS hadn't published yet.
 
 ## Working style
 
-- **Lead with the decision, then the reasoning.** Adam often reads on mobile —
+- **Lead with the decision, then the reasoning.** Adam often reads on mobile:
   short lines, verdict first.
 - Every proposed change states: **card in / card out / why / curve delta.**
 - **Always end a decklist with the deck code.**
 - **Push back** if a card Adam likes is bad. Say why with Oracle facts and meta
   data, then let him overrule.
-- **Don't restate all cards when only 2 changed** — show the diff.
+- **Don't restate all cards when only 2 changed**: show the diff.
 - **Flag dust cost** on anything not checked in collection.md, and offer a
   substitute he does own.
 

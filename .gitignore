@@ -28,6 +28,13 @@ game/**/bin/
 game/**/obj/
 
 .vercel
+
+# Hearthstone collection sync: raw personal API export + large card cache,
+# regenerate locally via hearthstone/scripts/refresh-collection.mjs
+hearthstone/collection-raw.json
+hearthstone/collection-full.json
+hearthstone/scripts/.cache/
+
 # Cross-agent handoff files: generated from raw AI transcripts, so they embed
 # verbatim prompts. Keep them local rather than in this public repo.
 *_CONTINUE_FROM_*.md
