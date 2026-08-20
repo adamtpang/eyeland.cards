@@ -44,6 +44,34 @@ const SEED_PAGES = [
   "Red Potion",
   "Drunk",
   "For the Worthy",
+  // Gating items/mechanics named in questbook.md's phases, beyond the
+  // bosses themselves.
+  "Life Crystal",
+  "Grappling Hook",
+  "Hermes Boots",
+  "Demon Altar",
+  "Pwnhammer",
+  "Guide Voodoo Doll",
+  "Hellstone",
+  "Molten Pickaxe",
+  "Cobalt",
+  "Mythril",
+  "Adamantite",
+  "Wyvern",
+  "Pickaxe Axe",
+  "Chlorophyte Ore",
+  "Life Fruit",
+  "Lihzahrd Temple",
+  "Celestial Pillars",
+  "Zenith",
+  // Post-game events named in Phase 8 (Bosses/pillars already cached, these
+  // aren't).
+  "Old One's Army",
+  "Frost Moon",
+  "Pumpkin Moon",
+  "Solar Eclipse",
+  "Dreadnautilus",
+  "Torch God",
 ];
 
 function slugify(title) {
@@ -56,7 +84,7 @@ function fetchViaCurl(url) {
 }
 
 async function fetchExtract(title) {
-  const url = `${API}?action=query&titles=${encodeURIComponent(title)}&prop=extracts&explaintext=1&format=json`;
+  const url = `${API}?action=query&titles=${encodeURIComponent(title)}&prop=extracts&explaintext=1&redirects=1&format=json`;
   let body;
   try {
     const res = await fetch(url);
