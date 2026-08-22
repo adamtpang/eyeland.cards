@@ -101,6 +101,52 @@ advance of evidence, same discipline this file has held from the start.
 - **Not vibes-coded, ever.** Every milestone gets actually played by someone
   before it counts as done, same standard v0 Duel already met.
 
+## 🏝️ V2 ISLAND: THE COMMITTED SCOPE (2026-08-22)
+
+The vertical slice this rung is measured against, in one sentence, per the
+mechanism above:
+
+> **One procedurally generated island with three mob camps and one warden,
+> where every fight is the v0 duel loop and every win drops a card that
+> changes your deck for the next fight, playable start to finish in 20
+> minutes.**
+
+**Two design decisions committed with it, both Adam's, 2026-08-22:**
+
+1. **Turns are time-bound**, Hearthstone-style, not untimed. A turn timer
+   is what makes the core loop *fast*, which is the stated appeal ("fast
+   battles, no waiting"). This is a real change to `v0 Duel`'s current
+   untimed turn engine and needs to land before the slice counts as done.
+2. **Islands are procedurally generated AND themed**, not generic. Same
+   instinct as the Jello pitch's three starting areas, where a fire
+   factory town, a haunted forest, and a desert oasis all had to be
+   genuinely distinct so no player felt cheated by their starting version
+   (see `game/research/jello-pokemon-pitch.md`). Theme drives the mob
+   table and therefore the card drops, so it's a mechanical decision, not
+   a decorative one.
+
+**What this slice deliberately does NOT include**, named so it can't creep
+back in silently:
+
+- No automation or idle layer. Real tension, honestly unresolved: Factorio
+  automation removes the player from the loop, turn-based combat requires
+  them in it every turn. Loop Hero resolves this by making combat automatic
+  and moving agency into map building. That's a real fork worth taking
+  later, not inside this slice.
+- No class or race selection. `DESIGN.md` principle 11 already flags this
+  as an open fork (WoW commits at creation, Terraria lets gear define the
+  role) and this file won't silently pick it.
+- No multiplayer. Adam confirmed 2026-08-22 that solo is a real game, so
+  co-op stays at `v4 Online` where the ladder already puts it.
+- No crafting, no questbook UI, no overworld beyond the one island.
+
+**Why these four pillars and not the other four:** deckbuilding + procgen +
+cards-as-combat-loot is already one proven shape (Slay the Spire, built by
+two people; Slay the Spire 2 sold 3M copies in its launch week), and
+eyeland already has the combat engine and the deckbuilder shipped. This
+slice fires four of Adam's named pillars at once while reusing both
+existing rungs, instead of starting a fifth thing from zero.
+
 ## 📍 WHERE THINGS STAND (2026-08-20)
 
 - **v0 Duel: shipped.** Real 10-turn playtest, AI-vs-AI balance simulator,
@@ -111,9 +157,10 @@ advance of evidence, same discipline this file has held from the start.
   centered column), a Quick Play button (skip manual building, use the
   starter deck), an invisible-button-color fix, and an unbiased Fisher-Yates
   shuffle replacing a biased `OrderBy(_ => rng.Next())`.
-- **v2 Island: not started.** The real next rung, and per this pivot's own
-  mechanism, its first real milestone is a vertical slice: one island, one
-  loop, playable start to finish, not "the island system."
+- **v2 Island: scoped 2026-08-22, not started.** Its committed vertical
+  slice is written above under "V2 ISLAND: THE COMMITTED SCOPE", along with
+  the two design decisions that came with it (time-bound turns, themed
+  procgen islands) and an explicit list of what it excludes.
 - **`GAMES-1000.md` / `GAME2-MASTERPLAN.md`**: both now describe paused
   side-work relative to this thesis, not the active plan. Not rewritten as
   part of this pivot; flagged here so a future session doesn't read them as
@@ -134,7 +181,8 @@ actually worked for the studios who finished, not because it sounds
 disciplined.
 
 ---
-**Next natural handoff:** open v2 Island by defining its vertical slice in
-one sentence (one island, one loop, what "playable start to finish" means
-concretely) before any building starts. `/diagnose` if that sentence is hard
-to write, that's a real signal the scope isn't scoped yet.
+**Next natural handoff:** v2 Island's vertical slice is now written and
+committed (2026-08-22), so the next real step is building against it, not
+more planning. First concrete task: add a turn timer to `v0 Duel`'s turn
+engine, since that is the one decision above that changes already-shipped
+code rather than adding new code.
