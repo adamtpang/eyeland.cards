@@ -1,645 +1,663 @@
 <title>Ember Reach</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Lato:ital,wght@0,400;0,700;1,400&display=swap">
 
 <style>
-  :root {
-    --ground: #f2eee6;
-    --surface: #ffffff;
-    --surface-2: #e9e3d8;
-    --line: #d5cdbe;
-    --ink: #1f232b;
-    --ink-soft: #5c6270;
-    --ink-faint: #8b909d;
-    --fire: #c9481a;
-    --water: #2b7fa6;
-    --storm: #7457b8;
-    --good: #2f7d55;
-    --bad: #b0361f;
-    --accent: var(--fire);
-    --shadow: 0 1px 2px rgba(31,35,43,.08), 0 8px 24px rgba(31,35,43,.06);
+  :root{
+    --felt:#3c2a1a; --felt-2:#4d3722; --rim:#8a6a3c; --rim-hi:#c9a45e;
+    --board:#2a1d12; --wood:#5a4028;
+    --parch:#efe2c6; --parch-2:#dcc9a4; --ink:#2b1e12; --ink-soft:#6b5236;
+    --mana:#2f7fd4; --mana-hi:#5aa9f0;
+    --atk:#e8b423; --hp:#c8302a;
+    --fire:#d2521f; --water:#2b7fa6; --storm:#7a52b8;
+    --gold:#d8b55f; --good:#5da35d; --bad:#c0453a;
   }
-  @media (prefers-color-scheme: dark) {
-    :root:not([data-theme="light"]) {
-      --ground: #141821;
-      --surface: #1d222e;
-      --surface-2: #262c3a;
-      --line: #333a4a;
-      --ink: #e8e2d6;
-      --ink-soft: #a2a8b8;
-      --ink-faint: #767d8f;
-      --fire: #f0733a;
-      --water: #4fa8cc;
-      --storm: #a487e0;
-      --good: #4fb37c;
-      --bad: #e2654a;
-      --shadow: 0 1px 2px rgba(0,0,0,.4), 0 10px 30px rgba(0,0,0,.35);
-    }
+  *{box-sizing:border-box}
+  body{
+    margin:0; background:var(--board); color:var(--parch);
+    font-family:Lato,ui-sans-serif,system-ui,sans-serif; font-size:15px; line-height:1.45;
+    -webkit-font-smoothing:antialiased;
   }
-  :root[data-theme="dark"] {
-    --ground: #141821;
-    --surface: #1d222e;
-    --surface-2: #262c3a;
-    --line: #333a4a;
-    --ink: #e8e2d6;
-    --ink-soft: #a2a8b8;
-    --ink-faint: #767d8f;
-    --fire: #f0733a;
-    --water: #4fa8cc;
-    --storm: #a487e0;
-    --good: #4fb37c;
-    --bad: #e2654a;
-    --shadow: 0 1px 2px rgba(0,0,0,.4), 0 10px 30px rgba(0,0,0,.35);
-  }
+  .app{max-width:1000px;margin:0 auto;padding:14px 14px 40px;display:flex;flex-direction:column;gap:12px}
 
-  * { box-sizing: border-box; }
+  h1,h2,h3,.disp{font-family:Cinzel,Georgia,serif;font-weight:700;letter-spacing:.01em}
+  h1{font-size:clamp(26px,5vw,38px);margin:0;color:var(--rim-hi);text-wrap:balance}
+  .lead{color:var(--parch-2);margin:0;max-width:64ch}
 
-  body {
-    margin: 0;
-    background: var(--ground);
-    color: var(--ink);
-    font-family: Archivo, ui-sans-serif, system-ui, sans-serif;
-    font-size: 16px;
-    line-height: 1.5;
-    -webkit-font-smoothing: antialiased;
+  /* ---------- run header ---------- */
+  .runbar{
+    display:flex;flex-wrap:wrap;gap:14px;align-items:center;
+    background:linear-gradient(180deg,var(--felt-2),var(--felt));
+    border:1px solid var(--rim);border-radius:8px;padding:9px 14px;
   }
+  .runbar .k{font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--rim-hi);font-weight:700}
+  .runbar .v{font-size:17px;font-weight:700;font-variant-numeric:tabular-nums}
+  .runbar .grp{display:flex;flex-direction:column;line-height:1.15}
+  .runbar .sp{flex:1}
+  .track{display:flex;gap:4px;align-items:center;height:20px}
+  .node{width:24px;height:7px;border-radius:2px;background:#00000055;border:1px solid var(--rim)}
+  .node.won{background:var(--good)} .node.now{background:var(--rim-hi)} .node.lost{background:var(--bad)}
 
-  .wrap {
-    max-width: 880px;
-    margin: 0 auto;
-    padding: 28px 20px 72px;
-    display: flex;
-    flex-direction: column;
-    gap: 22px;
+  /* ---------- board ---------- */
+  .board{
+    background:
+      radial-gradient(ellipse at 50% 50%, var(--felt-2) 0%, var(--felt) 70%);
+    border:2px solid var(--rim);border-radius:10px;
+    padding:10px;display:flex;flex-direction:column;gap:8px;
+    box-shadow:inset 0 0 40px #00000066;
   }
+  .side{display:flex;align-items:center;gap:12px}
+  .side.enemy{border-bottom:1px solid #00000044;padding-bottom:8px}
+  .lane{
+    flex:1;min-height:104px;display:flex;gap:7px;align-items:center;justify-content:center;
+    background:#00000022;border-radius:8px;padding:6px;
+  }
+  .lane.drop{outline:1px dashed var(--rim-hi)}
+  .lane .empty{color:#ffffff33;font-size:12px;letter-spacing:.1em;text-transform:uppercase}
 
-  .masthead { display: flex; flex-direction: column; gap: 4px; }
-  .eyebrow {
-    font-size: 11px; letter-spacing: .16em; text-transform: uppercase;
-    color: var(--ink-faint); font-weight: 600;
+  /* hero */
+  .hero{display:flex;flex-direction:column;align-items:center;gap:3px;width:92px;flex:0 0 auto}
+  .portrait{
+    width:66px;height:66px;border-radius:50%;
+    border:3px solid var(--rim);background:radial-gradient(circle at 35% 30%,#7d5a34,#3a2717);
+    display:grid;place-items:center;font-family:Cinzel,serif;font-size:22px;color:var(--parch);
+    position:relative;
   }
-  h1 {
-    font-family: "Instrument Serif", Georgia, serif;
-    font-weight: 400; font-size: clamp(34px, 6vw, 52px);
-    margin: 0; line-height: 1.02; text-wrap: balance;
+  .portrait.tgt{cursor:crosshair;border-color:var(--hp);box-shadow:0 0 0 3px #c8302a55}
+  .hp-gem{
+    position:absolute;bottom:-6px;right:-6px;min-width:26px;height:26px;border-radius:50%;
+    background:var(--hp);border:2px solid #7d1d18;display:grid;place-items:center;
+    font-weight:700;font-size:13px;color:#fff;font-variant-numeric:tabular-nums;
   }
-  h1 em { font-style: italic; color: var(--accent); }
-  .sub { color: var(--ink-soft); max-width: 62ch; margin: 0; }
+  .hero .nm{font-size:11px;color:var(--parch-2);text-align:center;line-height:1.15}
 
-  /* ---- status rail ---- */
-  .rail {
-    display: flex; flex-wrap: wrap; gap: 10px;
-    background: var(--surface); border: 1px solid var(--line);
-    border-radius: 6px; padding: 12px 14px; box-shadow: var(--shadow);
+  /* minion */
+  .minion{
+    width:74px;height:96px;border-radius:9px;position:relative;cursor:pointer;
+    border:2px solid #00000066;padding:5px 4px 4px;
+    display:flex;flex-direction:column;align-items:center;gap:2px;
+    font:inherit;color:var(--ink);
+    background:linear-gradient(180deg,var(--parch),var(--parch-2));
+    transition:transform .1s ease,box-shadow .1s ease;
   }
-  .stat { display: flex; flex-direction: column; gap: 2px; min-width: 78px; }
-  .stat .k {
-    font-size: 10px; letter-spacing: .14em; text-transform: uppercase;
-    color: var(--ink-faint); font-weight: 600;
+  .minion:hover:not(:disabled){transform:translateY(-3px)}
+  .minion:focus-visible{outline:2px solid var(--rim-hi);outline-offset:2px}
+  .minion .glyph{font-size:24px;line-height:1;margin-top:6px}
+  .minion .nm{font-size:9.5px;font-weight:700;text-align:center;line-height:1.05;padding:0 1px}
+  .minion .taunt{position:absolute;top:-6px;left:50%;transform:translateX(-50%);
+    font-size:9px;background:var(--wood);color:var(--parch);border:1px solid var(--rim);
+    border-radius:3px;padding:0 4px;letter-spacing:.06em}
+  .minion .a,.minion .h{
+    position:absolute;bottom:-5px;width:22px;height:22px;border-radius:50%;
+    display:grid;place-items:center;font-weight:700;font-size:12px;color:#fff;
+    font-variant-numeric:tabular-nums;border:2px solid #00000055;
   }
-  .stat .v { font-size: 19px; font-weight: 600; font-variant-numeric: tabular-nums; }
-  .rail .spacer { flex: 1; }
+  .minion .a{left:-5px;background:var(--atk)}
+  .minion .h{right:-5px;background:var(--hp)}
+  .minion.ready{box-shadow:0 0 0 2px var(--good),0 0 12px #5da35d88}
+  .minion.sel{box-shadow:0 0 0 3px var(--rim-hi)}
+  .minion.tgt{cursor:crosshair;box-shadow:0 0 0 2px var(--hp)}
+  .minion:disabled{cursor:default}
+  .minion.dead{opacity:0;transform:scale(.7);transition:all .25s ease}
 
-  .pips { display: flex; gap: 5px; align-items: center; height: 28px; }
-  .pip { width: 11px; height: 11px; border-radius: 50%; background: var(--bad); }
-  .pip.gone { background: transparent; border: 1.5px solid var(--line); }
+  /* ---------- mana + controls ---------- */
+  .controls{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+  .crystals{display:flex;gap:3px;flex-wrap:wrap;max-width:230px}
+  .cry{width:15px;height:19px;border-radius:3px 3px 6px 6px;background:#1b2a3d;border:1px solid #14202f}
+  .cry.on{background:linear-gradient(180deg,var(--mana-hi),var(--mana));box-shadow:0 0 6px #5aa9f088}
+  .manatxt{font-weight:700;font-variant-numeric:tabular-nums;color:var(--mana-hi)}
+  button.act{
+    font:inherit;font-family:Cinzel,serif;font-weight:700;cursor:pointer;letter-spacing:.03em;
+    background:linear-gradient(180deg,#7c5a2e,#4e3719);color:var(--parch);
+    border:2px solid var(--rim-hi);border-radius:8px;padding:9px 18px;
+  }
+  button.act:hover:not(:disabled){filter:brightness(1.14)}
+  button.act:disabled{opacity:.42;cursor:not-allowed}
+  button.act:focus-visible{outline:2px solid var(--parch);outline-offset:2px}
+  button.ghost{background:transparent;border-color:var(--rim)}
 
-  .track { display: flex; gap: 5px; align-items: center; height: 28px; }
-  .node {
-    width: 26px; height: 8px; border-radius: 2px;
-    background: var(--line);
+  /* ---------- hand ---------- */
+  .hand{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;min-height:150px;align-items:flex-end}
+  .pcard{
+    width:104px;height:146px;border-radius:10px;position:relative;cursor:pointer;
+    border:2px solid #2b1e1288;padding:6px 6px 5px;font:inherit;color:var(--ink);text-align:center;
+    background:linear-gradient(180deg,var(--parch),var(--parch-2));
+    display:flex;flex-direction:column;gap:3px;
+    transition:transform .12s ease,box-shadow .12s ease;
   }
-  .node.won { background: var(--good); }
-  .node.lost { background: var(--bad); }
-  .node.now { background: var(--accent); }
+  .pcard:hover:not(:disabled){transform:translateY(-8px)}
+  .pcard:focus-visible{outline:2px solid var(--rim-hi);outline-offset:2px}
+  .pcard.sel{transform:translateY(-12px);box-shadow:0 0 0 3px var(--rim-hi)}
+  .pcard:disabled{opacity:.45;cursor:not-allowed}
+  .pcard .cost{
+    position:absolute;top:-7px;left:-7px;width:27px;height:27px;border-radius:50%;
+    background:linear-gradient(180deg,var(--mana-hi),var(--mana));border:2px solid #14314f;
+    display:grid;place-items:center;color:#fff;font-weight:700;font-size:14px;
+    font-variant-numeric:tabular-nums;
+  }
+  .pcard .art{
+    height:44px;border-radius:5px;margin-top:12px;display:grid;place-items:center;font-size:24px;
+    border:1px solid #00000033;
+  }
+  .art.fire{background:linear-gradient(160deg,#f0a35c,#d2521f)}
+  .art.water{background:linear-gradient(160deg,#7fd0ea,#2b7fa6)}
+  .art.storm{background:linear-gradient(160deg,#bb9df0,#7a52b8)}
+  .pcard .nm{font-size:10.5px;font-weight:700;line-height:1.1}
+  .pcard .tx{font-size:9.5px;color:var(--ink-soft);line-height:1.2;font-style:italic;flex:1}
+  .pcard .a,.pcard .h{
+    position:absolute;bottom:-6px;width:24px;height:24px;border-radius:50%;
+    display:grid;place-items:center;font-weight:700;font-size:12px;color:#fff;
+    border:2px solid #00000055;font-variant-numeric:tabular-nums;
+  }
+  .pcard .a{left:-6px;background:var(--atk)}
+  .pcard .h{right:-6px;background:var(--hp)}
 
-  /* ---- panels ---- */
-  .panel {
-    background: var(--surface); border: 1px solid var(--line);
-    border-radius: 6px; padding: 20px; box-shadow: var(--shadow);
-    display: flex; flex-direction: column; gap: 16px;
+  /* ---------- log ---------- */
+  .log{
+    background:#00000033;border:1px solid var(--rim);border-radius:7px;
+    padding:8px 11px;font-size:12.5px;color:var(--parch-2);
+    max-height:92px;overflow-y:auto;display:flex;flex-direction:column-reverse;gap:2px;
   }
-  .panel h2 {
-    font-family: "Instrument Serif", Georgia, serif;
-    font-weight: 400; font-size: 27px; margin: 0; line-height: 1.15;
-  }
-  .panel h3 {
-    font-size: 11px; letter-spacing: .14em; text-transform: uppercase;
-    color: var(--ink-faint); font-weight: 600; margin: 0;
-  }
+  .log b{color:var(--rim-hi)}
 
-  .numbers { display: flex; gap: 26px; flex-wrap: wrap; }
-  .big { display: flex; flex-direction: column; gap: 1px; }
-  .big .k {
-    font-size: 10px; letter-spacing: .14em; text-transform: uppercase;
-    color: var(--ink-faint); font-weight: 600;
+  /* ---------- panels ---------- */
+  .panel{
+    background:linear-gradient(180deg,var(--felt-2),var(--felt));
+    border:2px solid var(--rim);border-radius:10px;padding:20px;
+    display:flex;flex-direction:column;gap:14px;
   }
-  .big .v {
-    font-size: 30px; font-weight: 700; line-height: 1;
-    font-variant-numeric: tabular-nums;
+  .panel h2{font-size:25px;margin:0;color:var(--rim-hi)}
+  .panel h3{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--rim-hi);margin:0}
+  .note{margin:0;color:var(--parch-2);font-size:14px}
+  .verdict{font-family:Cinzel,serif;font-weight:700;font-size:17px}
+  .verdict.win{color:var(--good)} .verdict.lose{color:var(--bad)}
+  .decklist{display:flex;flex-wrap:wrap;gap:5px}
+  .chip{
+    font:inherit;font-size:12.5px;cursor:pointer;color:var(--ink);
+    background:var(--parch-2);border:1px solid #00000044;border-radius:4px;padding:4px 8px;
+    display:flex;align-items:center;gap:6px;
   }
+  .chip:hover{outline:2px solid var(--bad)}
+  .chip:focus-visible{outline:2px solid var(--rim-hi)}
+  .chip .c{width:16px;height:16px;border-radius:50%;background:var(--mana);color:#fff;
+    display:grid;place-items:center;font-size:10px;font-weight:700}
+  pre.tracker{
+    background:#00000038;border:1px solid var(--rim);border-radius:6px;padding:13px;margin:0;
+    font-size:12px;line-height:1.6;overflow-x:auto;font-variant-numeric:tabular-nums;
+    white-space:pre;color:var(--parch-2);
+  }
+  .qs{display:flex;flex-direction:column;gap:12px}
+  .q{display:flex;gap:10px}
+  .q .n{font-family:Cinzel,serif;font-size:19px;color:var(--rim-hi);min-width:18px}
+  .q .body{display:flex;flex-direction:column;gap:4px;flex:1}
+  .q label{font-weight:700;font-size:13.5px}
+  .q .why{font-size:12px;color:var(--parch-2);font-style:italic}
+  .q textarea{
+    font:inherit;font-size:13.5px;color:var(--ink);background:var(--parch);
+    border:1px solid var(--rim);border-radius:4px;padding:7px 9px;resize:vertical;min-height:42px;
+  }
+  .hintbar{font-size:13px;color:var(--rim-hi);min-height:19px;font-style:italic}
 
-  .trait {
-    border-left: 2px solid var(--accent);
-    padding: 2px 0 2px 12px;
-  }
-  .trait .name { font-weight: 700; }
-  .trait .desc { color: var(--ink-soft); font-size: 14px; }
-
-  /* ---- cards ---- */
-  .hand { display: flex; flex-wrap: wrap; gap: 10px; }
-  .card {
-    position: relative; width: 152px; text-align: left;
-    background: var(--surface-2); border: 1px solid var(--line);
-    border-radius: 5px; padding: 11px 12px 12px;
-    display: flex; flex-direction: column; gap: 6px;
-    cursor: pointer; font: inherit; color: inherit;
-    transition: transform .12s ease, border-color .12s ease, box-shadow .12s ease;
-  }
-  .card:hover:not(:disabled) { transform: translateY(-2px); }
-  .card:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
-  .card.on {
-    border-color: var(--accent);
-    box-shadow: inset 0 0 0 1px var(--accent);
-    transform: translateY(-4px);
-  }
-  .card:disabled { opacity: .38; cursor: not-allowed; }
-  .card .top { display: flex; align-items: baseline; gap: 8px; }
-  .cost {
-    font-weight: 700; font-size: 15px; font-variant-numeric: tabular-nums;
-    min-width: 20px; height: 20px; border-radius: 3px;
-    display: grid; place-items: center; color: #fff;
-  }
-  .cost.fire { background: var(--fire); }
-  .cost.water { background: var(--water); }
-  .cost.storm { background: var(--storm); }
-  .card .nm { font-weight: 600; font-size: 14px; line-height: 1.2; }
-  .card .tx { font-size: 12px; color: var(--ink-soft); line-height: 1.35; }
-  .card .pw {
-    font-size: 11px; letter-spacing: .1em; text-transform: uppercase;
-    color: var(--ink-faint); font-weight: 600; margin-top: auto;
-  }
-  .card .pw b { color: var(--ink); font-size: 13px; font-variant-numeric: tabular-nums; }
-
-  /* ---- buttons ---- */
-  .row { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
-  button.act {
-    font: inherit; font-weight: 600; cursor: pointer;
-    background: var(--accent); color: #fff; border: 1px solid transparent;
-    border-radius: 5px; padding: 11px 20px;
-    transition: filter .12s ease;
-  }
-  button.act:hover:not(:disabled) { filter: brightness(1.08); }
-  button.act:disabled { opacity: .4; cursor: not-allowed; }
-  button.act:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
-  button.ghost {
-    background: transparent; color: var(--ink);
-    border: 1px solid var(--line);
-  }
-  button.ghost:hover:not(:disabled) { border-color: var(--ink-faint); filter: none; }
-
-  .verdict { font-size: 15px; font-weight: 600; }
-  .verdict.win { color: var(--good); }
-  .verdict.lose { color: var(--bad); }
-
-  .note { font-size: 13px; color: var(--ink-soft); margin: 0; }
-
-  /* ---- deck list ---- */
-  .decklist { display: flex; flex-wrap: wrap; gap: 6px; }
-  .chip {
-    font: inherit; font-size: 13px; cursor: pointer; color: inherit;
-    background: var(--surface-2); border: 1px solid var(--line);
-    border-radius: 4px; padding: 5px 9px;
-    display: flex; align-items: center; gap: 7px;
-    transition: border-color .12s ease;
-  }
-  .chip:hover { border-color: var(--bad); }
-  .chip:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
-  .chip .c {
-    font-weight: 700; font-variant-numeric: tabular-nums;
-    width: 16px; height: 16px; border-radius: 2px; color: #fff;
-    display: grid; place-items: center; font-size: 11px;
-  }
-  .chip .c.fire { background: var(--fire); }
-  .chip .c.water { background: var(--water); }
-  .chip .c.storm { background: var(--storm); }
-  .chip[data-static] { cursor: default; }
-  .chip[data-static]:hover { border-color: var(--line); }
-
-  /* ---- end screen ---- */
-  .qs { display: flex; flex-direction: column; gap: 14px; counter-reset: q; }
-  .q { display: flex; gap: 11px; }
-  .q .n {
-    font-family: "Instrument Serif", Georgia, serif;
-    font-size: 21px; color: var(--accent); line-height: 1; min-width: 20px;
-  }
-  .q .body { display: flex; flex-direction: column; gap: 5px; flex: 1; }
-  .q label { font-weight: 600; font-size: 14px; }
-  .q .why { font-size: 13px; color: var(--ink-soft); }
-  .q textarea {
-    font: inherit; font-size: 14px; color: var(--ink);
-    background: var(--ground); border: 1px solid var(--line);
-    border-radius: 4px; padding: 8px 10px; resize: vertical; min-height: 46px;
-  }
-  .q textarea:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
-
-  pre.tracker {
-    background: var(--ground); border: 1px solid var(--line);
-    border-radius: 5px; padding: 14px; margin: 0;
-    font-size: 12.5px; line-height: 1.65; overflow-x: auto;
-    font-variant-numeric: tabular-nums; white-space: pre;
-  }
-
-  .foot { color: var(--ink-faint); font-size: 12.5px; }
-  .foot a { color: var(--ink-soft); }
-
-  @media (prefers-reduced-motion: reduce) {
-    * { transition: none !important; animation: none !important; }
-  }
-  @media (max-width: 520px) {
-    .card { width: calc(50% - 5px); }
-    .numbers { gap: 18px; }
+  @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+  @media (max-width:640px){
+    .minion{width:62px;height:86px}
+    .pcard{width:92px;height:134px}
+    .hero{width:76px}
+    .portrait{width:56px;height:56px}
   }
 </style>
 
-<div class="wrap">
-  <header class="masthead">
-    <div class="eyebrow">Eyeland · v2 Island paper prototype</div>
-    <h1>Ember <em>Reach</em></h1>
-    <p class="sub">Three camps and a warden on one fire island. Every win changes your
-      deck. The only question this is built to answer: <strong>is that loop fun?</strong></p>
-  </header>
-
-  <div class="rail" id="rail"></div>
-  <main id="stage"></main>
-
-  <p class="foot">
-    Combat is abstracted on purpose — <code>v0 Duel</code> already proved the fight is fun.
-    Cards, costs and stats are the real <code>CardSet.StarterDeck()</code>.
-  </p>
+<div class="app">
+  <div id="top"></div>
+  <div id="stage"></div>
 </div>
 
 <script>
-(function () {
+(function(){
   "use strict";
+  const el=h=>{const t=document.createElement("template");t.innerHTML=h.trim();return t.content.firstElementChild;};
+  const top=document.getElementById("top"), stage=document.getElementById("stage");
+  const GLYPH={fire:"🔥",water:"🌊",storm:"⚡"};
 
-  const el = (h) => { const t = document.createElement("template"); t.innerHTML = h.trim(); return t.content.firstElementChild; };
-  const stage = document.getElementById("stage");
-  const rail = document.getElementById("rail");
-
-  // --- real cards from game/src/Eyeland.Duel/Cards.cs ---
-  const STARTER = [
-    ["Glowing Ember", 1, 4, "fire", "1/2 · Deal 1 to face", 2],
-    ["Ember Bolt", 2, 4, "fire", "Deal 3 · draw if first spell", 2],
-    ["Tide Guard", 2, 5, "water", "1/4 · Taunt", 2],
-    ["Squall Caller", 2, 5, "storm", "2/2 · Draw a card", 2],
-    ["Cinder Wolf", 3, 6, "fire", "4/2", 2],
-    ["Stormcaller Elemental", 4, 8, "storm", "3/5", 2],
-    ["Tidewisp", 3, 8, "water", "3/4 · Heal 2", 1],
-    ["Riptide", 4, 6, "water", "Heal 5 · draw", 1],
-    ["Rolling Thunder", 6, 8, "storm", "Deal 4 to a creature", 1],
-    ["Eye of the Storm", 5, 9, "storm", "Deal 2 to all · draw 2", 1]
-  ];
-
-  const mk = (n, c, p, e, t) => ({ n, c, p, e, t });
-  const REWARDS = [
-    [mk("Ash Imp", 1, 3, "fire", "2/1"), mk("Glowing Ember", 1, 4, "fire", "1/2 · Deal 1 to face"), mk("Ash Imp", 1, 3, "fire", "2/1")],
-    [mk("Emberclaw Prowler", 2, 5, "fire", "3/2"), mk("Cinder Wolf", 3, 6, "fire", "4/2"), mk("Emberclaw Prowler", 2, 5, "fire", "3/2")],
-    [mk("Magma Shell", 3, 8, "fire", "2/6 · Taunt"), mk("Firestorm", 4, 9, "fire", "Deal 3 to all enemies"), mk("Magma Shell", 3, 8, "fire", "2/6 · Taunt")]
-  ];
-
-  // Threats tuned by Monte Carlo (20k runs/config, see git history):
-  // 8/11/14/20 gave a 0.3% win rate — unplayable. These give ~23% overall,
-  // with per-camp clear rates of 61/73/71/66%. The rise from camp 1 to 2 is
-  // the deck-improvement effect showing up in the numbers.
-  const CAMPS = [
-    { name: "Ember Scouts", mana: 3, threat: 7 },
-    { name: "Cinder Pack", mana: 4, threat: 9 },
-    { name: "Magma Warren", mana: 5, threat: 11 },
-    { name: "The Warden of Ember Reach", mana: 7, threat: 15 }
-  ];
-
-  const TRAITS = {
-    1: { name: "Swarm", desc: "Threat +2, but choose from three rewards." },
-    2: { name: "Fortified", desc: "One less mana this fight." },
-    3: { name: "Rich", desc: "Keep both reward cards." },
-    4: { name: "Ambush", desc: "Draw three cards, not four." },
-    5: { name: "Volatile", desc: "No second wind. One attempt only." },
-    6: { name: "Sleeping", desc: "Threat −3." }
+  // ---- real cards from game/src/Eyeland.Duel/Cards.cs ----
+  // fx: (G, ctx) => void   ctx = {me, foe, target}
+  const C = {
+    glowingEmber:{n:"Glowing Ember",c:1,e:"fire",type:"m",a:1,h:2,tx:"Battlecry: Deal 1 damage to the enemy hero.",
+      fx:(G,x)=>{dmgHero(G,x.foe,1);}},
+    emberBolt:{n:"Ember Bolt",c:2,e:"fire",type:"s",tgt:"any",tx:"Deal 3 damage. If it's your first spell this turn, draw a card.",
+      fx:(G,x)=>{dealAny(G,x,3); if(x.me.firstSpell) draw(G,x.me,1);}},
+    tideGuard:{n:"Tide Guard",c:2,e:"water",type:"m",a:1,h:4,taunt:true,tx:"Taunt."},
+    squallCaller:{n:"Squall Caller",c:2,e:"storm",type:"m",a:2,h:2,tx:"Battlecry: Draw a card.",
+      fx:(G,x)=>{draw(G,x.me,1);}},
+    cinderWolf:{n:"Cinder Wolf",c:3,e:"fire",type:"m",a:4,h:2,tx:"A fast, fragile striker."},
+    tidewisp:{n:"Tidewisp",c:3,e:"water",type:"m",a:3,h:4,tx:"Battlecry: Restore 2 Health to your hero.",
+      fx:(G,x)=>{heal(G,x.me,2);}},
+    stormcaller:{n:"Stormcaller Elemental",c:4,e:"storm",type:"m",a:3,h:5,tx:"A sturdy elemental body."},
+    riptide:{n:"Riptide",c:4,e:"water",type:"s",tx:"Restore 5 Health to your hero and draw a card.",
+      fx:(G,x)=>{heal(G,x.me,5);draw(G,x.me,1);}},
+    eyeOfStorm:{n:"Eye of the Storm",c:5,e:"storm",type:"s",tx:"Deal 2 damage to all enemy minions, then draw 2.",
+      fx:(G,x)=>{x.foe.board.slice().forEach(m=>dmgMinion(G,m,2)); draw(G,x.me,2);}},
+    rollingThunder:{n:"Rolling Thunder",c:6,e:"storm",type:"s",tgt:"minion",tx:"Deal 4 damage to a minion.",
+      fx:(G,x)=>{if(x.target)dmgMinion(G,x.target,4);}},
+    // Ember Reach drops (fire island -> fire cards)
+    ashImp:{n:"Ash Imp",c:1,e:"fire",type:"m",a:2,h:1,tx:"Small and eager."},
+    emberclaw:{n:"Emberclaw Prowler",c:2,e:"fire",type:"m",a:3,h:2,tx:"Hunts in the ash."},
+    magmaShell:{n:"Magma Shell",c:3,e:"fire",type:"m",a:2,h:6,taunt:true,tx:"Taunt."},
+    firestorm:{n:"Firestorm",c:4,e:"fire",type:"s",tx:"Deal 3 damage to all enemy minions.",
+      fx:(G,x)=>{x.foe.board.slice().forEach(m=>dmgMinion(G,m,3));}}
   };
 
-  let uid = 0;
-  const S = {};
+  const STARTER=[["glowingEmber",2],["emberBolt",2],["tideGuard",2],["squallCaller",2],["cinderWolf",2],
+                 ["stormcaller",2],["tidewisp",1],["riptide",1],["rollingThunder",1],["eyeOfStorm",1]];
 
-  function reset() {
-    uid = 0;
-    S.deck = [];
-    STARTER.forEach(([n, c, p, e, t, x]) => {
-      for (let i = 0; i < x; i++) S.deck.push({ id: ++uid, n, c, p, e, t });
+  const CAMPS=[
+    {name:"Ember Scouts",hp:16,deck:[["ashImp",4],["emberclaw",3],["glowingEmber",3]],
+     drops:["ashImp","glowingEmber","ashImp"]},
+    {name:"Cinder Pack",hp:20,deck:[["emberclaw",4],["cinderWolf",3],["ashImp",3]],
+     drops:["emberclaw","cinderWolf","emberclaw"]},
+    {name:"Magma Warren",hp:24,deck:[["magmaShell",3],["cinderWolf",3],["emberclaw",2],["firestorm",2]],
+     drops:["magmaShell","firestorm","magmaShell"]},
+    {name:"Warden of Ember Reach",hp:30,
+     deck:[["magmaShell",3],["cinderWolf",3],["firestorm",2],["emberclaw",2],["stormcaller",2]],drops:[]}
+  ];
+
+  const TRAITS={
+    1:{n:"Swarm",d:"Enemy starts with an extra minion. Choose from three drops."},
+    2:{n:"Fortified",d:"Enemy hero has +5 Health."},
+    3:{n:"Rich",d:"Keep both drops after the win."},
+    4:{n:"Ambush",d:"You start with 2 cards instead of 3."},
+    5:{n:"Volatile",d:"Enemy draws an extra card each turn."},
+    6:{n:"Sleeping",d:"Enemy skips its first turn."}
+  };
+
+  let uid=0, S={}, G=null;
+
+  function reset(){
+    uid=0;
+    S.deck=[]; STARTER.forEach(([k,x])=>{for(let i=0;i<x;i++)S.deck.push(mkCard(k));});
+    S.i=0; S.hp=30; S.log=[]; S.phase="intro";
+    render();
+  }
+  const mkCard=k=>({...C[k],key:k,id:++uid});
+  const sh=a=>{const r=a.slice();for(let i=r.length-1;i>0;i--){const j=Math.random()*(i+1)|0;[r[i],r[j]]=[r[j],r[i]];}return r;};
+
+  // ---------- duel engine ----------
+  function say(g,t){g.log.push(t); }
+  function draw(g,p,n){for(let i=0;i<n;i++){ if(!p.lib.length) p.lib=sh(p.discard.splice(0)); const c=p.lib.pop(); if(c&&p.hand.length<8)p.hand.push(c);} }
+  function heal(g,p,n){p.hp=Math.min(p.max,p.hp+n); say(g,`<b>${p.name}</b> heals ${n}.`);}
+  function dmgHero(g,p,n){p.hp-=n; say(g,`<b>${p.name}</b> takes ${n}.`);}
+  function dmgMinion(g,m,n){m.h-=n; say(g,`${m.n} takes ${n}.`); }
+  function dealAny(g,x,n){ if(x.target) dmgMinion(g,x.target,n); else dmgHero(g,x.foe,n); }
+  function cleanup(g){ [g.you,g.foe].forEach(p=>{ const d=p.board.filter(m=>m.h<=0); d.forEach(m=>say(g,`${m.n} dies.`)); p.board=p.board.filter(m=>m.h>0); }); }
+
+  function newDuel(campIdx,trait){
+    const c=CAMPS[campIdx];
+    let foeDeck=[]; c.deck.forEach(([k,x])=>{for(let i=0;i<x;i++)foeDeck.push(mkCard(k));});
+    const g={
+      camp:c, trait,
+      you:{name:"You",hp:S.hp,max:30,pips:0,maxPips:0,lib:sh(S.deck.map(x=>({...x}))),hand:[],board:[],discard:[],firstSpell:true},
+      foe:{name:c.name,hp:c.hp+(trait===2?5:0),max:c.hp+(trait===2?5:0),pips:0,maxPips:0,lib:sh(foeDeck),hand:[],board:[],discard:[],firstSpell:true},
+      turn:"you", n:0, log:[], over:null, sel:null, mode:null
+    };
+    draw(g,g.you,trait===4?2:3);
+    draw(g,g.foe,3);
+    if(trait===1){ const m=g.foe.lib.pop(); if(m&&m.type==="m") g.foe.board.push({...m,ready:false}); }
+    say(g,`<b>${c.name}</b> blocks the path.`);
+    startTurn(g,"you");
+    return g;
+  }
+
+  function startTurn(g,who){
+    const p=g[who==="you"?"you":"foe"];
+    p.maxPips=Math.min(10,p.maxPips+1); p.pips=p.maxPips; p.firstSpell=true;
+    p.board.forEach(m=>m.ready=true);
+    draw(g,p,who==="foe"&&g.trait===5?2:1);
+    g.turn=who; g.n++;
+  }
+
+  function playCard(g,card,target){
+    const me=g.you, foe=g.foe;
+    if(me.pips<card.c) return false;
+    me.pips-=card.c;
+    me.hand=me.hand.filter(c=>c.id!==card.id);
+    say(g,`You play <b>${card.n}</b>.`);
+    if(card.type==="m"){
+      if(me.board.length>=7){say(g,"Board is full.");return true;}
+      me.board.push({...card,ready:false});
+    } else { me.discard.push(card); }
+    if(card.fx) card.fx(g,{me,foe,target});
+    if(card.type==="s") me.firstSpell=false;
+    cleanup(g); checkOver(g);
+    return true;
+  }
+
+  function attack(g,att,def){
+    if(!att.ready) return;
+    if(def==="hero"){
+      const taunts=g.foe.board.filter(m=>m.taunt);
+      if(taunts.length){say(g,"A Taunt minion blocks the way.");return;}
+      dmgHero(g,g.foe,att.a); att.ready=false;
+    } else {
+      const taunts=g.foe.board.filter(m=>m.taunt);
+      if(taunts.length&&!def.taunt){say(g,"You must attack the Taunt minion first.");return;}
+      say(g,`${att.n} strikes ${def.n}.`);
+      def.h-=att.a; att.h-=def.a; att.ready=false;
+    }
+    cleanup(g); checkOver(g);
+  }
+
+  function checkOver(g){
+    if(g.foe.hp<=0) g.over="win";
+    else if(g.you.hp<=0) g.over="lose";
+  }
+
+  // greedy AI, same spirit as v0's GreedyAI
+  function aiTurn(g){
+    if(g.trait===6 && g.n<=2){ say(g,`<b>${g.foe.name}</b> is sleeping.`); return; }
+    let guard=0;
+    while(guard++<20){
+      const playable=g.foe.hand.filter(c=>c.c<=g.foe.pips).sort((a,b)=>b.c-a.c);
+      if(!playable.length) break;
+      const card=playable[0];
+      g.foe.pips-=card.c;
+      g.foe.hand=g.foe.hand.filter(c=>c.id!==card.id);
+      say(g,`<b>${g.foe.name}</b> plays ${card.n}.`);
+      if(card.type==="m"){ if(g.foe.board.length<7) g.foe.board.push({...card,ready:false}); }
+      else {
+        g.foe.discard.push(card);
+        // spell effects flipped: foe is the caster
+        const x={me:g.foe,foe:g.you,target:g.you.board.slice().sort((a,b)=>b.a-a.a)[0]||null};
+        if(card.fx) card.fx(g,x);
+      }
+      cleanup(g); checkOver(g); if(g.over) return;
+    }
+    g.foe.board.filter(m=>m.ready).forEach(m=>{
+      const taunts=g.you.board.filter(t=>t.taunt);
+      if(taunts.length){ const t=taunts[0]; say(g,`${m.n} strikes ${t.n}.`); t.h-=m.a; m.h-=t.a; }
+      else {
+        const trade=g.you.board.find(t=>t.h<=m.a&&t.a<m.h);
+        if(trade){ say(g,`${m.n} strikes ${trade.n}.`); trade.h-=m.a; m.h-=trade.a; }
+        else dmgHero(g,g.you,m.a);
+      }
+      m.ready=false; cleanup(g); checkOver(g);
     });
-    S.i = 0;              // camp index
-    S.wounds = 3;
-    S.log = [];           // per-camp records
-    S.phase = "intro";
-    S.attempt = 0;
-    S.hand = [];
-    S.sel = new Set();
-    S.trait = null;
   }
 
-  const shuffled = (a) => {
-    const r = a.slice();
-    for (let i = r.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [r[i], r[j]] = [r[j], r[i]]; }
-    return r;
-  };
-
-  const camp = () => CAMPS[S.i];
-  const eMana = () => Math.max(0, camp().mana + (S.trait === 2 ? -1 : 0));
-  const eThreat = () => Math.max(1, camp().threat + (S.trait === 1 ? 2 : 0) + (S.trait === 6 ? -3 : 0));
-  const drawN = () => (S.trait === 4 ? 3 : 4);
-  const maxAttempts = () => (S.trait === 5 ? 1 : 2);
-  const spent = () => [...S.sel].reduce((s, id) => s + S.hand.find((c) => c.id === id).c, 0);
-  const strike = () => [...S.sel].reduce((s, id) => s + S.hand.find((c) => c.id === id).p, 0);
-
-  // ---------- rail ----------
-  function drawRail() {
-    const nodes = CAMPS.map((_, i) => {
-      const rec = S.log[i];
-      let cls = "node";
-      if (rec) cls += rec.won ? " won" : " lost";
-      else if (i === S.i && S.phase !== "intro" && S.phase !== "end") cls += " now";
-      return `<div class="${cls}"></div>`;
-    }).join("");
-    const pips = [0, 1, 2].map((i) => `<div class="pip ${i < S.wounds ? "" : "gone"}"></div>`).join("");
-    rail.innerHTML = `
-      <div class="stat"><div class="k">Wounds</div><div class="pips">${pips}</div></div>
-      <div class="stat"><div class="k">Deck</div><div class="v">${S.deck.length}</div></div>
-      <div class="stat"><div class="k">Progress</div><div class="track">${nodes}</div></div>
-      <div class="spacer"></div>
-      <div class="stat"><div class="k">Island</div><div class="v" style="font-size:15px;font-family:'Instrument Serif',Georgia,serif">Ember Reach</div></div>`;
+  // ---------- render ----------
+  function renderTop(){
+    const nodes=CAMPS.map((_,i)=>{const r=S.log[i];
+      let cls="node"; if(r)cls+=r.won?" won":" lost"; else if(i===S.i&&S.phase!=="intro"&&S.phase!=="end")cls+=" now";
+      return `<div class="${cls}"></div>`;}).join("");
+    top.replaceChildren(el(`<div class="runbar">
+      <div class="grp"><span class="k">Hero</span><span class="v" style="color:var(--hp)">${Math.max(0,S.hp)} HP</span></div>
+      <div class="grp"><span class="k">Deck</span><span class="v">${S.deck.length}</span></div>
+      <div class="grp"><span class="k">Island</span><span class="track">${nodes}</span></div>
+      <div class="sp"></div>
+      <div class="grp"><span class="k">Ember Reach</span><span class="v disp" style="font-size:14px;color:var(--rim-hi)">Fire island</span></div>
+    </div>`));
   }
 
-  // ---------- card ----------
-  function cardBtn(c, { on, dis, onclick }) {
-    const b = el(`
-      <button class="card ${on ? "on" : ""}" ${dis ? "disabled" : ""}>
-        <div class="top"><span class="cost ${c.e}">${c.c}</span><span class="nm">${c.n}</span></div>
-        <div class="tx">${c.t}</div>
-        <div class="pw">Power <b>${c.p}</b></div>
-      </button>`);
-    if (onclick) b.addEventListener("click", onclick);
+  function minionEl(m,{mine,onclick,cls}){
+    const b=el(`<button class="minion ${cls||""}" ${onclick?"":"disabled"}>
+      ${m.taunt?'<span class="taunt">TAUNT</span>':""}
+      <div class="glyph">${GLYPH[m.e]}</div>
+      <div class="nm">${m.n}</div>
+      <span class="a">${m.a}</span><span class="h">${m.h}</span>
+    </button>`);
+    if(onclick)b.addEventListener("click",onclick);
     return b;
   }
 
-  // ---------- screens ----------
-  function intro() {
-    stage.replaceChildren(el(`
-      <section class="panel">
-        <h2>How a skirmish works</h2>
-        <p class="note">Draw four cards. Play any of them you can afford with the camp's mana.
-          Their combined <strong>Power</strong> is your <strong>Strike</strong>. Beat the camp's
-          <strong>Threat</strong> and you win a reward. Miss and you get one second wind, then a wound.</p>
-        <p class="note">Three wounds ends the run. Four camps to clear. Roughly twenty minutes.</p>
-        <div class="row"><button class="act" id="go">Begin the run</button></div>
-      </section>`));
-    document.getElementById("go").addEventListener("click", () => { S.phase = "camp"; render(); });
-  }
-
-  function campScreen() {
-    S.trait = 1 + Math.floor(Math.random() * 6);
-    S.attempt = 0;
-    S.hand = shuffled(S.deck).slice(0, drawN());
-    S.sel = new Set();
-    S.phase = "hand";
-    render();
-  }
-
-  function handScreen() {
-    const t = TRAITS[S.trait];
-    const last = S.i === CAMPS.length - 1;
-    const p = el(`
-      <section class="panel">
-        <h3>${last ? "Final fight" : "Camp " + (S.i + 1) + " of 3"}</h3>
-        <h2>${camp().name}</h2>
-        <div class="trait"><div class="name">${t.name} <span style="color:var(--ink-faint);font-weight:400">(rolled ${S.trait})</span></div><div class="desc">${t.desc}</div></div>
-        <div class="numbers">
-          <div class="big"><div class="k">Mana</div><div class="v">${eMana()}</div></div>
-          <div class="big"><div class="k">Threat</div><div class="v">${eThreat()}</div></div>
-          <div class="big"><div class="k">Your strike</div><div class="v" id="sv">0</div></div>
-          <div class="big"><div class="k">Spent</div><div class="v" id="mv">0/${eMana()}</div></div>
+  function duelScreen(){
+    const t=TRAITS[G.trait];
+    const wrap=el(`<div style="display:flex;flex-direction:column;gap:10px">
+      <div class="panel" style="padding:12px 16px;gap:6px">
+        <h3>Camp ${S.i+1} of 4 · ${t.n}</h3>
+        <div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:baseline">
+          <h2 style="font-size:21px">${G.camp.name}</h2>
+          <span class="note" style="font-size:13px">${t.d}</span>
         </div>
-        <h3>Your hand${S.attempt > 0 ? " · second wind" : ""}</h3>
-        <div class="hand" id="hand"></div>
-        <div class="row">
-          <button class="act" id="strike" disabled>Strike</button>
-          <span class="note" id="hint">Select cards you can afford.</span>
+      </div>
+      <div class="board">
+        <div class="side enemy">
+          <div class="hero">
+            <div class="portrait" id="foeP">${GLYPH.fire}<span class="hp-gem" id="foeHp">${G.foe.hp}</span></div>
+            <div class="nm">${G.camp.name}</div>
+          </div>
+          <div class="lane" id="foeLane"></div>
+          <div style="width:52px;text-align:center;font-size:11px;color:var(--parch-2)">
+            <div style="font-size:18px">🂠</div>${G.foe.hand.length}
+          </div>
         </div>
-      </section>`);
-    stage.replaceChildren(p);
+        <div class="side">
+          <div class="hero">
+            <div class="portrait">${GLYPH.storm}<span class="hp-gem" id="youHp">${G.you.hp}</span></div>
+            <div class="nm">You</div>
+          </div>
+          <div class="lane" id="youLane"></div>
+          <div style="width:52px"></div>
+        </div>
+      </div>
+      <div class="controls">
+        <div class="crystals" id="cry"></div>
+        <span class="manatxt" id="manaTxt"></span>
+        <span class="sp" style="flex:1"></span>
+        <span class="hintbar" id="hint"></span>
+        <button class="act" id="end">End Turn</button>
+      </div>
+      <div class="hand" id="hand"></div>
+      <div class="log" id="log"></div>
+    </div>`);
+    stage.replaceChildren(wrap);
 
-    const handEl = p.querySelector("#hand");
-    const sv = p.querySelector("#sv"), mv = p.querySelector("#mv");
-    const btn = p.querySelector("#strike"), hint = p.querySelector("#hint");
+    const $=id=>wrap.querySelector("#"+id);
+    const foeLane=$("foeLane"),youLane=$("youLane"),handEl=$("hand"),logEl=$("log"),hint=$("hint");
 
-    function paint() {
-      handEl.replaceChildren(...S.hand.map((c) => {
-        const on = S.sel.has(c.id);
-        const dis = !on && spent() + c.c > eMana();
-        return cardBtn(c, {
-          on, dis,
-          onclick: () => { on ? S.sel.delete(c.id) : S.sel.add(c.id); paint(); }
+    function paint(){
+      $("foeHp").textContent=Math.max(0,G.foe.hp);
+      $("youHp").textContent=Math.max(0,G.you.hp);
+      $("manaTxt").textContent=`${G.you.pips}/${G.you.maxPips}`;
+      $("cry").replaceChildren(...Array.from({length:Math.max(G.you.maxPips,1)},(_,i)=>
+        el(`<div class="cry ${i<G.you.pips?"on":""}"></div>`)));
+
+      const targeting=G.mode==="target";
+      const attacking=G.sel&&G.sel.kind==="minion";
+
+      // enemy board
+      foeLane.replaceChildren(...(G.foe.board.length?G.foe.board.map(m=>{
+        const canTarget=targeting||attacking;
+        return minionEl(m,{cls:canTarget?"tgt":"",onclick:canTarget?()=>{
+          if(targeting){ playCard(G,G.sel.card,m); G.sel=null;G.mode=null; }
+          else { attack(G,G.sel.m,m); G.sel=null; }
+          after();
+        }:null});
+      }):[el(`<div class="empty">no minions</div>`)]));
+
+      // enemy face targetable
+      const fp=$("foeP");
+      const faceOk=(targeting&&G.sel.card.tgt==="any")||attacking;
+      fp.classList.toggle("tgt",!!faceOk);
+      fp.onclick=faceOk?()=>{
+        if(targeting){ playCard(G,G.sel.card,null); G.sel=null;G.mode=null; }
+        else attack(G,G.sel.m,"hero");
+        after();
+      }:null;
+
+      // your board
+      youLane.replaceChildren(...(G.you.board.length?G.you.board.map(m=>{
+        const can=m.ready&&G.turn==="you"&&!G.mode;
+        return minionEl(m,{cls:(m.ready?"ready ":"")+(G.sel&&G.sel.m===m?"sel":""),
+          onclick:can?()=>{ G.sel=(G.sel&&G.sel.m===m)?null:{kind:"minion",m}; after(); }:null});
+      }):[el(`<div class="empty">no minions</div>`)]));
+
+      // hand
+      handEl.replaceChildren(...G.you.hand.map(c=>{
+        const afford=c.c<=G.you.pips&&G.turn==="you";
+        const b=el(`<button class="pcard ${G.sel&&G.sel.card&&G.sel.card.id===c.id?"sel":""}" ${afford?"":"disabled"}>
+          <span class="cost">${c.c}</span>
+          <div class="art ${c.e}">${GLYPH[c.e]}</div>
+          <div class="nm">${c.n}</div>
+          <div class="tx">${c.tx||""}</div>
+          ${c.type==="m"?`<span class="a">${c.a}</span><span class="h">${c.h}</span>`:""}
+        </button>`);
+        if(afford)b.addEventListener("click",()=>{
+          if(c.tgt){ G.sel={kind:"card",card:c}; G.mode="target"; }
+          else { playCard(G,c,null); G.sel=null;G.mode=null; }
+          after();
         });
+        return b;
       }));
-      sv.textContent = strike();
-      mv.textContent = spent() + "/" + eMana();
-      btn.disabled = S.sel.size === 0;
-      hint.textContent = strike() >= eThreat()
-        ? "That clears it."
-        : S.sel.size ? `${eThreat() - strike()} short of Threat.` : "Select cards you can afford.";
+
+      hint.textContent = G.mode==="target"
+        ? (G.sel.card.tgt==="minion" ? "Choose an enemy minion." : "Choose a target, or the enemy hero.")
+        : attacking ? "Choose what to attack." : "";
+
+      logEl.replaceChildren(...G.log.slice(-14).map(l=>el(`<div>${l}</div>`)));
     }
+
+    function after(){
+      if(G.over){ finishDuel(); return; }
+      paint();
+    }
+
+    $("end").addEventListener("click",()=>{
+      if(G.turn!=="you")return;
+      G.sel=null;G.mode=null;
+      startTurn(G,"foe");
+      aiTurn(G);
+      if(G.over){finishDuel();return;}
+      startTurn(G,"you");
+      paint();
+    });
+
     paint();
-
-    btn.addEventListener("click", () => {
-      const st = strike(), won = st >= eThreat();
-      S.attempt++;
-      if (won) { S.log[S.i] = { won: true, strike: st, threat: eThreat(), trait: S.trait, took: null }; S.phase = "result"; }
-      else if (S.attempt < maxAttempts()) { S.phase = "retry"; S.lastStrike = st; }
-      else { S.wounds--; S.log[S.i] = { won: false, strike: st, threat: eThreat(), trait: S.trait, took: null }; S.phase = "result"; }
-      render();
-    });
   }
 
-  function retryScreen() {
-    const p = el(`
-      <section class="panel">
-        <h2>${S.lastStrike} against ${eThreat()}</h2>
-        <p class="verdict lose">Not enough. You get one second wind.</p>
-        <p class="note">Your hand goes back in the deck. Draw ${drawN()} fresh cards and try once more.</p>
-        <div class="row"><button class="act" id="again">Second wind</button></div>
-      </section>`);
-    stage.replaceChildren(p);
-    p.querySelector("#again").addEventListener("click", () => {
-      S.hand = shuffled(S.deck).slice(0, drawN());
-      S.sel = new Set();
-      S.phase = "hand";
-      render();
-    });
-  }
-
-  function resultScreen() {
-    const rec = S.log[S.i];
-    const last = S.i === CAMPS.length - 1;
-    const dead = S.wounds <= 0;
-
-    if (rec.won && last) { S.phase = "end"; S.victory = true; return render(); }
-    if (dead) { S.phase = "end"; S.victory = false; return render(); }
-    if (!rec.won) {
-      const p = el(`
-        <section class="panel">
-          <h2>${rec.strike} against ${rec.threat}</h2>
-          <p class="verdict lose">The camp holds. You take a wound and move on with nothing.</p>
-          <div class="row"><button class="act" id="on">Press on</button></div>
-        </section>`);
-      stage.replaceChildren(p);
-      p.querySelector("#on").addEventListener("click", () => { S.i++; S.phase = "camp"; render(); });
-      return;
-    }
-    if (last) { S.phase = "end"; S.victory = true; return render(); }
-    S.phase = "reward";
+  function finishDuel(){
+    S.hp=Math.max(0,G.you.hp);
+    const won=G.over==="win";
+    S.log[S.i]={won,trait:G.trait,hp:S.hp,turns:Math.ceil(G.n/2),took:null};
+    S.phase=won?(S.i===CAMPS.length-1?"end":"reward"):"end";
+    if(won&&S.i<CAMPS.length-1){ S.hp=Math.min(30,S.hp+5); }
+    S.victory=won&&S.i===CAMPS.length-1;
     render();
   }
 
-  function rewardScreen() {
-    const rec = S.log[S.i];
-    const pool = REWARDS[S.i];
-    const three = S.trait === 1;
-    const rich = S.trait === 3;
-    const offer = three ? pool : pool.slice(0, 2);
+  // ---------- screens ----------
+  function intro(){
+    stage.replaceChildren(el(`<div class="panel">
+      <h1>Ember <span style="color:var(--fire)">Reach</span></h1>
+      <p class="lead">Three camps and a warden on one fire island. Every duel is the real
+        <strong>v0 Duel</strong> ruleset — 30 Health, mana that ramps to 10, Taunt, summoning
+        sickness, the actual card effects. Every win adds a fire card to your deck.</p>
+      <p class="note"><strong>Your Health carries between fights.</strong> You heal 5 after each win.
+        Lose once and the run is over.</p>
+      <p class="note">The only question this is built to answer: <em>is that loop fun?</em></p>
+      <div><button class="act" id="go">Begin the run</button></div>
+    </div>`));
+    document.getElementById("go").addEventListener("click",()=>{S.phase="duel";render();});
+  }
 
-    const p = el(`
-      <section class="panel">
-        <h2>${rec.strike} against ${rec.threat}</h2>
-        <p class="verdict win">Camp cleared.</p>
-        ${rich ? `<p class="note"><strong>Rich:</strong> take both cards, no choice needed.</p>`
-               : `<p class="note">Add one of these, <em>or</em> permanently remove a card from your deck. One or the other.</p>`}
-        <h3>Fire drops · Ember Reach</h3>
-        <div class="hand" id="offer"></div>
-        <div id="rem"></div>
-      </section>`);
+  function rewardScreen(){
+    const rec=S.log[S.i], c=CAMPS[S.i];
+    const three=rec.trait===1, rich=rec.trait===3;
+    const keys=three?c.drops:c.drops.slice(0,2);
+    const p=el(`<div class="panel">
+      <h3>Camp cleared in ${rec.turns} turns</h3>
+      <h2>${c.name} falls</h2>
+      <p class="verdict win">You march on with ${S.hp} Health.</p>
+      ${rich?`<p class="note"><strong>Rich:</strong> take both cards.</p>`
+            :`<p class="note">Add one of these to your deck, <em>or</em> permanently remove a card. One or the other.</p>`}
+      <h3>Fire drops</h3>
+      <div class="hand" id="offer" style="min-height:0;justify-content:flex-start"></div>
+      <div id="rem"></div>
+    </div>`);
     stage.replaceChildren(p);
 
-    const offerEl = p.querySelector("#offer");
-    offerEl.replaceChildren(...offer.map((c) =>
-      cardBtn(c, {
-        on: false, dis: false,
-        onclick: () => {
-          if (rich) { offer.forEach((o) => S.deck.push({ ...o, id: ++uid })); rec.took = "kept both (" + offer.map((o) => o.n).join(" + ") + ")"; }
-          else { S.deck.push({ ...c, id: ++uid }); rec.took = "added " + c.n; }
-          S.i++; S.phase = "camp"; render();
-        }
-      })));
-
-    if (rich) {
-      const b = el(`<div class="row"><button class="act" id="both">Take both</button></div>`);
-      p.querySelector("#rem").replaceChildren(b);
-      b.querySelector("#both").addEventListener("click", () => {
-        offer.forEach((o) => S.deck.push({ ...o, id: ++uid }));
-        rec.took = "kept both (" + offer.map((o) => o.n).join(" + ") + ")";
-        S.i++; S.phase = "camp"; render();
+    p.querySelector("#offer").replaceChildren(...keys.map(k=>{
+      const c2=C[k];
+      const b=el(`<button class="pcard">
+        <span class="cost">${c2.c}</span>
+        <div class="art ${c2.e}">${GLYPH[c2.e]}</div>
+        <div class="nm">${c2.n}</div><div class="tx">${c2.tx||""}</div>
+        ${c2.type==="m"?`<span class="a">${c2.a}</span><span class="h">${c2.h}</span>`:""}
+      </button>`);
+      b.addEventListener("click",()=>{
+        if(rich){keys.forEach(kk=>S.deck.push(mkCard(kk)));rec.took="kept both";}
+        else {S.deck.push(mkCard(k));rec.took="added "+c2.n;}
+        S.i++;S.phase="duel";render();
       });
-      return;
-    }
+      return b;
+    }));
 
-    const box = p.querySelector("#rem");
-    const toggle = el(`<div class="row"><button class="act ghost" id="rm">Remove a card instead</button></div>`);
-    box.replaceChildren(toggle);
-    toggle.querySelector("#rm").addEventListener("click", () => {
-      const list = el(`<div style="display:flex;flex-direction:column;gap:9px">
-          <h3>Click a card to remove it permanently</h3>
-          <div class="decklist" id="dl"></div>
-        </div>`);
+    if(rich)return;
+    const box=p.querySelector("#rem");
+    const t=el(`<div><button class="act ghost" id="rm">Remove a card instead</button></div>`);
+    box.replaceChildren(t);
+    t.querySelector("#rm").addEventListener("click",()=>{
+      const list=el(`<div style="display:flex;flex-direction:column;gap:8px">
+        <h3>Click a card to remove it permanently</h3><div class="decklist" id="dl"></div></div>`);
       box.replaceChildren(list);
-      const dl = list.querySelector("#dl");
-      dl.replaceChildren(...S.deck.slice().sort((a, b) => a.c - b.c || a.n.localeCompare(b.n)).map((c) => {
-        const chip = el(`<button class="chip"><span class="c ${c.e}">${c.c}</span>${c.n}</button>`);
-        chip.addEventListener("click", () => {
-          S.deck = S.deck.filter((d) => d.id !== c.id);
-          rec.took = "removed " + c.n;
-          S.i++; S.phase = "camp"; render();
+      list.querySelector("#dl").replaceChildren(...S.deck.slice().sort((a,b)=>a.c-b.c||a.n.localeCompare(b.n)).map(cd=>{
+        const chip=el(`<button class="chip"><span class="c">${cd.c}</span>${cd.n}</button>`);
+        chip.addEventListener("click",()=>{
+          S.deck=S.deck.filter(d=>d.id!==cd.id); rec.took="removed "+cd.n;
+          S.i++;S.phase="duel";render();
         });
         return chip;
       }));
     });
   }
 
-  function endScreen() {
-    const rows = CAMPS.map((c, i) => {
-      const r = S.log[i];
-      const nm = (c.name + "                          ").slice(0, 26);
-      if (!r) return `${nm} not reached`;
-      const t = TRAITS[r.trait].name;
-      return `${nm} ${String(r.strike).padStart(2)} / ${String(r.threat).padStart(2)}   ${r.won ? "WON " : "LOST"}   ${t}${r.took ? "   " + r.took : ""}`;
+  function endScreen(){
+    const rows=CAMPS.map((c,i)=>{const r=S.log[i];
+      const nm=(c.name+"                        ").slice(0,24);
+      if(!r)return `${nm} not reached`;
+      return `${nm} ${r.won?"WON ":"LOST"}  ${String(r.turns).padStart(2)} turns  ${String(r.hp).padStart(2)} HP left  ${TRAITS[r.trait].n}${r.took?"  ·  "+r.took:""}`;
     }).join("\n");
-
-    const tracker =
-`RUN — Ember Reach
-
-${rows}
-
-Wounds left: ${Math.max(0, S.wounds)}        Final deck size: ${S.deck.length}
-Result: ${S.victory ? "WARDEN DEFEATED" : "RUN ENDED"}`;
-
-    const QS = [
-      ["Did you want to play again?", "Your own test, from the Milanote export."],
-      ["Was any reward choice actually hard?", "If every pick was obvious, deckbuilding isn't doing work yet."],
-      ["Did your deck feel different by the warden?", "If it felt the same, the loop's core promise isn't landing."],
-      ["Which camp trait was best? Which was worst?", "The worst one is a cut-list candidate, not a balance problem."],
-      ["Did you ever want to remove a card?", "If never, deck thinning isn't earning its slot."]
+    const tracker=`RUN — Ember Reach\n\n${rows}\n\nFinal deck size: ${S.deck.length}\nResult: ${S.victory?"WARDEN DEFEATED":"RUN ENDED"}`;
+    const QS=[
+      ["Did you want to play again?","Your own test, from the Milanote export."],
+      ["Was any drop choice actually hard?","If every pick was obvious, deckbuilding isn't doing work yet."],
+      ["Did your deck feel different by the warden?","If it felt the same, the loop's core promise isn't landing."],
+      ["Which camp trait was best? Which was worst?","The worst one is a cut-list candidate, not a balance problem."],
+      ["Did you ever want to remove a card?","If never, deck thinning isn't earning its slot."]
     ];
-
-    const p = el(`
-      <section class="panel">
-        <h3>${S.victory ? "Run complete" : "Run over"}</h3>
-        <h2>${S.victory ? "The warden falls." : "Ember Reach keeps you."}</h2>
-        <pre class="tracker">${tracker}</pre>
-        <h3>Answer these before you forget</h3>
-        <div class="qs" id="qs"></div>
-        <div class="row">
-          <button class="act" id="copy">Copy run + answers</button>
-          <button class="act ghost" id="again">Run it again</button>
-          <span class="note" id="said"></span>
-        </div>
-      </section>`);
+    const p=el(`<div class="panel">
+      <h3>${S.victory?"Run complete":"Run over"}</h3>
+      <h2>${S.victory?"The warden falls.":"Ember Reach keeps you."}</h2>
+      <pre class="tracker">${tracker}</pre>
+      <h3>Answer these before you forget</h3>
+      <div class="qs" id="qs"></div>
+      <div style="display:flex;gap:9px;flex-wrap:wrap;align-items:center">
+        <button class="act" id="copy">Copy run + answers</button>
+        <button class="act ghost" id="again">Run it again</button>
+        <span class="note" id="said"></span>
+      </div>
+    </div>`);
     stage.replaceChildren(p);
-
-    const qs = p.querySelector("#qs");
-    qs.replaceChildren(...QS.map(([q, why], i) => el(`
-      <div class="q">
-        <div class="n">${i + 1}</div>
-        <div class="body">
-          <label for="q${i}">${q}</label>
-          <div class="why">${why}</div>
-          <textarea id="q${i}" rows="2"></textarea>
-        </div>
-      </div>`)));
-
-    p.querySelector("#again").addEventListener("click", () => { reset(); render(); });
-    p.querySelector("#copy").addEventListener("click", async () => {
-      const answers = QS.map(([q], i) => `${i + 1}. ${q}\n   ${document.getElementById("q" + i).value.trim() || "(blank)"}`).join("\n");
-      const out = tracker + "\n\n" + answers;
-      try { await navigator.clipboard.writeText(out); p.querySelector("#said").textContent = "Copied."; }
-      catch { p.querySelector("#said").textContent = "Copy failed — select the text above."; }
+    p.querySelector("#qs").replaceChildren(...QS.map(([q,why],i)=>el(`<div class="q">
+      <div class="n">${i+1}</div><div class="body">
+        <label for="q${i}">${q}</label><div class="why">${why}</div>
+        <textarea id="q${i}" rows="2"></textarea></div></div>`)));
+    p.querySelector("#again").addEventListener("click",()=>reset());
+    p.querySelector("#copy").addEventListener("click",async()=>{
+      const a=QS.map(([q],i)=>`${i+1}. ${q}\n   ${document.getElementById("q"+i).value.trim()||"(blank)"}`).join("\n");
+      try{await navigator.clipboard.writeText(tracker+"\n\n"+a);p.querySelector("#said").textContent="Copied.";}
+      catch{p.querySelector("#said").textContent="Copy failed — select the text above.";}
     });
   }
 
-  function render() {
-    drawRail();
-    ({ intro, hand: handScreen, retry: retryScreen, result: resultScreen, reward: rewardScreen, end: endScreen }[S.phase] || intro)();
-    if (S.phase === "camp") campScreen();
+  function render(){
+    renderTop();
+    if(S.phase==="intro")return intro();
+    if(S.phase==="reward")return rewardScreen();
+    if(S.phase==="end")return endScreen();
+    if(S.phase==="duel"){ G=newDuel(S.i,1+(Math.random()*6|0)); S.phase="duelling"; return duelScreen(); }
+    if(S.phase==="duelling")return duelScreen();
   }
 
   reset();
-  render();
 })();
 </script>
