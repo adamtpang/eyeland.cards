@@ -1,0 +1,645 @@
+<title>Ember Reach</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&display=swap">
+
+<style>
+  :root {
+    --ground: #f2eee6;
+    --surface: #ffffff;
+    --surface-2: #e9e3d8;
+    --line: #d5cdbe;
+    --ink: #1f232b;
+    --ink-soft: #5c6270;
+    --ink-faint: #8b909d;
+    --fire: #c9481a;
+    --water: #2b7fa6;
+    --storm: #7457b8;
+    --good: #2f7d55;
+    --bad: #b0361f;
+    --accent: var(--fire);
+    --shadow: 0 1px 2px rgba(31,35,43,.08), 0 8px 24px rgba(31,35,43,.06);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --ground: #141821;
+      --surface: #1d222e;
+      --surface-2: #262c3a;
+      --line: #333a4a;
+      --ink: #e8e2d6;
+      --ink-soft: #a2a8b8;
+      --ink-faint: #767d8f;
+      --fire: #f0733a;
+      --water: #4fa8cc;
+      --storm: #a487e0;
+      --good: #4fb37c;
+      --bad: #e2654a;
+      --shadow: 0 1px 2px rgba(0,0,0,.4), 0 10px 30px rgba(0,0,0,.35);
+    }
+  }
+  :root[data-theme="dark"] {
+    --ground: #141821;
+    --surface: #1d222e;
+    --surface-2: #262c3a;
+    --line: #333a4a;
+    --ink: #e8e2d6;
+    --ink-soft: #a2a8b8;
+    --ink-faint: #767d8f;
+    --fire: #f0733a;
+    --water: #4fa8cc;
+    --storm: #a487e0;
+    --good: #4fb37c;
+    --bad: #e2654a;
+    --shadow: 0 1px 2px rgba(0,0,0,.4), 0 10px 30px rgba(0,0,0,.35);
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--ground);
+    color: var(--ink);
+    font-family: Archivo, ui-sans-serif, system-ui, sans-serif;
+    font-size: 16px;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .wrap {
+    max-width: 880px;
+    margin: 0 auto;
+    padding: 28px 20px 72px;
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+  }
+
+  .masthead { display: flex; flex-direction: column; gap: 4px; }
+  .eyebrow {
+    font-size: 11px; letter-spacing: .16em; text-transform: uppercase;
+    color: var(--ink-faint); font-weight: 600;
+  }
+  h1 {
+    font-family: "Instrument Serif", Georgia, serif;
+    font-weight: 400; font-size: clamp(34px, 6vw, 52px);
+    margin: 0; line-height: 1.02; text-wrap: balance;
+  }
+  h1 em { font-style: italic; color: var(--accent); }
+  .sub { color: var(--ink-soft); max-width: 62ch; margin: 0; }
+
+  /* ---- status rail ---- */
+  .rail {
+    display: flex; flex-wrap: wrap; gap: 10px;
+    background: var(--surface); border: 1px solid var(--line);
+    border-radius: 6px; padding: 12px 14px; box-shadow: var(--shadow);
+  }
+  .stat { display: flex; flex-direction: column; gap: 2px; min-width: 78px; }
+  .stat .k {
+    font-size: 10px; letter-spacing: .14em; text-transform: uppercase;
+    color: var(--ink-faint); font-weight: 600;
+  }
+  .stat .v { font-size: 19px; font-weight: 600; font-variant-numeric: tabular-nums; }
+  .rail .spacer { flex: 1; }
+
+  .pips { display: flex; gap: 5px; align-items: center; height: 28px; }
+  .pip { width: 11px; height: 11px; border-radius: 50%; background: var(--bad); }
+  .pip.gone { background: transparent; border: 1.5px solid var(--line); }
+
+  .track { display: flex; gap: 5px; align-items: center; height: 28px; }
+  .node {
+    width: 26px; height: 8px; border-radius: 2px;
+    background: var(--line);
+  }
+  .node.won { background: var(--good); }
+  .node.lost { background: var(--bad); }
+  .node.now { background: var(--accent); }
+
+  /* ---- panels ---- */
+  .panel {
+    background: var(--surface); border: 1px solid var(--line);
+    border-radius: 6px; padding: 20px; box-shadow: var(--shadow);
+    display: flex; flex-direction: column; gap: 16px;
+  }
+  .panel h2 {
+    font-family: "Instrument Serif", Georgia, serif;
+    font-weight: 400; font-size: 27px; margin: 0; line-height: 1.15;
+  }
+  .panel h3 {
+    font-size: 11px; letter-spacing: .14em; text-transform: uppercase;
+    color: var(--ink-faint); font-weight: 600; margin: 0;
+  }
+
+  .numbers { display: flex; gap: 26px; flex-wrap: wrap; }
+  .big { display: flex; flex-direction: column; gap: 1px; }
+  .big .k {
+    font-size: 10px; letter-spacing: .14em; text-transform: uppercase;
+    color: var(--ink-faint); font-weight: 600;
+  }
+  .big .v {
+    font-size: 30px; font-weight: 700; line-height: 1;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .trait {
+    border-left: 2px solid var(--accent);
+    padding: 2px 0 2px 12px;
+  }
+  .trait .name { font-weight: 700; }
+  .trait .desc { color: var(--ink-soft); font-size: 14px; }
+
+  /* ---- cards ---- */
+  .hand { display: flex; flex-wrap: wrap; gap: 10px; }
+  .card {
+    position: relative; width: 152px; text-align: left;
+    background: var(--surface-2); border: 1px solid var(--line);
+    border-radius: 5px; padding: 11px 12px 12px;
+    display: flex; flex-direction: column; gap: 6px;
+    cursor: pointer; font: inherit; color: inherit;
+    transition: transform .12s ease, border-color .12s ease, box-shadow .12s ease;
+  }
+  .card:hover:not(:disabled) { transform: translateY(-2px); }
+  .card:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .card.on {
+    border-color: var(--accent);
+    box-shadow: inset 0 0 0 1px var(--accent);
+    transform: translateY(-4px);
+  }
+  .card:disabled { opacity: .38; cursor: not-allowed; }
+  .card .top { display: flex; align-items: baseline; gap: 8px; }
+  .cost {
+    font-weight: 700; font-size: 15px; font-variant-numeric: tabular-nums;
+    min-width: 20px; height: 20px; border-radius: 3px;
+    display: grid; place-items: center; color: #fff;
+  }
+  .cost.fire { background: var(--fire); }
+  .cost.water { background: var(--water); }
+  .cost.storm { background: var(--storm); }
+  .card .nm { font-weight: 600; font-size: 14px; line-height: 1.2; }
+  .card .tx { font-size: 12px; color: var(--ink-soft); line-height: 1.35; }
+  .card .pw {
+    font-size: 11px; letter-spacing: .1em; text-transform: uppercase;
+    color: var(--ink-faint); font-weight: 600; margin-top: auto;
+  }
+  .card .pw b { color: var(--ink); font-size: 13px; font-variant-numeric: tabular-nums; }
+
+  /* ---- buttons ---- */
+  .row { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+  button.act {
+    font: inherit; font-weight: 600; cursor: pointer;
+    background: var(--accent); color: #fff; border: 1px solid transparent;
+    border-radius: 5px; padding: 11px 20px;
+    transition: filter .12s ease;
+  }
+  button.act:hover:not(:disabled) { filter: brightness(1.08); }
+  button.act:disabled { opacity: .4; cursor: not-allowed; }
+  button.act:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+  button.ghost {
+    background: transparent; color: var(--ink);
+    border: 1px solid var(--line);
+  }
+  button.ghost:hover:not(:disabled) { border-color: var(--ink-faint); filter: none; }
+
+  .verdict { font-size: 15px; font-weight: 600; }
+  .verdict.win { color: var(--good); }
+  .verdict.lose { color: var(--bad); }
+
+  .note { font-size: 13px; color: var(--ink-soft); margin: 0; }
+
+  /* ---- deck list ---- */
+  .decklist { display: flex; flex-wrap: wrap; gap: 6px; }
+  .chip {
+    font: inherit; font-size: 13px; cursor: pointer; color: inherit;
+    background: var(--surface-2); border: 1px solid var(--line);
+    border-radius: 4px; padding: 5px 9px;
+    display: flex; align-items: center; gap: 7px;
+    transition: border-color .12s ease;
+  }
+  .chip:hover { border-color: var(--bad); }
+  .chip:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .chip .c {
+    font-weight: 700; font-variant-numeric: tabular-nums;
+    width: 16px; height: 16px; border-radius: 2px; color: #fff;
+    display: grid; place-items: center; font-size: 11px;
+  }
+  .chip .c.fire { background: var(--fire); }
+  .chip .c.water { background: var(--water); }
+  .chip .c.storm { background: var(--storm); }
+  .chip[data-static] { cursor: default; }
+  .chip[data-static]:hover { border-color: var(--line); }
+
+  /* ---- end screen ---- */
+  .qs { display: flex; flex-direction: column; gap: 14px; counter-reset: q; }
+  .q { display: flex; gap: 11px; }
+  .q .n {
+    font-family: "Instrument Serif", Georgia, serif;
+    font-size: 21px; color: var(--accent); line-height: 1; min-width: 20px;
+  }
+  .q .body { display: flex; flex-direction: column; gap: 5px; flex: 1; }
+  .q label { font-weight: 600; font-size: 14px; }
+  .q .why { font-size: 13px; color: var(--ink-soft); }
+  .q textarea {
+    font: inherit; font-size: 14px; color: var(--ink);
+    background: var(--ground); border: 1px solid var(--line);
+    border-radius: 4px; padding: 8px 10px; resize: vertical; min-height: 46px;
+  }
+  .q textarea:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+
+  pre.tracker {
+    background: var(--ground); border: 1px solid var(--line);
+    border-radius: 5px; padding: 14px; margin: 0;
+    font-size: 12.5px; line-height: 1.65; overflow-x: auto;
+    font-variant-numeric: tabular-nums; white-space: pre;
+  }
+
+  .foot { color: var(--ink-faint); font-size: 12.5px; }
+  .foot a { color: var(--ink-soft); }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { transition: none !important; animation: none !important; }
+  }
+  @media (max-width: 520px) {
+    .card { width: calc(50% - 5px); }
+    .numbers { gap: 18px; }
+  }
+</style>
+
+<div class="wrap">
+  <header class="masthead">
+    <div class="eyebrow">Eyeland · v2 Island paper prototype</div>
+    <h1>Ember <em>Reach</em></h1>
+    <p class="sub">Three camps and a warden on one fire island. Every win changes your
+      deck. The only question this is built to answer: <strong>is that loop fun?</strong></p>
+  </header>
+
+  <div class="rail" id="rail"></div>
+  <main id="stage"></main>
+
+  <p class="foot">
+    Combat is abstracted on purpose — <code>v0 Duel</code> already proved the fight is fun.
+    Cards, costs and stats are the real <code>CardSet.StarterDeck()</code>.
+  </p>
+</div>
+
+<script>
+(function () {
+  "use strict";
+
+  const el = (h) => { const t = document.createElement("template"); t.innerHTML = h.trim(); return t.content.firstElementChild; };
+  const stage = document.getElementById("stage");
+  const rail = document.getElementById("rail");
+
+  // --- real cards from game/src/Eyeland.Duel/Cards.cs ---
+  const STARTER = [
+    ["Glowing Ember", 1, 4, "fire", "1/2 · Deal 1 to face", 2],
+    ["Ember Bolt", 2, 4, "fire", "Deal 3 · draw if first spell", 2],
+    ["Tide Guard", 2, 5, "water", "1/4 · Taunt", 2],
+    ["Squall Caller", 2, 5, "storm", "2/2 · Draw a card", 2],
+    ["Cinder Wolf", 3, 6, "fire", "4/2", 2],
+    ["Stormcaller Elemental", 4, 8, "storm", "3/5", 2],
+    ["Tidewisp", 3, 8, "water", "3/4 · Heal 2", 1],
+    ["Riptide", 4, 6, "water", "Heal 5 · draw", 1],
+    ["Rolling Thunder", 6, 8, "storm", "Deal 4 to a creature", 1],
+    ["Eye of the Storm", 5, 9, "storm", "Deal 2 to all · draw 2", 1]
+  ];
+
+  const mk = (n, c, p, e, t) => ({ n, c, p, e, t });
+  const REWARDS = [
+    [mk("Ash Imp", 1, 3, "fire", "2/1"), mk("Glowing Ember", 1, 4, "fire", "1/2 · Deal 1 to face"), mk("Ash Imp", 1, 3, "fire", "2/1")],
+    [mk("Emberclaw Prowler", 2, 5, "fire", "3/2"), mk("Cinder Wolf", 3, 6, "fire", "4/2"), mk("Emberclaw Prowler", 2, 5, "fire", "3/2")],
+    [mk("Magma Shell", 3, 8, "fire", "2/6 · Taunt"), mk("Firestorm", 4, 9, "fire", "Deal 3 to all enemies"), mk("Magma Shell", 3, 8, "fire", "2/6 · Taunt")]
+  ];
+
+  // Threats tuned by Monte Carlo (20k runs/config, see git history):
+  // 8/11/14/20 gave a 0.3% win rate — unplayable. These give ~23% overall,
+  // with per-camp clear rates of 61/73/71/66%. The rise from camp 1 to 2 is
+  // the deck-improvement effect showing up in the numbers.
+  const CAMPS = [
+    { name: "Ember Scouts", mana: 3, threat: 7 },
+    { name: "Cinder Pack", mana: 4, threat: 9 },
+    { name: "Magma Warren", mana: 5, threat: 11 },
+    { name: "The Warden of Ember Reach", mana: 7, threat: 15 }
+  ];
+
+  const TRAITS = {
+    1: { name: "Swarm", desc: "Threat +2, but choose from three rewards." },
+    2: { name: "Fortified", desc: "One less mana this fight." },
+    3: { name: "Rich", desc: "Keep both reward cards." },
+    4: { name: "Ambush", desc: "Draw three cards, not four." },
+    5: { name: "Volatile", desc: "No second wind. One attempt only." },
+    6: { name: "Sleeping", desc: "Threat −3." }
+  };
+
+  let uid = 0;
+  const S = {};
+
+  function reset() {
+    uid = 0;
+    S.deck = [];
+    STARTER.forEach(([n, c, p, e, t, x]) => {
+      for (let i = 0; i < x; i++) S.deck.push({ id: ++uid, n, c, p, e, t });
+    });
+    S.i = 0;              // camp index
+    S.wounds = 3;
+    S.log = [];           // per-camp records
+    S.phase = "intro";
+    S.attempt = 0;
+    S.hand = [];
+    S.sel = new Set();
+    S.trait = null;
+  }
+
+  const shuffled = (a) => {
+    const r = a.slice();
+    for (let i = r.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [r[i], r[j]] = [r[j], r[i]]; }
+    return r;
+  };
+
+  const camp = () => CAMPS[S.i];
+  const eMana = () => Math.max(0, camp().mana + (S.trait === 2 ? -1 : 0));
+  const eThreat = () => Math.max(1, camp().threat + (S.trait === 1 ? 2 : 0) + (S.trait === 6 ? -3 : 0));
+  const drawN = () => (S.trait === 4 ? 3 : 4);
+  const maxAttempts = () => (S.trait === 5 ? 1 : 2);
+  const spent = () => [...S.sel].reduce((s, id) => s + S.hand.find((c) => c.id === id).c, 0);
+  const strike = () => [...S.sel].reduce((s, id) => s + S.hand.find((c) => c.id === id).p, 0);
+
+  // ---------- rail ----------
+  function drawRail() {
+    const nodes = CAMPS.map((_, i) => {
+      const rec = S.log[i];
+      let cls = "node";
+      if (rec) cls += rec.won ? " won" : " lost";
+      else if (i === S.i && S.phase !== "intro" && S.phase !== "end") cls += " now";
+      return `<div class="${cls}"></div>`;
+    }).join("");
+    const pips = [0, 1, 2].map((i) => `<div class="pip ${i < S.wounds ? "" : "gone"}"></div>`).join("");
+    rail.innerHTML = `
+      <div class="stat"><div class="k">Wounds</div><div class="pips">${pips}</div></div>
+      <div class="stat"><div class="k">Deck</div><div class="v">${S.deck.length}</div></div>
+      <div class="stat"><div class="k">Progress</div><div class="track">${nodes}</div></div>
+      <div class="spacer"></div>
+      <div class="stat"><div class="k">Island</div><div class="v" style="font-size:15px;font-family:'Instrument Serif',Georgia,serif">Ember Reach</div></div>`;
+  }
+
+  // ---------- card ----------
+  function cardBtn(c, { on, dis, onclick }) {
+    const b = el(`
+      <button class="card ${on ? "on" : ""}" ${dis ? "disabled" : ""}>
+        <div class="top"><span class="cost ${c.e}">${c.c}</span><span class="nm">${c.n}</span></div>
+        <div class="tx">${c.t}</div>
+        <div class="pw">Power <b>${c.p}</b></div>
+      </button>`);
+    if (onclick) b.addEventListener("click", onclick);
+    return b;
+  }
+
+  // ---------- screens ----------
+  function intro() {
+    stage.replaceChildren(el(`
+      <section class="panel">
+        <h2>How a skirmish works</h2>
+        <p class="note">Draw four cards. Play any of them you can afford with the camp's mana.
+          Their combined <strong>Power</strong> is your <strong>Strike</strong>. Beat the camp's
+          <strong>Threat</strong> and you win a reward. Miss and you get one second wind, then a wound.</p>
+        <p class="note">Three wounds ends the run. Four camps to clear. Roughly twenty minutes.</p>
+        <div class="row"><button class="act" id="go">Begin the run</button></div>
+      </section>`));
+    document.getElementById("go").addEventListener("click", () => { S.phase = "camp"; render(); });
+  }
+
+  function campScreen() {
+    S.trait = 1 + Math.floor(Math.random() * 6);
+    S.attempt = 0;
+    S.hand = shuffled(S.deck).slice(0, drawN());
+    S.sel = new Set();
+    S.phase = "hand";
+    render();
+  }
+
+  function handScreen() {
+    const t = TRAITS[S.trait];
+    const last = S.i === CAMPS.length - 1;
+    const p = el(`
+      <section class="panel">
+        <h3>${last ? "Final fight" : "Camp " + (S.i + 1) + " of 3"}</h3>
+        <h2>${camp().name}</h2>
+        <div class="trait"><div class="name">${t.name} <span style="color:var(--ink-faint);font-weight:400">(rolled ${S.trait})</span></div><div class="desc">${t.desc}</div></div>
+        <div class="numbers">
+          <div class="big"><div class="k">Mana</div><div class="v">${eMana()}</div></div>
+          <div class="big"><div class="k">Threat</div><div class="v">${eThreat()}</div></div>
+          <div class="big"><div class="k">Your strike</div><div class="v" id="sv">0</div></div>
+          <div class="big"><div class="k">Spent</div><div class="v" id="mv">0/${eMana()}</div></div>
+        </div>
+        <h3>Your hand${S.attempt > 0 ? " · second wind" : ""}</h3>
+        <div class="hand" id="hand"></div>
+        <div class="row">
+          <button class="act" id="strike" disabled>Strike</button>
+          <span class="note" id="hint">Select cards you can afford.</span>
+        </div>
+      </section>`);
+    stage.replaceChildren(p);
+
+    const handEl = p.querySelector("#hand");
+    const sv = p.querySelector("#sv"), mv = p.querySelector("#mv");
+    const btn = p.querySelector("#strike"), hint = p.querySelector("#hint");
+
+    function paint() {
+      handEl.replaceChildren(...S.hand.map((c) => {
+        const on = S.sel.has(c.id);
+        const dis = !on && spent() + c.c > eMana();
+        return cardBtn(c, {
+          on, dis,
+          onclick: () => { on ? S.sel.delete(c.id) : S.sel.add(c.id); paint(); }
+        });
+      }));
+      sv.textContent = strike();
+      mv.textContent = spent() + "/" + eMana();
+      btn.disabled = S.sel.size === 0;
+      hint.textContent = strike() >= eThreat()
+        ? "That clears it."
+        : S.sel.size ? `${eThreat() - strike()} short of Threat.` : "Select cards you can afford.";
+    }
+    paint();
+
+    btn.addEventListener("click", () => {
+      const st = strike(), won = st >= eThreat();
+      S.attempt++;
+      if (won) { S.log[S.i] = { won: true, strike: st, threat: eThreat(), trait: S.trait, took: null }; S.phase = "result"; }
+      else if (S.attempt < maxAttempts()) { S.phase = "retry"; S.lastStrike = st; }
+      else { S.wounds--; S.log[S.i] = { won: false, strike: st, threat: eThreat(), trait: S.trait, took: null }; S.phase = "result"; }
+      render();
+    });
+  }
+
+  function retryScreen() {
+    const p = el(`
+      <section class="panel">
+        <h2>${S.lastStrike} against ${eThreat()}</h2>
+        <p class="verdict lose">Not enough. You get one second wind.</p>
+        <p class="note">Your hand goes back in the deck. Draw ${drawN()} fresh cards and try once more.</p>
+        <div class="row"><button class="act" id="again">Second wind</button></div>
+      </section>`);
+    stage.replaceChildren(p);
+    p.querySelector("#again").addEventListener("click", () => {
+      S.hand = shuffled(S.deck).slice(0, drawN());
+      S.sel = new Set();
+      S.phase = "hand";
+      render();
+    });
+  }
+
+  function resultScreen() {
+    const rec = S.log[S.i];
+    const last = S.i === CAMPS.length - 1;
+    const dead = S.wounds <= 0;
+
+    if (rec.won && last) { S.phase = "end"; S.victory = true; return render(); }
+    if (dead) { S.phase = "end"; S.victory = false; return render(); }
+    if (!rec.won) {
+      const p = el(`
+        <section class="panel">
+          <h2>${rec.strike} against ${rec.threat}</h2>
+          <p class="verdict lose">The camp holds. You take a wound and move on with nothing.</p>
+          <div class="row"><button class="act" id="on">Press on</button></div>
+        </section>`);
+      stage.replaceChildren(p);
+      p.querySelector("#on").addEventListener("click", () => { S.i++; S.phase = "camp"; render(); });
+      return;
+    }
+    if (last) { S.phase = "end"; S.victory = true; return render(); }
+    S.phase = "reward";
+    render();
+  }
+
+  function rewardScreen() {
+    const rec = S.log[S.i];
+    const pool = REWARDS[S.i];
+    const three = S.trait === 1;
+    const rich = S.trait === 3;
+    const offer = three ? pool : pool.slice(0, 2);
+
+    const p = el(`
+      <section class="panel">
+        <h2>${rec.strike} against ${rec.threat}</h2>
+        <p class="verdict win">Camp cleared.</p>
+        ${rich ? `<p class="note"><strong>Rich:</strong> take both cards, no choice needed.</p>`
+               : `<p class="note">Add one of these, <em>or</em> permanently remove a card from your deck. One or the other.</p>`}
+        <h3>Fire drops · Ember Reach</h3>
+        <div class="hand" id="offer"></div>
+        <div id="rem"></div>
+      </section>`);
+    stage.replaceChildren(p);
+
+    const offerEl = p.querySelector("#offer");
+    offerEl.replaceChildren(...offer.map((c) =>
+      cardBtn(c, {
+        on: false, dis: false,
+        onclick: () => {
+          if (rich) { offer.forEach((o) => S.deck.push({ ...o, id: ++uid })); rec.took = "kept both (" + offer.map((o) => o.n).join(" + ") + ")"; }
+          else { S.deck.push({ ...c, id: ++uid }); rec.took = "added " + c.n; }
+          S.i++; S.phase = "camp"; render();
+        }
+      })));
+
+    if (rich) {
+      const b = el(`<div class="row"><button class="act" id="both">Take both</button></div>`);
+      p.querySelector("#rem").replaceChildren(b);
+      b.querySelector("#both").addEventListener("click", () => {
+        offer.forEach((o) => S.deck.push({ ...o, id: ++uid }));
+        rec.took = "kept both (" + offer.map((o) => o.n).join(" + ") + ")";
+        S.i++; S.phase = "camp"; render();
+      });
+      return;
+    }
+
+    const box = p.querySelector("#rem");
+    const toggle = el(`<div class="row"><button class="act ghost" id="rm">Remove a card instead</button></div>`);
+    box.replaceChildren(toggle);
+    toggle.querySelector("#rm").addEventListener("click", () => {
+      const list = el(`<div style="display:flex;flex-direction:column;gap:9px">
+          <h3>Click a card to remove it permanently</h3>
+          <div class="decklist" id="dl"></div>
+        </div>`);
+      box.replaceChildren(list);
+      const dl = list.querySelector("#dl");
+      dl.replaceChildren(...S.deck.slice().sort((a, b) => a.c - b.c || a.n.localeCompare(b.n)).map((c) => {
+        const chip = el(`<button class="chip"><span class="c ${c.e}">${c.c}</span>${c.n}</button>`);
+        chip.addEventListener("click", () => {
+          S.deck = S.deck.filter((d) => d.id !== c.id);
+          rec.took = "removed " + c.n;
+          S.i++; S.phase = "camp"; render();
+        });
+        return chip;
+      }));
+    });
+  }
+
+  function endScreen() {
+    const rows = CAMPS.map((c, i) => {
+      const r = S.log[i];
+      const nm = (c.name + "                          ").slice(0, 26);
+      if (!r) return `${nm} not reached`;
+      const t = TRAITS[r.trait].name;
+      return `${nm} ${String(r.strike).padStart(2)} / ${String(r.threat).padStart(2)}   ${r.won ? "WON " : "LOST"}   ${t}${r.took ? "   " + r.took : ""}`;
+    }).join("\n");
+
+    const tracker =
+`RUN — Ember Reach
+
+${rows}
+
+Wounds left: ${Math.max(0, S.wounds)}        Final deck size: ${S.deck.length}
+Result: ${S.victory ? "WARDEN DEFEATED" : "RUN ENDED"}`;
+
+    const QS = [
+      ["Did you want to play again?", "Your own test, from the Milanote export."],
+      ["Was any reward choice actually hard?", "If every pick was obvious, deckbuilding isn't doing work yet."],
+      ["Did your deck feel different by the warden?", "If it felt the same, the loop's core promise isn't landing."],
+      ["Which camp trait was best? Which was worst?", "The worst one is a cut-list candidate, not a balance problem."],
+      ["Did you ever want to remove a card?", "If never, deck thinning isn't earning its slot."]
+    ];
+
+    const p = el(`
+      <section class="panel">
+        <h3>${S.victory ? "Run complete" : "Run over"}</h3>
+        <h2>${S.victory ? "The warden falls." : "Ember Reach keeps you."}</h2>
+        <pre class="tracker">${tracker}</pre>
+        <h3>Answer these before you forget</h3>
+        <div class="qs" id="qs"></div>
+        <div class="row">
+          <button class="act" id="copy">Copy run + answers</button>
+          <button class="act ghost" id="again">Run it again</button>
+          <span class="note" id="said"></span>
+        </div>
+      </section>`);
+    stage.replaceChildren(p);
+
+    const qs = p.querySelector("#qs");
+    qs.replaceChildren(...QS.map(([q, why], i) => el(`
+      <div class="q">
+        <div class="n">${i + 1}</div>
+        <div class="body">
+          <label for="q${i}">${q}</label>
+          <div class="why">${why}</div>
+          <textarea id="q${i}" rows="2"></textarea>
+        </div>
+      </div>`)));
+
+    p.querySelector("#again").addEventListener("click", () => { reset(); render(); });
+    p.querySelector("#copy").addEventListener("click", async () => {
+      const answers = QS.map(([q], i) => `${i + 1}. ${q}\n   ${document.getElementById("q" + i).value.trim() || "(blank)"}`).join("\n");
+      const out = tracker + "\n\n" + answers;
+      try { await navigator.clipboard.writeText(out); p.querySelector("#said").textContent = "Copied."; }
+      catch { p.querySelector("#said").textContent = "Copy failed — select the text above."; }
+    });
+  }
+
+  function render() {
+    drawRail();
+    ({ intro, hand: handScreen, retry: retryScreen, result: resultScreen, reward: rewardScreen, end: endScreen }[S.phase] || intro)();
+    if (S.phase === "camp") campScreen();
+  }
+
+  reset();
+  render();
+})();
+</script>

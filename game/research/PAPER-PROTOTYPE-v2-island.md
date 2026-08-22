@@ -78,10 +78,17 @@ Draw four boxes on the paper, left to right:
 
 | | Mana | Threat |
 |---|---|---|
-| Camp 1 | 3 | 8 |
-| Camp 2 | 4 | 11 |
-| Camp 3 | 5 | 14 |
-| **Warden** | 7 | 20 |
+| Camp 1 | 3 | 7 |
+| Camp 2 | 4 | 9 |
+| Camp 3 | 5 | 11 |
+| **Warden** | 7 | 15 |
+
+**These numbers are tuned, not guessed.** The first draft used 8/11/14/20
+and a 20,000-run Monte Carlo showed a **0.3% win rate** — the base deck
+mathematically could not clear camps 3 or 4 at all. The values above give a
+**~23% overall win rate**, with per-camp clear rates of 61 / 73 / 71 / 66%.
+The rise from camp 1 to camp 2 is the deck-improvement effect appearing in
+the numbers, which is the loop this prototype exists to test.
 
 **You start with 3 Wounds.** Lose all 3 and the run ends.
 
@@ -138,10 +145,10 @@ output of the prototype.
 ```
 RUN #___          Island: Ember Reach
 
-Camp 1   trait:______  strike:___ / 8    won? ___   took: add____ / remove____
-Camp 2   trait:______  strike:___ / 11   won? ___   took: add____ / remove____
-Camp 3   trait:______  strike:___ / 14   won? ___   took: add____ / remove____
-WARDEN   trait:______  strike:___ / 20   won? ___
+Camp 1   trait:______  strike:___ / 7    won? ___   took: add____ / remove____
+Camp 2   trait:______  strike:___ / 9    won? ___   took: add____ / remove____
+Camp 3   trait:______  strike:___ / 11   won? ___   took: add____ / remove____
+WARDEN   trait:______  strike:___ / 15   won? ___
 
 Wounds left: ___        Final deck size: ___
 ```
