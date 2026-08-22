@@ -1,0 +1,28 @@
+# repos.yaml v0 — see github.com/adamtpang/repo-connect
+repo: eyeland.cards
+is: An open-world card-combat MMORPG (Wizard101 spell-duels x Hearthstone deckbuilding x Pokemon open-world exploration), built in Unity with a portable, engine-agnostic C# duel core. Also the chosen home for a fourth 1000-life-loop pillar, "1000 games" (speedrun-built games), alongside eyeland's own build ladder as its first entry.
+cluster: 1000-life-loop
+
+provides:
+  - id: game-design-principles
+    what: 11 concrete design rules distilled from real game-origin-story research (Tetris, Stardew Valley, Slay the Spire, Minecraft, Pokemon, Dark Souls, Hearthstone, Wizard101, Breath of the Wild, FTB/HQM), each tied to a specific eyeland.cards decision, not inspirational quotes
+    at: game/DESIGN.md
+  - id: games-pillar
+    what: The "1000 games" queue and progress tracking, same discipline as pangaea.blog's ESSAYS-1000.md (scoped mechanics, not genre words; honest count, no padding)
+    at: GAMES-1000.md
+
+stack: [Unity 6, C#, URP]
+
+kin:
+  - repo: themain.quest
+    why: Adam wants the same design thinking that makes eyeland.cards' quests and card-combat loop actually fun (real stakes, mastery loops, companions, leveling, drawn from DESIGN.md's researched principles) baked into themain.quest itself, since that's the dashboard for the one game he says actually matters, his own life.
+  - repo: pangaea.blog
+    why: pangaea.blog is the hub of the 1000-life-loop cluster (essays + apps live there directly). eyeland.cards is the fourth pillar, "1000 games," named 2026-08-10.
+  - repo: strummer.fun
+    why: strummer.fun holds the 1000-life-loop's songs pillar; eyeland.cards is the sibling games pillar, named 2026-08-10.
+  - repo: thedojo.fun
+    why: thedojo.fun holds the 1000-life-loop's apps pillar; eyeland.cards is the sibling games pillar, named 2026-08-10.
+  - repo: pokedex.life
+    why: Same real lineage, not idea-level hand-waving -- both are literally built on the Pokedex/collectible-card tiering metaphor (eyeland.cards' own DESIGN.md cites Pokemon directly, principles 7 and 11; pokedex.life's README opens "it's a pokedex, but for the humans you surround yourself with"). Both use a card as the core UI/data primitive: eyeland's CardDef/DeckBuilderUI vs pokedex.life's specimen-card.tsx entity-as-collectible-card rendering. pokedex.life's real, shipped card-ui component is a genuine reference point for eyeland's own still-bare card visuals.
+  - repo: youchop.app
+    why: youchop.app's tools/corpus.mjs (keyless yt-dlp transcript extraction) is what actually produced game/research/jello-pokemon-pitch-transcript.txt, the full JelloApocalypse "Let's Make a Pokemon Game" pitch that game/DESIGN.md principles 6, 6a, 6b, and 7 are all distilled from. Same relationship youchop.app already declares with summon.company: youchop is the extractor, this repo is the destination. Any future game-design research grounded in a real video talk (GDC postmortems, dev interviews) comes through the same pipe.
