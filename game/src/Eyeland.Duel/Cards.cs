@@ -56,7 +56,8 @@ public sealed record CardDef(
     int Health = 0,
     bool Taunt = false,
     TargetRule Targeting = TargetRule.None,
-    CardEffect? OnPlay = null)
+    CardEffect? OnPlay = null,
+    AuraDef? Aura = null)
 {
     public override string ToString() =>
         Type == CardType.Creature
@@ -71,7 +72,7 @@ public static class Effects
     {
         if (ctx.Target is { } creature)
         {
-            creature.Health -= amount;
+            creature.TakeDamage(amount);
             ctx.Log.Add($"{creature.Source.Name} takes {amount} damage ({Math.Max(creature.Health, 0)} health left).");
         }
         else
@@ -85,7 +86,7 @@ public static class Effects
     {
         foreach (var creature in ctx.Opponent.Board)
         {
-            creature.Health -= amount;
+            creature.TakeDamage(amount);
             ctx.Log.Add($"{creature.Source.Name} takes {amount} damage ({Math.Max(creature.Health, 0)} health left).");
         }
     }
@@ -179,10 +180,24 @@ public static class CardSet
         Targeting: TargetRule.RequiredCreature,
         OnPlay: ctx => Effects.Damage(ctx, 4));
 
+    /// <summary>
+    /// The first real aura card. Exists to exercise the stat onion end to end: its bonus
+    /// is never written into the affected creatures, it is recomputed every board change
+    /// and vanishes the moment the Totem dies. Per DESIGN.md principle 4 the verb is
+    /// Storm's own (a wide, board-shaping effect), not a bigger number at higher cost.
+    /// </summary>
+    public static readonly CardDef StormTotem = new(
+        "storm-totem", "Storm Totem", Cost: 3, CardType.Creature, Element.Storm, Rarity.Rare,
+        "Your other creatures have +1 Attack.",
+        Attack: 0, Health: 4,
+        Aura: AuraDef.Of(AuraScope.FriendlyOthers, "Your other creatures have +1 Attack.",
+            new StatMod(Stat.Attack, 1)));
+
     public static readonly IReadOnlyList<CardDef> All = new[]
     {
         EmberBolt, Tidewisp, EyeOfTheStorm, GlowingEmber, CinderWolf,
         TideGuard, Riptide, SquallCaller, StormcallerElemental, RollingThunder,
+        StormTotem,
     };
 
     /// <summary>
