@@ -7,4 +7,11 @@
     <RootNamespace>Eyeland.Duel</RootNamespace>
   </PropertyGroup>
 
+  <ItemGroup>
+    <!-- The card pool travels with the assembly so shipped builds work without the
+         repo layout. CardSource still prefers the on-disk copy when it can find one,
+         so editing game/data/cards.json takes effect without a rebuild. -->
+    <EmbeddedResource Include="..\..\data\cards.json" LogicalName="Eyeland.Duel.cards.json" />
+  </ItemGroup>
+
 </Project>

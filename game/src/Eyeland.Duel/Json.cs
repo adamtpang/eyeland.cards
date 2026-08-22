@@ -1,0 +1,166 @@
+namespace Eyeland.Duel;
+
+// ─────────────────────────────────────────────────────────────────────────────
+// A tiny, dependency-free JSON reader.
+//
+// Why hand-rolled rather than System.Text.Json or Newtonsoft: Eyeland.Duel is a
+// portable library that gets copied byte-for-byte into Unity's Assets/Scripts
+// (see game/README.md). Unity ships neither of those. Its only built-in is
+// JsonUtility, which cannot express this schema (no dictionaries, no arrays at
+// the root, no optional fields). A ~150-line reader is the price of the card
+// data loading identically in the console, the tests, and the Unity build.
+//
+// Supports the whole of JSON except number exponents beyond what double.Parse
+// handles natively, which this schema never uses.
+// ─────────────────────────────────────────────────────────────────────────────
+
+/// <summary>A parsed JSON value. Access with the typed helpers, which never throw on a missing key.</summary>
+public sealed class JsonValue
+{
+    private readonly object? _value;
+
+    private JsonValue(object? value) => _value = value;
+
+    public static readonly JsonValue Null = new(null);
+
+    public bool IsNull => _value is null;
+    public IReadOnlyList<JsonValue> Array => _value as List<JsonValue> ?? new List<JsonValue>();
+
+    /// <summary>Member lookup. Returns <see cref="Null"/> when absent, so callers can chain safely.</summary>
+    public JsonValue this[string key] =>
+        _value is Dictionary<string, JsonValue> map && map.TryGetValue(key, out var v) ? v : Null;
+
+    public bool Has(string key) => _value is Dictionary<string, JsonValue> map && map.ContainsKey(key);
+
+    public string AsString(string fallback = "") => _value as string ?? fallback;
+    public int AsInt(int fallback = 0) => _value is double d ? (int)Math.Round(d) : fallback;
+    public bool AsBool(bool fallback = false) => _value is bool b ? b : fallback;
+
+    public static JsonValue Parse(string text)
+    {
+        var i = 0;
+        var result = ParseValue(text, ref i);
+        SkipWhitespace(text, ref i);
+        if (i < text.Length)
+            throw new FormatException($"Trailing content at index {i}.");
+        return result;
+    }
+
+    private static JsonValue ParseValue(string s, ref int i)
+    {
+        SkipWhitespace(s, ref i);
+        if (i >= s.Length) throw new FormatException("Unexpected end of input.");
+
+        return s[i] switch
+        {
+            '{' => ParseObject(s, ref i),
+            '[' => ParseArray(s, ref i),
+            '"' => new JsonValue(ParseString(s, ref i)),
+            't' => ParseLiteral(s, ref i, "true", new JsonValue(true)),
+            'f' => ParseLiteral(s, ref i, "false", new JsonValue(false)),
+            'n' => ParseLiteral(s, ref i, "null", Null),
+            _ => ParseNumber(s, ref i),
+        };
+    }
+
+    private static JsonValue ParseObject(string s, ref int i)
+    {
+        var map = new Dictionary<string, JsonValue>();
+        i++; // '{'
+        SkipWhitespace(s, ref i);
+        if (i < s.Length && s[i] == '}') { i++; return new JsonValue(map); }
+
+        while (true)
+        {
+            SkipWhitespace(s, ref i);
+            if (i >= s.Length || s[i] != '"') throw new FormatException($"Expected a key at index {i}.");
+            var key = ParseString(s, ref i);
+
+            SkipWhitespace(s, ref i);
+            if (i >= s.Length || s[i] != ':') throw new FormatException($"Expected ':' at index {i}.");
+            i++;
+
+            map[key] = ParseValue(s, ref i);
+
+            SkipWhitespace(s, ref i);
+            if (i >= s.Length) throw new FormatException("Unterminated object.");
+            if (s[i] == ',') { i++; continue; }
+            if (s[i] == '}') { i++; return new JsonValue(map); }
+            throw new FormatException($"Expected ',' or '}}' at index {i}.");
+        }
+    }
+
+    private static JsonValue ParseArray(string s, ref int i)
+    {
+        var list = new List<JsonValue>();
+        i++; // '['
+        SkipWhitespace(s, ref i);
+        if (i < s.Length && s[i] == ']') { i++; return new JsonValue(list); }
+
+        while (true)
+        {
+            list.Add(ParseValue(s, ref i));
+            SkipWhitespace(s, ref i);
+            if (i >= s.Length) throw new FormatException("Unterminated array.");
+            if (s[i] == ',') { i++; continue; }
+            if (s[i] == ']') { i++; return new JsonValue(list); }
+            throw new FormatException($"Expected ',' or ']' at index {i}.");
+        }
+    }
+
+    private static string ParseString(string s, ref int i)
+    {
+        i++; // opening quote
+        var sb = new System.Text.StringBuilder();
+        while (i < s.Length)
+        {
+            var c = s[i++];
+            if (c == '"') return sb.ToString();
+            if (c != '\\') { sb.Append(c); continue; }
+
+            if (i >= s.Length) break;
+            var esc = s[i++];
+            sb.Append(esc switch
+            {
+                '"' => '"', '\\' => '\\', '/' => '/', 'b' => '\b',
+                'f' => '\f', 'n' => '\n', 'r' => '\r', 't' => '\t',
+                'u' => ParseUnicode(s, ref i),
+                _ => throw new FormatException($"Bad escape '\\{esc}' at index {i - 1}."),
+            });
+        }
+        throw new FormatException("Unterminated string.");
+    }
+
+    private static char ParseUnicode(string s, ref int i)
+    {
+        if (i + 4 > s.Length) throw new FormatException("Truncated \\u escape.");
+        var code = Convert.ToInt32(s.Substring(i, 4), 16);
+        i += 4;
+        return (char)code;
+    }
+
+    private static JsonValue ParseNumber(string s, ref int i)
+    {
+        var start = i;
+        if (i < s.Length && (s[i] == '-' || s[i] == '+')) i++;
+        while (i < s.Length && (char.IsDigit(s[i]) || s[i] is '.' or 'e' or 'E' or '-' or '+')) i++;
+        var span = s.Substring(start, i - start);
+        if (!double.TryParse(span, System.Globalization.NumberStyles.Float,
+                System.Globalization.CultureInfo.InvariantCulture, out var d))
+            throw new FormatException($"Bad number '{span}' at index {start}.");
+        return new JsonValue(d);
+    }
+
+    private static JsonValue ParseLiteral(string s, ref int i, string literal, JsonValue value)
+    {
+        if (i + literal.Length > s.Length || s.Substring(i, literal.Length) != literal)
+            throw new FormatException($"Expected '{literal}' at index {i}.");
+        i += literal.Length;
+        return value;
+    }
+
+    private static void SkipWhitespace(string s, ref int i)
+    {
+        while (i < s.Length && char.IsWhiteSpace(s[i])) i++;
+    }
+}

@@ -1,0 +1,186 @@
+{
+  "schemaVersion": 1,
+  "_comment": [
+    "The eyeland card pool, as data. Editing this file adds or changes cards with no",
+    "recompile: it is loaded at runtime by CardLoader.",
+    "",
+    "An `onPlay` step names an effect from CardLoader's registry plus its parameters.",
+    "Only genuinely new EFFECTS need C#; new CARDS never do. Same split Spellsource uses",
+    "(see game/research/FIELD-NOTES-card-engines.md).",
+    "",
+    "Registry: damage · damageEnemyCaster · damageAllEnemyCreatures · healCaster · draw",
+    "Conditions: firstSpellThisTurn",
+    "Elements: fire | water | storm    Rarities: common | rare | legendary",
+    "Targeting: none | optionalCreature | requiredCreature",
+    "Aura scopes: friendlyOthers | friendlyAll | enemyAll | allCreatures",
+    "Stats: attack | maxHealth | taunt"
+  ],
+
+  "cards": [
+    {
+      "id": "ember-bolt",
+      "name": "Ember Bolt",
+      "cost": 2,
+      "type": "spell",
+      "element": "fire",
+      "rarity": "common",
+      "text": "Deal 3 damage. If it's the first spell you've cast this turn, draw a card.",
+      "targeting": "optionalCreature",
+      "onPlay": [
+        { "effect": "damage", "amount": 3 },
+        { "effect": "draw", "amount": 1, "condition": "firstSpellThisTurn" }
+      ]
+    },
+    {
+      "id": "tidewisp",
+      "name": "Tidewisp",
+      "cost": 3,
+      "type": "creature",
+      "element": "water",
+      "rarity": "rare",
+      "attack": 3,
+      "health": 4,
+      "text": "When Tidewisp appears, restore 2 health to your caster.",
+      "onPlay": [
+        { "effect": "healCaster", "amount": 2 }
+      ]
+    },
+    {
+      "id": "eye-of-the-storm",
+      "name": "Eye of the Storm",
+      "cost": 5,
+      "type": "spell",
+      "element": "storm",
+      "rarity": "legendary",
+      "text": "Deal 2 damage to all enemies, then draw 2 cards.",
+      "onPlay": [
+        { "effect": "damageAllEnemyCreatures", "amount": 2 },
+        { "effect": "draw", "amount": 2 }
+      ]
+    },
+    {
+      "id": "glowing-ember",
+      "name": "Glowing Ember",
+      "cost": 1,
+      "type": "creature",
+      "element": "fire",
+      "rarity": "common",
+      "attack": 1,
+      "health": 2,
+      "text": "Battlecry: Deal 1 damage to the enemy caster.",
+      "onPlay": [
+        { "effect": "damageEnemyCaster", "amount": 1 }
+      ]
+    },
+    {
+      "id": "cinder-wolf",
+      "name": "Cinder Wolf",
+      "cost": 3,
+      "type": "creature",
+      "element": "fire",
+      "rarity": "common",
+      "attack": 4,
+      "health": 2,
+      "text": "A fast, fragile striker."
+    },
+    {
+      "id": "tide-guard",
+      "name": "Tide Guard",
+      "cost": 2,
+      "type": "creature",
+      "element": "water",
+      "rarity": "common",
+      "attack": 1,
+      "health": 4,
+      "taunt": true,
+      "text": "Taunt."
+    },
+    {
+      "id": "riptide",
+      "name": "Riptide",
+      "cost": 4,
+      "type": "spell",
+      "element": "water",
+      "rarity": "rare",
+      "text": "Restore 5 health to your caster and draw a card.",
+      "onPlay": [
+        { "effect": "healCaster", "amount": 5 },
+        { "effect": "draw", "amount": 1 }
+      ]
+    },
+    {
+      "id": "squall-caller",
+      "name": "Squall Caller",
+      "cost": 2,
+      "type": "creature",
+      "element": "storm",
+      "rarity": "common",
+      "attack": 2,
+      "health": 2,
+      "text": "Battlecry: Draw a card.",
+      "onPlay": [
+        { "effect": "draw", "amount": 1 }
+      ]
+    },
+    {
+      "id": "stormcaller-elemental",
+      "name": "Stormcaller Elemental",
+      "cost": 4,
+      "type": "creature",
+      "element": "storm",
+      "rarity": "common",
+      "attack": 3,
+      "health": 5,
+      "text": "A sturdy elemental body."
+    },
+    {
+      "id": "rolling-thunder",
+      "name": "Rolling Thunder",
+      "cost": 6,
+      "type": "spell",
+      "element": "storm",
+      "rarity": "rare",
+      "text": "Deal 4 damage to a creature.",
+      "targeting": "requiredCreature",
+      "onPlay": [
+        { "effect": "damage", "amount": 4 }
+      ]
+    },
+    {
+      "id": "storm-totem",
+      "name": "Storm Totem",
+      "cost": 3,
+      "type": "creature",
+      "element": "storm",
+      "rarity": "rare",
+      "attack": 0,
+      "health": 4,
+      "text": "Your other creatures have +1 Attack.",
+      "aura": {
+        "scope": "friendlyOthers",
+        "mods": [ { "stat": "attack", "amount": 1 } ]
+      }
+    }
+  ],
+
+  "starterDeck": {
+    "_comment": "The symmetric v0 starter: 2 of each common, 1 of each rare, 1 legendary. 16 cards.",
+    "counts": {
+      "ember-bolt": 2,
+      "glowing-ember": 2,
+      "cinder-wolf": 2,
+      "tide-guard": 2,
+      "squall-caller": 2,
+      "stormcaller-elemental": 2,
+      "tidewisp": 1,
+      "riptide": 1,
+      "rolling-thunder": 1,
+      "eye-of-the-storm": 1
+    },
+    "order": [
+      "ember-bolt", "glowing-ember", "cinder-wolf", "tide-guard",
+      "squall-caller", "stormcaller-elemental",
+      "tidewisp", "riptide", "rolling-thunder", "eye-of-the-storm"
+    ]
+  }
+}
