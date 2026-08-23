@@ -25,7 +25,13 @@ namespace Eyeland.Duel;
 // ─────────────────────────────────────────────────────────────────────────────
 
 /// <summary>One step of a card's play effect: an effect name plus its parameters.</summary>
-public sealed record EffectStep(string Effect, int Amount, string? Condition);
+public sealed record EffectStep(
+    string Effect,
+    int Amount = 0,
+    int Attack = 0,
+    int Health = 0,
+    string? Card = null,
+    string? Condition = null);
 
 /// <summary>A deck recipe: how many copies of each card, in a stable order.</summary>
 public sealed record DeckRecipe(IReadOnlyList<string> Order, IReadOnlyDictionary<string, int> Counts);
@@ -56,6 +62,37 @@ public static class CardLoader
             ["damageAllEnemyCreatures"] = (ctx, s) => Duel.Effects.DamageAllEnemyCreatures(ctx, s.Amount),
             ["healCaster"] = (ctx, s) => Duel.Effects.Heal(ctx, ctx.Owner, s.Amount),
             ["draw"] = (ctx, s) => Duel.Effects.Draw(ctx, ctx.Owner, s.Amount),
+
+            // ── class verbs ───────────────────────────────────────────────────
+            ["buffTarget"] = (ctx, s) =>
+            {
+                if (ctx.Target is { } t) Duel.Effects.Buff(ctx, t, s.Card ?? "Buff", s.Attack, s.Health);
+            },
+            ["buffSelf"] = (ctx, s) =>
+            {
+                var last = ctx.Owner.Board.LastOrDefault(c => c.IsAlive);
+                if (last is not null) Duel.Effects.Buff(ctx, last, s.Card ?? "Buff", s.Attack, s.Health);
+            },
+            ["buffAllFriendly"] = (ctx, s) =>
+                Duel.Effects.BuffAllFriendly(ctx, s.Card ?? "Inspired", s.Attack, s.Health),
+            ["grantTaunt"] = (ctx, s) =>
+            {
+                if (ctx.Target is { } t) Duel.Effects.GrantTaunt(ctx, t);
+            },
+            ["healTarget"] = (ctx, s) =>
+            {
+                if (ctx.Target is { } t) Duel.Effects.HealCreature(ctx, t, s.Amount);
+            },
+            ["damageOwnCaster"] = (ctx, s) => Duel.Effects.DamageOwnCaster(ctx, s.Amount),
+            ["damageRandomEnemyCreature"] = (ctx, s) => Duel.Effects.DamageRandomEnemyCreature(ctx, s.Amount),
+            ["destroyTarget"] = (ctx, s) =>
+            {
+                if (ctx.Target is { } t) Duel.Effects.DestroyCreature(ctx, t);
+            },
+            ["summon"] = (ctx, s) =>
+            {
+                if (s.Card is { } id) Duel.Effects.Summon(ctx, id, Math.Max(1, s.Amount));
+            },
         };
 
     /// <summary>Conditions a step may be gated on.</summary>
@@ -70,8 +107,20 @@ public static class CardLoader
         var root = JsonValue.Parse(json);
 
         var cards = new List<CardDef>();
+
+        // Cards may sit at the root (the original single-pool shape) or be grouped into
+        // named sets. Both are supported so the file can be split per class later without
+        // another loader change.
         foreach (var node in root["cards"].Array)
             cards.Add(ReadCard(node));
+
+        foreach (var set in root["sets"].Array)
+            foreach (var node in set["cards"].Array)
+                cards.Add(ReadCard(node));
+
+        var duplicates = cards.GroupBy(c => c.Id).Where(g => g.Count() > 1).Select(g => g.Key).ToList();
+        if (duplicates.Count > 0)
+            throw new FormatException($"Duplicate card ids: {string.Join(", ", duplicates)}.");
 
         var deckNode = root["starterDeck"];
         var order = deckNode["order"].Array.Select(v => v.AsString()).ToList();
@@ -99,6 +148,7 @@ public static class CardLoader
                 Element: Enum<Element>(n["element"].AsString("fire"), id, "element"),
                 Rarity: Enum<Rarity>(n["rarity"].AsString("common"), id, "rarity"),
                 Text: n["text"].AsString(),
+                Class: Enum<PlayerClass>(n["class"].AsString("neutral"), id, "class"),
                 Attack: n["attack"].AsInt(),
                 Health: n["health"].AsInt(),
                 Taunt: n["taunt"].AsBool(),
@@ -124,7 +174,13 @@ public static class CardLoader
             throw new FormatException(
                 $"Unknown condition '{condition}'. Known: {string.Join(", ", Conditions.Keys)}.");
 
-        return new EffectStep(effect, n["amount"].AsInt(), condition);
+        return new EffectStep(
+            effect,
+            n["amount"].AsInt(),
+            n["attack"].AsInt(),
+            n["health"].AsInt(),
+            n.Has("card") ? n["card"].AsString() : null,
+            condition);
     }
 
     /// <summary>Turns the parsed steps into the single delegate CardDef expects.</summary>

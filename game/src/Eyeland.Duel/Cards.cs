@@ -7,6 +7,21 @@ public enum CardType { Spell, Creature }
 public enum Rarity { Common, Rare, Legendary }
 
 /// <summary>
+/// A card's class. Neutral cards go in any deck; the rest are class-locked.
+///
+/// The twelve names are the SRD 5.1 classes, used under CC-BY-4.0 (see
+/// game/data/cards.json's legal block). Tinkerer is Adam's own addition from the
+/// Milanote export, deliberately not an SRD class.
+/// </summary>
+public enum PlayerClass
+{
+    Neutral,
+    Barbarian, Bard, Cleric, Druid, Fighter, Monk,
+    Paladin, Ranger, Rogue, Sorcerer, Warlock, Wizard,
+    Tinkerer,
+}
+
+/// <summary>
 /// The result of resolving a card: what happened, for the log and the console UI.
 /// Effects append here instead of printing directly, so the engine stays UI-agnostic
 /// (the same CardDef will later run unmodified inside the Unity duel scene).
@@ -52,6 +67,7 @@ public sealed record CardDef(
     Element Element,
     Rarity Rarity,
     string Text,
+    PlayerClass Class = PlayerClass.Neutral,
     int Attack = 0,
     int Health = 0,
     bool Taunt = false,
@@ -101,6 +117,85 @@ public static class Effects
     {
         for (var i = 0; i < count; i++)
             who.DrawCard(ctx.Log);
+    }
+
+    /// <summary>Permanently buffs one creature. Layer 1 of the stat onion.</summary>
+    public static void Buff(DuelContext ctx, BoardCreature target, string name, int attack, int health)
+    {
+        var mods = new List<StatMod>();
+        if (attack != 0) mods.Add(new StatMod(Stat.Attack, attack));
+        if (health != 0) mods.Add(new StatMod(Stat.MaxHealth, health));
+        if (mods.Count == 0) return;
+
+        target.AddEnchantment(new Enchantment(name, mods));
+        ctx.Log.Add($"{target.Source.Name} gains {(attack != 0 ? $"+{attack} Attack" : "")}" +
+                    $"{(attack != 0 && health != 0 ? " and " : "")}" +
+                    $"{(health != 0 ? $"+{health} Health" : "")}.");
+    }
+
+    public static void BuffAllFriendly(DuelContext ctx, string name, int attack, int health)
+    {
+        foreach (var c in ctx.Owner.Board.Where(c => c.IsAlive).ToList())
+            Buff(ctx, c, name, attack, health);
+    }
+
+    public static void GrantTaunt(DuelContext ctx, BoardCreature target)
+    {
+        target.AddEnchantment(Enchantment.Of("Taunt", new StatMod(Stat.Taunt, 1)));
+        ctx.Log.Add($"{target.Source.Name} gains Taunt.");
+    }
+
+    /// <summary>Restores health to a creature by removing damage. Never exceeds MaxHealth.</summary>
+    public static void HealCreature(DuelContext ctx, BoardCreature target, int amount)
+    {
+        var healed = target.Restore(amount);
+        ctx.Log.Add(healed > 0
+            ? $"{target.Source.Name} restores {healed} health."
+            : $"{target.Source.Name} is already undamaged.");
+    }
+
+    /// <summary>The Warlock tax: pay your own health for effect.</summary>
+    public static void DamageOwnCaster(DuelContext ctx, int amount)
+    {
+        ctx.Owner.Health -= amount;
+        ctx.Log.Add($"{ctx.Owner.Name} pays {amount} health.");
+    }
+
+    /// <summary>Sorcerer volatility: hits something on the enemy board, chosen at random.</summary>
+    public static void DamageRandomEnemyCreature(DuelContext ctx, int amount)
+    {
+        var living = ctx.Opponent.Board.Where(c => c.IsAlive).ToList();
+        if (living.Count == 0)
+        {
+            ctx.Opponent.Health -= amount;
+            ctx.Log.Add($"Nothing to strike — {ctx.Opponent.Name} takes {amount}.");
+            return;
+        }
+        var pick = living[ctx.State.Random.Next(living.Count)];
+        pick.TakeDamage(amount);
+        ctx.Log.Add($"{pick.Source.Name} is struck for {amount}.");
+    }
+
+    public static void DestroyCreature(DuelContext ctx, BoardCreature target)
+    {
+        target.TakeDamage(target.Health);
+        ctx.Log.Add($"{target.Source.Name} is destroyed.");
+    }
+
+    /// <summary>Summons copies of a card by id, respecting the 7-creature board cap.</summary>
+    public static void Summon(DuelContext ctx, string cardId, int count)
+    {
+        var card = CardSet.ById(cardId);
+        for (var i = 0; i < count; i++)
+        {
+            if (ctx.Owner.Board.Count >= 7)
+            {
+                ctx.Log.Add("The board is full.");
+                return;
+            }
+            ctx.Owner.Board.Add(BoardCreature.FromCard(card));
+            ctx.Log.Add($"{card.Name} is summoned.");
+        }
     }
 }
 

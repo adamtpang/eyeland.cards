@@ -140,6 +140,13 @@ public sealed class DuelState
     public int TurnNumber { get; set; } = 1;
     public List<string> Log { get; } = new();
 
+    /// <summary>
+    /// The single source of randomness for card effects, so a duel is reproducible from
+    /// a seed. Same reason the console harness already takes --seed: a bug you cannot
+    /// replay is a bug you cannot fix.
+    /// </summary>
+    public Random Random { get; init; } = new();
+
     public bool IsOver => !A.IsAlive || !B.IsAlive;
     public Caster? Winner =>
         (!A.IsAlive, !B.IsAlive) switch

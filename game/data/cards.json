@@ -1,181 +1,387 @@
 {
-  "schemaVersion": 1,
-  "_comment": [
-    "The eyeland card pool, as data. Editing this file adds or changes cards with no",
-    "recompile: it is loaded at runtime by CardLoader.",
+  "schemaVersion": 2,
+
+  "legal": {
+    "notice": "This work includes material taken from the System Reference Document 5.1 (\"SRD 5.1\") by Wizards of the Coast LLC and available at https://dnd.wizards.com/resources/systems-reference-document. The SRD 5.1 is licensed under the Creative Commons Attribution 4.0 International License available at https://creativecommons.org/licenses/by/4.0/legalcode.",
+    "whatIsBorrowed": "The twelve class NAMES only (Barbarian, Bard, Cleric, Druid, Fighter, Monk, Paladin, Ranger, Rogue, Sorcerer, Warlock, Wizard). No SRD stat blocks, spells, rules text or descriptions are reproduced. Every card name, effect and number below is original to eyeland.cards. Tinkerer is not an SRD class; it is Adam's own, from the Milanote export.",
+    "modified": "This work is not an excerpt of the SRD and makes no claim to represent it."
+  },
+
+  "_design": [
+    "One verb per class (DESIGN.md principle 4). A class you cannot describe in one",
+    "sentence is a class that will not read at the table:",
+    "  Barbarian  damage is fuel      Bard      buff the whole board",
+    "  Cleric     heal and preserve   Druid     small things that grow",
+    "  Fighter    honest efficient    Monk      many cheap actions",
+    "  Paladin    protect, then hit   Ranger    precision plus a companion",
+    "  Rogue      conditional burst   Sorcerer  volatile power",
+    "  Warlock    pay health for it   Wizard    spells pay off spells",
+    "  Tinkerer   build your own      Neutral   the shared floor",
     "",
-    "An `onPlay` step names an effect from CardLoader's registry plus its parameters.",
-    "Only genuinely new EFFECTS need C#; new CARDS never do. Same split Spellsource uses",
-    "(see game/research/FIELD-NOTES-card-engines.md).",
+    "Rarity tiers follow Adam's own Milanote tiering, not a new invention:",
+    "  common fighter/ranger · uncommon barbarian/rogue/cleric/bard",
+    "  rare paladin/tinkerer/monk/wizard · epic druid/sorcerer/warlock",
+    "Since the engine has three rarities, that maps to: common, rare, legendary,",
+    "with a class's signature card carrying the highest rarity it is entitled to.",
     "",
-    "Registry: damage · damageEnemyCaster · damageAllEnemyCreatures · healCaster · draw",
+    "Effects: damage · damageEnemyCaster · damageAllEnemyCreatures · damageOwnCaster",
+    "         damageRandomEnemyCreature · destroyTarget · healCaster · healTarget",
+    "         draw · buffTarget · buffSelf · buffAllFriendly · grantTaunt · summon",
     "Conditions: firstSpellThisTurn",
-    "Elements: fire | water | storm    Rarities: common | rare | legendary",
-    "Targeting: none | optionalCreature | requiredCreature",
-    "Aura scopes: friendlyOthers | friendlyAll | enemyAll | allCreatures",
-    "Stats: attack | maxHealth | taunt"
+    "Elements: fire | water | storm   Targeting: none | optionalCreature | requiredCreature",
+    "Aura scopes: friendlyOthers | friendlyAll | enemyAll | allCreatures"
   ],
 
-  "cards": [
+  "sets": [
     {
-      "id": "ember-bolt",
-      "name": "Ember Bolt",
-      "cost": 2,
-      "type": "spell",
-      "element": "fire",
-      "rarity": "common",
-      "text": "Deal 3 damage. If it's the first spell you've cast this turn, draw a card.",
-      "targeting": "optionalCreature",
-      "onPlay": [
-        { "effect": "damage", "amount": 3 },
-        { "effect": "draw", "amount": 1, "condition": "firstSpellThisTurn" }
+      "id": "neutral",
+      "name": "The Common Collection",
+      "note": "Playable in every deck. The shared floor the classes are measured against.",
+      "cards": [
+        { "id": "ember-bolt", "name": "Ember Bolt", "cost": 2, "type": "spell", "element": "fire", "rarity": "common",
+          "text": "Deal 3 damage. If it's the first spell you've cast this turn, draw a card.",
+          "targeting": "optionalCreature",
+          "onPlay": [ { "effect": "damage", "amount": 3 },
+                      { "effect": "draw", "amount": 1, "condition": "firstSpellThisTurn" } ] },
+
+        { "id": "glowing-ember", "name": "Glowing Ember", "cost": 1, "type": "creature", "element": "fire",
+          "rarity": "common", "attack": 1, "health": 2,
+          "text": "Battlecry: Deal 1 damage to the enemy caster.",
+          "onPlay": [ { "effect": "damageEnemyCaster", "amount": 1 } ] },
+
+        { "id": "cinder-wolf", "name": "Cinder Wolf", "cost": 3, "type": "creature", "element": "fire",
+          "rarity": "common", "attack": 4, "health": 2, "text": "A fast, fragile striker." },
+
+        { "id": "tide-guard", "name": "Tide Guard", "cost": 2, "type": "creature", "element": "water",
+          "rarity": "common", "attack": 1, "health": 4, "taunt": true, "text": "Taunt." },
+
+        { "id": "tidewisp", "name": "Tidewisp", "cost": 3, "type": "creature", "element": "water",
+          "rarity": "rare", "attack": 3, "health": 4,
+          "text": "Battlecry: Restore 2 health to your caster.",
+          "onPlay": [ { "effect": "healCaster", "amount": 2 } ] },
+
+        { "id": "riptide", "name": "Riptide", "cost": 4, "type": "spell", "element": "water", "rarity": "rare",
+          "text": "Restore 5 health to your caster and draw a card.",
+          "onPlay": [ { "effect": "healCaster", "amount": 5 }, { "effect": "draw", "amount": 1 } ] },
+
+        { "id": "squall-caller", "name": "Squall Caller", "cost": 2, "type": "creature", "element": "storm",
+          "rarity": "common", "attack": 2, "health": 2,
+          "text": "Battlecry: Draw a card.",
+          "onPlay": [ { "effect": "draw", "amount": 1 } ] },
+
+        { "id": "stormcaller-elemental", "name": "Stormcaller Elemental", "cost": 4, "type": "creature",
+          "element": "storm", "rarity": "common", "attack": 3, "health": 5, "text": "A sturdy elemental body." },
+
+        { "id": "rolling-thunder", "name": "Rolling Thunder", "cost": 6, "type": "spell", "element": "storm",
+          "rarity": "rare", "text": "Deal 4 damage to a creature.",
+          "targeting": "requiredCreature", "onPlay": [ { "effect": "damage", "amount": 4 } ] },
+
+        { "id": "storm-totem", "name": "Storm Totem", "cost": 3, "type": "creature", "element": "storm",
+          "rarity": "rare", "attack": 0, "health": 4,
+          "text": "Your other creatures have +1 Attack.",
+          "aura": { "scope": "friendlyOthers", "mods": [ { "stat": "attack", "amount": 1 } ] } },
+
+        { "id": "eye-of-the-storm", "name": "Eye of the Storm", "cost": 5, "type": "spell", "element": "storm",
+          "rarity": "legendary", "text": "Deal 2 damage to all enemies, then draw 2 cards.",
+          "onPlay": [ { "effect": "damageAllEnemyCreatures", "amount": 2 }, { "effect": "draw", "amount": 2 } ] },
+
+        { "id": "drift-hand", "name": "Drift Hand", "cost": 1, "type": "creature", "element": "water",
+          "rarity": "common", "attack": 2, "health": 1, "text": "Cheap, and it does not last." },
+
+        { "id": "reef-warden", "name": "Reef Warden", "cost": 5, "type": "creature", "element": "water",
+          "rarity": "common", "attack": 3, "health": 7, "taunt": true, "text": "Taunt." },
+
+        { "id": "salvage", "name": "Salvage", "cost": 2, "type": "spell", "element": "water", "rarity": "common",
+          "text": "Restore 4 health to a creature.",
+          "targeting": "requiredCreature", "onPlay": [ { "effect": "healTarget", "amount": 4 } ] }
       ]
     },
+
     {
-      "id": "tidewisp",
-      "name": "Tidewisp",
-      "cost": 3,
-      "type": "creature",
-      "element": "water",
-      "rarity": "rare",
-      "attack": 3,
-      "health": 4,
-      "text": "When Tidewisp appears, restore 2 health to your caster.",
-      "onPlay": [
-        { "effect": "healCaster", "amount": 2 }
+      "id": "barbarian", "name": "Barbarian", "class": "barbarian", "verb": "damage is fuel",
+      "cards": [
+        { "id": "bar-scarred-brute", "name": "Scarred Brute", "cost": 2, "type": "creature", "class": "barbarian",
+          "element": "fire", "rarity": "common", "attack": 3, "health": 2, "text": "It fights better bloodied." },
+        { "id": "bar-reckless-swing", "name": "Reckless Swing", "cost": 1, "type": "spell", "class": "barbarian",
+          "element": "fire", "rarity": "common", "text": "Deal 4 damage to a creature. Your caster takes 2.",
+          "targeting": "requiredCreature",
+          "onPlay": [ { "effect": "damage", "amount": 4 }, { "effect": "damageOwnCaster", "amount": 2 } ] },
+        { "id": "bar-warcry", "name": "Warcry", "cost": 3, "type": "spell", "class": "barbarian", "element": "fire",
+          "rarity": "common", "text": "Give your creatures +2 Attack.",
+          "onPlay": [ { "effect": "buffAllFriendly", "attack": 2, "card": "Warcry" } ] },
+        { "id": "bar-the-unbroken", "name": "The Unbroken", "cost": 6, "type": "creature", "class": "barbarian",
+          "element": "fire", "rarity": "legendary", "attack": 6, "health": 6,
+          "text": "Battlecry: Pay 3 health. Give your creatures +2/+2.",
+          "onPlay": [ { "effect": "damageOwnCaster", "amount": 3 },
+                      { "effect": "buffAllFriendly", "attack": 2, "health": 2, "card": "Unbroken" } ] }
       ]
     },
+
     {
-      "id": "eye-of-the-storm",
-      "name": "Eye of the Storm",
-      "cost": 5,
-      "type": "spell",
-      "element": "storm",
-      "rarity": "legendary",
-      "text": "Deal 2 damage to all enemies, then draw 2 cards.",
-      "onPlay": [
-        { "effect": "damageAllEnemyCreatures", "amount": 2 },
-        { "effect": "draw", "amount": 2 }
+      "id": "bard", "name": "Bard", "class": "bard", "verb": "buff the whole board",
+      "cards": [
+        { "id": "brd-street-singer", "name": "Street Singer", "cost": 1, "type": "creature", "class": "bard",
+          "element": "storm", "rarity": "common", "attack": 1, "health": 2,
+          "text": "Battlecry: Give your other creatures +1 Attack.",
+          "onPlay": [ { "effect": "buffAllFriendly", "attack": 1, "card": "Refrain" } ] },
+        { "id": "brd-refrain", "name": "Rising Refrain", "cost": 2, "type": "spell", "class": "bard",
+          "element": "storm", "rarity": "common", "text": "Give a creature +2/+2.",
+          "targeting": "requiredCreature",
+          "onPlay": [ { "effect": "buffTarget", "attack": 2, "health": 2, "card": "Refrain" } ] },
+        { "id": "brd-chorus-of-two", "name": "Chorus of Two", "cost": 4, "type": "spell", "class": "bard",
+          "element": "storm", "rarity": "rare", "text": "Give your creatures +1/+1 and draw a card.",
+          "onPlay": [ { "effect": "buffAllFriendly", "attack": 1, "health": 1, "card": "Chorus" },
+                      { "effect": "draw", "amount": 1 } ] },
+        { "id": "brd-the-last-verse", "name": "The Last Verse", "cost": 5, "type": "creature", "class": "bard",
+          "element": "storm", "rarity": "legendary", "attack": 2, "health": 5,
+          "text": "Your other creatures have +2 Attack.",
+          "aura": { "scope": "friendlyOthers", "mods": [ { "stat": "attack", "amount": 2 } ] } }
       ]
     },
+
     {
-      "id": "glowing-ember",
-      "name": "Glowing Ember",
-      "cost": 1,
-      "type": "creature",
-      "element": "fire",
-      "rarity": "common",
-      "attack": 1,
-      "health": 2,
-      "text": "Battlecry: Deal 1 damage to the enemy caster.",
-      "onPlay": [
-        { "effect": "damageEnemyCaster", "amount": 1 }
+      "id": "cleric", "name": "Cleric", "class": "cleric", "verb": "heal and preserve",
+      "cards": [
+        { "id": "clr-acolyte", "name": "Quiet Acolyte", "cost": 2, "type": "creature", "class": "cleric",
+          "element": "water", "rarity": "common", "attack": 1, "health": 3,
+          "text": "Battlecry: Restore 3 health to your caster.",
+          "onPlay": [ { "effect": "healCaster", "amount": 3 } ] },
+        { "id": "clr-mend", "name": "Mend", "cost": 1, "type": "spell", "class": "cleric", "element": "water",
+          "rarity": "common", "text": "Restore 5 health to a creature.",
+          "targeting": "requiredCreature", "onPlay": [ { "effect": "healTarget", "amount": 5 } ] },
+        { "id": "clr-sanctuary", "name": "Sanctuary", "cost": 3, "type": "spell", "class": "cleric",
+          "element": "water", "rarity": "common", "text": "Give a creature +0/+4 and Taunt.",
+          "targeting": "requiredCreature",
+          "onPlay": [ { "effect": "buffTarget", "health": 4, "card": "Sanctuary" },
+                      { "effect": "grantTaunt" } ] },
+        { "id": "clr-the-long-vigil", "name": "The Long Vigil", "cost": 6, "type": "creature", "class": "cleric",
+          "element": "water", "rarity": "legendary", "attack": 3, "health": 8, "taunt": true,
+          "text": "Taunt. Battlecry: Restore 8 health to your caster.",
+          "onPlay": [ { "effect": "healCaster", "amount": 8 } ] }
       ]
     },
+
     {
-      "id": "cinder-wolf",
-      "name": "Cinder Wolf",
-      "cost": 3,
-      "type": "creature",
-      "element": "fire",
-      "rarity": "common",
-      "attack": 4,
-      "health": 2,
-      "text": "A fast, fragile striker."
-    },
-    {
-      "id": "tide-guard",
-      "name": "Tide Guard",
-      "cost": 2,
-      "type": "creature",
-      "element": "water",
-      "rarity": "common",
-      "attack": 1,
-      "health": 4,
-      "taunt": true,
-      "text": "Taunt."
-    },
-    {
-      "id": "riptide",
-      "name": "Riptide",
-      "cost": 4,
-      "type": "spell",
-      "element": "water",
-      "rarity": "rare",
-      "text": "Restore 5 health to your caster and draw a card.",
-      "onPlay": [
-        { "effect": "healCaster", "amount": 5 },
-        { "effect": "draw", "amount": 1 }
+      "id": "druid", "name": "Druid", "class": "druid", "verb": "small things that grow",
+      "cards": [
+        { "id": "drd-sapling", "name": "Stubborn Sapling", "cost": 1, "type": "creature", "class": "druid",
+          "element": "water", "rarity": "common", "attack": 1, "health": 3, "text": "It has time." },
+        { "id": "drd-overgrow", "name": "Overgrow", "cost": 2, "type": "spell", "class": "druid", "element": "water",
+          "rarity": "common", "text": "Give a creature +1/+3.",
+          "targeting": "requiredCreature",
+          "onPlay": [ { "effect": "buffTarget", "attack": 1, "health": 3, "card": "Overgrown" } ] },
+        { "id": "drd-thicket", "name": "Call the Thicket", "cost": 4, "type": "spell", "class": "druid",
+          "element": "water", "rarity": "rare", "text": "Summon two Stubborn Saplings.",
+          "onPlay": [ { "effect": "summon", "card": "drd-sapling", "amount": 2 } ] },
+        { "id": "drd-heart-of-the-grove", "name": "Heart of the Grove", "cost": 7, "type": "creature",
+          "class": "druid", "element": "water", "rarity": "legendary", "attack": 4, "health": 8,
+          "text": "Your other creatures have +1/+1.",
+          "aura": { "scope": "friendlyOthers",
+                    "mods": [ { "stat": "attack", "amount": 1 }, { "stat": "maxHealth", "amount": 1 } ] } }
       ]
     },
+
     {
-      "id": "squall-caller",
-      "name": "Squall Caller",
-      "cost": 2,
-      "type": "creature",
-      "element": "storm",
-      "rarity": "common",
-      "attack": 2,
-      "health": 2,
-      "text": "Battlecry: Draw a card.",
-      "onPlay": [
-        { "effect": "draw", "amount": 1 }
+      "id": "fighter", "name": "Fighter", "class": "fighter", "verb": "honest, efficient bodies",
+      "cards": [
+        { "id": "ftr-recruit", "name": "Steady Recruit", "cost": 1, "type": "creature", "class": "fighter",
+          "element": "fire", "rarity": "common", "attack": 2, "health": 2, "text": "Nothing fancy." },
+        { "id": "ftr-shield-line", "name": "Shield Line", "cost": 3, "type": "creature", "class": "fighter",
+          "element": "fire", "rarity": "common", "attack": 3, "health": 4, "taunt": true, "text": "Taunt." },
+        { "id": "ftr-second-wind", "name": "Second Wind", "cost": 2, "type": "spell", "class": "fighter",
+          "element": "fire", "rarity": "common", "text": "Restore 3 health to a creature and give it +2 Attack.",
+          "targeting": "requiredCreature",
+          "onPlay": [ { "effect": "healTarget", "amount": 3 },
+                      { "effect": "buffTarget", "attack": 2, "card": "Second Wind" } ] },
+        { "id": "ftr-the-standard-bearer", "name": "The Standard Bearer", "cost": 5, "type": "creature",
+          "class": "fighter", "element": "fire", "rarity": "legendary", "attack": 5, "health": 5,
+          "text": "Battlecry: Give your creatures +1/+1.",
+          "onPlay": [ { "effect": "buffAllFriendly", "attack": 1, "health": 1, "card": "The Standard" } ] }
       ]
     },
+
     {
-      "id": "stormcaller-elemental",
-      "name": "Stormcaller Elemental",
-      "cost": 4,
-      "type": "creature",
-      "element": "storm",
-      "rarity": "common",
-      "attack": 3,
-      "health": 5,
-      "text": "A sturdy elemental body."
-    },
-    {
-      "id": "rolling-thunder",
-      "name": "Rolling Thunder",
-      "cost": 6,
-      "type": "spell",
-      "element": "storm",
-      "rarity": "rare",
-      "text": "Deal 4 damage to a creature.",
-      "targeting": "requiredCreature",
-      "onPlay": [
-        { "effect": "damage", "amount": 4 }
+      "id": "monk", "name": "Monk", "class": "monk", "verb": "many cheap actions",
+      "cards": [
+        { "id": "mnk-initiate", "name": "Barefoot Initiate", "cost": 1, "type": "creature", "class": "monk",
+          "element": "storm", "rarity": "common", "attack": 2, "health": 1, "text": "Quick, and easily broken." },
+        { "id": "mnk-flurry", "name": "Flurry", "cost": 2, "type": "spell", "class": "monk", "element": "storm",
+          "rarity": "common", "text": "Deal 1 damage three times, at random.",
+          "onPlay": [ { "effect": "damageRandomEnemyCreature", "amount": 1 },
+                      { "effect": "damageRandomEnemyCreature", "amount": 1 },
+                      { "effect": "damageRandomEnemyCreature", "amount": 1 } ] },
+        { "id": "mnk-open-palm", "name": "Open Palm", "cost": 1, "type": "spell", "class": "monk", "element": "storm",
+          "rarity": "common", "text": "Deal 2 damage. Draw a card.",
+          "targeting": "optionalCreature",
+          "onPlay": [ { "effect": "damage", "amount": 2 }, { "effect": "draw", "amount": 1 } ] },
+        { "id": "mnk-the-hundred-steps", "name": "The Hundred Steps", "cost": 4, "type": "creature", "class": "monk",
+          "element": "storm", "rarity": "legendary", "attack": 3, "health": 4,
+          "text": "Battlecry: Summon two Barefoot Initiates.",
+          "onPlay": [ { "effect": "summon", "card": "mnk-initiate", "amount": 2 } ] }
       ]
     },
+
     {
-      "id": "storm-totem",
-      "name": "Storm Totem",
-      "cost": 3,
-      "type": "creature",
-      "element": "storm",
-      "rarity": "rare",
-      "attack": 0,
-      "health": 4,
-      "text": "Your other creatures have +1 Attack.",
-      "aura": {
-        "scope": "friendlyOthers",
-        "mods": [ { "stat": "attack", "amount": 1 } ]
-      }
+      "id": "paladin", "name": "Paladin", "class": "paladin", "verb": "protect, then punish",
+      "cards": [
+        { "id": "pal-squire", "name": "Oathsworn Squire", "cost": 2, "type": "creature", "class": "paladin",
+          "element": "fire", "rarity": "common", "attack": 2, "health": 3, "taunt": true, "text": "Taunt." },
+        { "id": "pal-lay-on-hands", "name": "Lay On Hands", "cost": 2, "type": "spell", "class": "paladin",
+          "element": "water", "rarity": "common", "text": "Restore 4 health to a creature and give it Taunt.",
+          "targeting": "requiredCreature",
+          "onPlay": [ { "effect": "healTarget", "amount": 4 }, { "effect": "grantTaunt" } ] },
+        { "id": "pal-smite", "name": "Smite", "cost": 4, "type": "spell", "class": "paladin", "element": "fire",
+          "rarity": "rare", "text": "Destroy a creature. Restore 3 health to your caster.",
+          "targeting": "requiredCreature",
+          "onPlay": [ { "effect": "destroyTarget" }, { "effect": "healCaster", "amount": 3 } ] },
+        { "id": "pal-the-last-oath", "name": "The Last Oath", "cost": 6, "type": "creature", "class": "paladin",
+          "element": "fire", "rarity": "legendary", "attack": 4, "health": 7, "taunt": true,
+          "text": "Taunt. Your other creatures have +0/+2.",
+          "aura": { "scope": "friendlyOthers", "mods": [ { "stat": "maxHealth", "amount": 2 } ] } }
+      ]
+    },
+
+    {
+      "id": "ranger", "name": "Ranger", "class": "ranger", "verb": "precision, plus a companion",
+      "cards": [
+        { "id": "rng-wolf", "name": "Bound Wolf", "cost": 1, "type": "creature", "class": "ranger",
+          "element": "water", "rarity": "common", "attack": 2, "health": 2, "text": "It answers to one voice." },
+        { "id": "rng-mark", "name": "Hunter's Mark", "cost": 1, "type": "spell", "class": "ranger",
+          "element": "water", "rarity": "common", "text": "Deal 3 damage to a creature.",
+          "targeting": "requiredCreature", "onPlay": [ { "effect": "damage", "amount": 3 } ] },
+        { "id": "rng-call-companion", "name": "Call Companion", "cost": 3, "type": "spell", "class": "ranger",
+          "element": "water", "rarity": "common", "text": "Summon a Bound Wolf. Draw a card.",
+          "onPlay": [ { "effect": "summon", "card": "rng-wolf", "amount": 1 },
+                      { "effect": "draw", "amount": 1 } ] },
+        { "id": "rng-the-long-shot", "name": "The Long Shot", "cost": 5, "type": "creature", "class": "ranger",
+          "element": "water", "rarity": "legendary", "attack": 4, "health": 4,
+          "text": "Battlecry: Destroy a creature.",
+          "targeting": "requiredCreature", "onPlay": [ { "effect": "destroyTarget" } ] }
+      ]
+    },
+
+    {
+      "id": "rogue", "name": "Rogue", "class": "rogue", "verb": "conditional burst",
+      "cards": [
+        { "id": "rog-cutpurse", "name": "Alley Cutpurse", "cost": 1, "type": "creature", "class": "rogue",
+          "element": "storm", "rarity": "common", "attack": 2, "health": 1,
+          "text": "Battlecry: Draw a card.",
+          "onPlay": [ { "effect": "draw", "amount": 1 } ] },
+        { "id": "rog-backstab", "name": "Backstab", "cost": 0, "type": "spell", "class": "rogue", "element": "storm",
+          "rarity": "common", "text": "Deal 2 damage to a creature.",
+          "targeting": "requiredCreature", "onPlay": [ { "effect": "damage", "amount": 2 } ] },
+        { "id": "rog-opening-move", "name": "Opening Move", "cost": 2, "type": "spell", "class": "rogue",
+          "element": "storm", "rarity": "common",
+          "text": "Deal 3 damage. If it's the first spell you've cast this turn, draw 2 cards.",
+          "targeting": "optionalCreature",
+          "onPlay": [ { "effect": "damage", "amount": 3 },
+                      { "effect": "draw", "amount": 2, "condition": "firstSpellThisTurn" } ] },
+        { "id": "rog-the-quiet-blade", "name": "The Quiet Blade", "cost": 4, "type": "creature", "class": "rogue",
+          "element": "storm", "rarity": "legendary", "attack": 4, "health": 3,
+          "text": "Battlecry: Deal 3 damage to the enemy caster and draw a card.",
+          "onPlay": [ { "effect": "damageEnemyCaster", "amount": 3 }, { "effect": "draw", "amount": 1 } ] }
+      ]
+    },
+
+    {
+      "id": "sorcerer", "name": "Sorcerer", "class": "sorcerer", "verb": "volatile power",
+      "cards": [
+        { "id": "sor-spark", "name": "Loose Spark", "cost": 1, "type": "spell", "class": "sorcerer",
+          "element": "storm", "rarity": "common", "text": "Deal 2 damage at random.",
+          "onPlay": [ { "effect": "damageRandomEnemyCreature", "amount": 2 } ] },
+        { "id": "sor-wild-surge", "name": "Wild Surge", "cost": 3, "type": "spell", "class": "sorcerer",
+          "element": "storm", "rarity": "common", "text": "Deal 3 damage twice, at random.",
+          "onPlay": [ { "effect": "damageRandomEnemyCreature", "amount": 3 },
+                      { "effect": "damageRandomEnemyCreature", "amount": 3 } ] },
+        { "id": "sor-unstable-familiar", "name": "Unstable Familiar", "cost": 2, "type": "creature",
+          "class": "sorcerer", "element": "storm", "rarity": "common", "attack": 3, "health": 2,
+          "text": "Battlecry: Deal 2 damage at random.",
+          "onPlay": [ { "effect": "damageRandomEnemyCreature", "amount": 2 } ] },
+        { "id": "sor-the-tide-of-chance", "name": "The Tide of Chance", "cost": 6, "type": "spell",
+          "class": "sorcerer", "element": "storm", "rarity": "legendary",
+          "text": "Deal 3 damage four times, at random. Draw a card.",
+          "onPlay": [ { "effect": "damageRandomEnemyCreature", "amount": 3 },
+                      { "effect": "damageRandomEnemyCreature", "amount": 3 },
+                      { "effect": "damageRandomEnemyCreature", "amount": 3 },
+                      { "effect": "damageRandomEnemyCreature", "amount": 3 },
+                      { "effect": "draw", "amount": 1 } ] }
+      ]
+    },
+
+    {
+      "id": "warlock", "name": "Warlock", "class": "warlock", "verb": "pay health for it",
+      "cards": [
+        { "id": "wlk-pact-imp", "name": "Pact Imp", "cost": 1, "type": "creature", "class": "warlock",
+          "element": "fire", "rarity": "common", "attack": 3, "health": 2,
+          "text": "Battlecry: Your caster takes 2 damage.",
+          "onPlay": [ { "effect": "damageOwnCaster", "amount": 2 } ] },
+        { "id": "wlk-dark-bargain", "name": "Dark Bargain", "cost": 1, "type": "spell", "class": "warlock",
+          "element": "fire", "rarity": "common", "text": "Draw 2 cards. Your caster takes 2 damage.",
+          "onPlay": [ { "effect": "draw", "amount": 2 }, { "effect": "damageOwnCaster", "amount": 2 } ] },
+        { "id": "wlk-siphon", "name": "Siphon", "cost": 3, "type": "spell", "class": "warlock", "element": "fire",
+          "rarity": "common", "text": "Deal 4 damage. Restore 4 health to your caster.",
+          "targeting": "optionalCreature",
+          "onPlay": [ { "effect": "damage", "amount": 4 }, { "effect": "healCaster", "amount": 4 } ] },
+        { "id": "wlk-the-debt-collector", "name": "The Debt Collector", "cost": 5, "type": "creature",
+          "class": "warlock", "element": "fire", "rarity": "legendary", "attack": 6, "health": 5,
+          "text": "Battlecry: Draw 3 cards. Your caster takes 5 damage.",
+          "onPlay": [ { "effect": "draw", "amount": 3 }, { "effect": "damageOwnCaster", "amount": 5 } ] }
+      ]
+    },
+
+    {
+      "id": "wizard", "name": "Wizard", "class": "wizard", "verb": "spells pay off spells",
+      "cards": [
+        { "id": "wiz-apprentice", "name": "Ink-Stained Apprentice", "cost": 2, "type": "creature", "class": "wizard",
+          "element": "storm", "rarity": "common", "attack": 2, "health": 3,
+          "text": "Battlecry: Draw a card.",
+          "onPlay": [ { "effect": "draw", "amount": 1 } ] },
+        { "id": "wiz-arcane-jolt", "name": "Arcane Jolt", "cost": 1, "type": "spell", "class": "wizard",
+          "element": "storm", "rarity": "common",
+          "text": "Deal 2 damage. If it's the first spell you've cast this turn, draw a card.",
+          "targeting": "optionalCreature",
+          "onPlay": [ { "effect": "damage", "amount": 2 },
+                      { "effect": "draw", "amount": 1, "condition": "firstSpellThisTurn" } ] },
+        { "id": "wiz-study", "name": "Deep Study", "cost": 3, "type": "spell", "class": "wizard", "element": "storm",
+          "rarity": "common", "text": "Draw 3 cards.",
+          "onPlay": [ { "effect": "draw", "amount": 3 } ] },
+        { "id": "wiz-the-open-book", "name": "The Open Book", "cost": 7, "type": "spell", "class": "wizard",
+          "element": "storm", "rarity": "legendary",
+          "text": "Deal 3 damage to all enemy creatures. Draw 3 cards.",
+          "onPlay": [ { "effect": "damageAllEnemyCreatures", "amount": 3 },
+                      { "effect": "draw", "amount": 3 } ] }
+      ]
+    },
+
+    {
+      "id": "tinkerer", "name": "Tinkerer", "class": "tinkerer",
+      "verb": "build your own",
+      "note": "Not an SRD class. Adam's own, from the Milanote export: 'engineer, can craft mounts and mechsuits for battle'.",
+      "cards": [
+        { "id": "tnk-scrap-servitor", "name": "Scrap Servitor", "cost": 1, "type": "creature", "class": "tinkerer",
+          "element": "storm", "rarity": "common", "attack": 1, "health": 1, "text": "It was made in a hurry." },
+        { "id": "tnk-bolt-on", "name": "Bolt-On Plating", "cost": 1, "type": "spell", "class": "tinkerer",
+          "element": "storm", "rarity": "common", "text": "Give a creature +1/+2.",
+          "targeting": "requiredCreature",
+          "onPlay": [ { "effect": "buffTarget", "attack": 1, "health": 2, "card": "Plating" } ] },
+        { "id": "tnk-assembly-line", "name": "Assembly Line", "cost": 3, "type": "spell", "class": "tinkerer",
+          "element": "storm", "rarity": "common", "text": "Summon three Scrap Servitors.",
+          "onPlay": [ { "effect": "summon", "card": "tnk-scrap-servitor", "amount": 3 } ] },
+        { "id": "tnk-the-workshop", "name": "The Workshop", "cost": 5, "type": "creature", "class": "tinkerer",
+          "element": "storm", "rarity": "legendary", "attack": 2, "health": 6,
+          "text": "Battlecry: Summon two Scrap Servitors. Your creatures have +1 Attack.",
+          "onPlay": [ { "effect": "summon", "card": "tnk-scrap-servitor", "amount": 2 } ],
+          "aura": { "scope": "friendlyOthers", "mods": [ { "stat": "attack", "amount": 1 } ] } }
+      ]
     }
   ],
 
   "starterDeck": {
-    "_comment": "The symmetric v0 starter: 2 of each common, 1 of each rare, 1 legendary. 16 cards.",
+    "_comment": "Unchanged: the symmetric neutral-only v0 starter. 16 cards. Class decks come at v1.",
     "counts": {
-      "ember-bolt": 2,
-      "glowing-ember": 2,
-      "cinder-wolf": 2,
-      "tide-guard": 2,
-      "squall-caller": 2,
-      "stormcaller-elemental": 2,
-      "tidewisp": 1,
-      "riptide": 1,
-      "rolling-thunder": 1,
-      "eye-of-the-storm": 1
+      "ember-bolt": 2, "glowing-ember": 2, "cinder-wolf": 2, "tide-guard": 2,
+      "squall-caller": 2, "stormcaller-elemental": 2,
+      "tidewisp": 1, "riptide": 1, "rolling-thunder": 1, "eye-of-the-storm": 1
     },
     "order": [
       "ember-bolt", "glowing-ember", "cinder-wolf", "tide-guard",
