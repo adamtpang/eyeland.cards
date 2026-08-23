@@ -83,8 +83,15 @@ public sealed record CardDef(
     bool Taunt = false,
     TargetRule Targeting = TargetRule.None,
     CardEffect? OnPlay = null,
-    AuraDef? Aura = null)
+    AuraDef? Aura = null,
+    IReadOnlyList<Stat>? Keywords = null,
+    int SpellDamage = 0,
+    CardEffect? OnDeath = null)
 {
+    /// <summary>Whether this card is printed with a keyword. Taunt stays a top-level flag for compatibility.</summary>
+    public bool Has(Stat keyword) =>
+        (keyword == Stat.Taunt && Taunt) || (Keywords?.Contains(keyword) ?? false);
+
     public override string ToString() =>
         Type == CardType.Creature
             ? $"{Name} ({Cost}) [{Attack}/{Health}]"
@@ -93,9 +100,17 @@ public sealed record CardDef(
 
 public static class Effects
 {
-    /// <summary>Damages the chosen target, or the opponent's face if no target was chosen.</summary>
+    /// <summary>Total Spell Damage the owner's board is contributing.</summary>
+    public static int SpellPower(DuelContext ctx) =>
+        ctx.Owner.Board.Where(c => c.IsAlive).Sum(c => c.SpellDamage);
+
+    /// <summary>
+    /// Damages the chosen target, or the opponent's face if no target was chosen.
+    /// Spell Damage is added here, so it applies to spell effects and not to combat.
+    /// </summary>
     public static void Damage(DuelContext ctx, int amount)
     {
+        amount += SpellPower(ctx);
         if (ctx.Target is { } creature)
         {
             creature.TakeDamage(amount);
@@ -110,7 +125,8 @@ public static class Effects
 
     public static void DamageAllEnemyCreatures(DuelContext ctx, int amount)
     {
-        foreach (var creature in ctx.Opponent.Board)
+        amount += SpellPower(ctx);
+        foreach (var creature in ctx.Opponent.Board.ToList())
         {
             creature.TakeDamage(amount);
             ctx.Log.Add($"{creature.Source.Name} takes {amount} damage ({Math.Max(creature.Health, 0)} health left).");
@@ -186,10 +202,17 @@ public static class Effects
         ctx.Log.Add($"{pick.Source.Name} is struck for {amount}.");
     }
 
+    /// <summary>Destroy ignores Divine Shield — a shield absorbs damage, not annihilation.</summary>
     public static void DestroyCreature(DuelContext ctx, BoardCreature target)
     {
-        target.TakeDamage(target.Health);
+        target.Destroy();
         ctx.Log.Add($"{target.Source.Name} is destroyed.");
+    }
+
+    public static void Freeze(DuelContext ctx, BoardCreature target)
+    {
+        target.Frozen = true;
+        ctx.Log.Add($"{target.Source.Name} is frozen.");
     }
 
     /// <summary>Summons copies of a card by id, respecting the 7-creature board cap.</summary>

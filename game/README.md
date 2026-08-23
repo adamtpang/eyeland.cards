@@ -49,12 +49,19 @@ stop being symmetric; Ben Brode-style, iterate from ladder data, not theorycraft
   usually unaffordable, so the opening move was almost always a forced pass.
   `Caster.DealOpeningHand` now deals 3 cards to each side before turn 1, separate
   from the per-turn draw.
-- **Still open:** going first wins ~71-73% of symmetric AI-vs-AI games (measured
-  both before and after the opening-hand fix, the two are independent; fixing the
-  empty turn 1 didn't move this number). Real card games compensate the player on
-  the draw (an extra card, a "coin"); v0 has no such mechanic yet. Flagging honestly
-  rather than fixing blind: needs a real decision (extra starting card on the draw?
-  excess pips?) before v1's asymmetric decks make the signal harder to isolate.
+- **Largely resolved 2026-08-23, by accident.** Going first used to win **71-73%**
+  of symmetric AI-vs-AI games, and the note here said it needed a real decision
+  (an extra card on the draw, a coin). Adding the Hearthstone keyword set moved it
+  to **51.2 / 53.2 / 53.5%** across three runs of 2,000, without any catch-up
+  mechanic being added.
+  The cause is **Rush**. Cinder Wolf and Drift Hand can now answer a board the
+  turn they land, so the player on the draw is no longer a full tempo step behind.
+  That is exactly the job Rush does in Hearthstone, and it turned out to be the
+  missing piece rather than a coin.
+  Average game length rose from 9.3 to 12.0 turns at the same time, consistent
+  with boards trading more instead of one side snowballing.
+  Not called "fixed": ~53% is close to fair but not proven fair, and this is one
+  AI against itself on one symmetric deck. Re-measure when class decks exist.
 - Taunt behaves correctly under real play: it absorbs attacks (even multiple weaker
   ones) until it dies, then stops forcing: confirmed live when a 1/4 Tide Guard ate
   two attacks in one enemy turn before the rest went face.

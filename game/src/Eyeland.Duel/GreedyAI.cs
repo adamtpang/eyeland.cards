@@ -34,11 +34,17 @@ public sealed class GreedyAI : IPlayerController
             }
         }
 
-        var attacker = me.Board.FirstOrDefault(c => c.CanAttack && c.IsAlive);
-        if (attacker is not null)
+        // Ask the engine what is legal rather than re-deriving Taunt/Rush/Stealth here.
+        // Proposing an attack the engine then refuses would spin this loop forever.
+        foreach (var candidate in me.Board.Where(c => c.CanAttackNow))
         {
-            var enemyTaunt = opponent.Board.FirstOrDefault(c => c.Taunt && c.IsAlive);
-            return new AttackAction(attacker, enemyTaunt);
+            var targets = TurnEngine.LegalAttackTargets(state, candidate);
+            if (targets.Count == 0) continue;
+
+            // Prefer a kill it survives, then face, then anything legal.
+            var best = targets.FirstOrDefault(t => t is not null && t.Health <= candidate.Attack && t.Attack < candidate.Health)
+                       ?? (targets.Contains(null) ? null : targets[0]);
+            return new AttackAction(candidate, best);
         }
 
         return new PassTurn();

@@ -79,6 +79,10 @@ public static class CardLoader
             {
                 if (ctx.Target is { } t) Duel.Effects.DestroyCreature(ctx, t);
             },
+            ["freezeTarget"] = (ctx, s) =>
+            {
+                if (ctx.Target is { } t) Duel.Effects.Freeze(ctx, t);
+            },
             ["summon"] = (ctx, s) =>
             {
                 if (s.Card is { } id) Duel.Effects.Summon(ctx, id, Math.Max(1, s.Amount));
@@ -142,6 +146,9 @@ public static class CardLoader
                 Attack: n["attack"].AsInt(),
                 Health: n["health"].AsInt(),
                 Taunt: n["taunt"].AsBool(),
+                Keywords: ReadKeywords(n["keywords"], id),
+                SpellDamage: n["spellDamage"].AsInt(),
+                OnDeath: ReadSteps(n["deathrattle"], id),
                 Targeting: Enum<TargetRule>(n["targeting"].AsString("none"), id, "targeting"),
                 OnPlay: steps.Count == 0 ? null : Compile(steps),
                 Aura: n.Has("aura") ? ReadAura(n["aura"], id) : null);
@@ -150,6 +157,25 @@ public static class CardLoader
         {
             throw new FormatException($"Card '{id}' failed to load: {ex.Message}", ex);
         }
+    }
+
+    /// <summary>Compiles an effect-step array into a delegate, or null when empty.</summary>
+    private static CardEffect? ReadSteps(JsonValue node, string cardId)
+    {
+        var steps = node.Array.Select(ReadStep).ToList();
+        return steps.Count == 0 ? null : Compile(steps);
+    }
+
+    private static IReadOnlyList<Stat>? ReadKeywords(JsonValue node, string cardId)
+    {
+        var raw = node.Array.Select(v => v.AsString()).Where(v => v.Length > 0).ToList();
+        if (raw.Count == 0) return null;
+
+        var keywords = raw.Select(k => Enum<Stat>(k, cardId, "keywords")).ToList();
+        foreach (var k in keywords)
+            if (k is Stat.Attack or Stat.MaxHealth)
+                throw new FormatException($"Card '{cardId}' lists '{k}' as a keyword; it is a stat.");
+        return keywords;
     }
 
     private static EffectStep ReadStep(JsonValue n)

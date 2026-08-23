@@ -63,8 +63,22 @@ static DuelState NewGame(int? seed = null)
     return state;
 }
 
-static List<CardDef> Shuffled(List<CardDef> deck, Random rng) =>
-    deck.OrderBy(_ => rng.Next()).ToList();
+// Fisher-Yates, not OrderBy(_ => rng.Next()) -- the sort-by-random-key shuffle it
+// replaced isn't proven uniform (ties in the random keys resolve via the sort's own
+// tie-breaking, which biases the result). Cherry-picked from CardHouse's
+// CardGroup.Shuffle (github.com/pipeworks-studios/CardHouse), reimplemented here
+// rather than pulled in wholesale since that project's shuffle lives on a MonoBehaviour
+// CardGroup while this one is a plain method on a portable, engine-agnostic List<T>.
+static List<CardDef> Shuffled(List<CardDef> deck, Random rng)
+{
+    var result = new List<CardDef>(deck);
+    for (var i = result.Count - 1; i > 0; i--)
+    {
+        var j = rng.Next(i + 1);
+        (result[i], result[j]) = (result[j], result[i]);
+    }
+    return result;
+}
 
 // ---------------------------------------------------------------------
 // Interactive human-vs-GreedyAI console duel.
@@ -201,7 +215,7 @@ sealed class ConsoleController : IPlayerController
             return;
         }
         var entries = board.Select((c, i) =>
-            $"[{i}] {c.Source.Name} {c.Attack}/{c.Health}{(c.Taunt ? " (Taunt)" : "")}{(c.CanAttack ? "" : " (tapped)")}");
+            $"[{i}] {c.Source.Name} {c.Attack}/{c.Health}{(c.Taunt ? " (Taunt)" : "")}{(c.CanAttackNow ? "" : " (tapped)")}");
         Console.WriteLine("  Board: " + string.Join("  ", entries));
     }
 }

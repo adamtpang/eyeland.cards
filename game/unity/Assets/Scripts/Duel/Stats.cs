@@ -35,12 +35,29 @@ namespace Eyeland.Duel;
 // itself copyrightable.
 // ─────────────────────────────────────────────────────────────────────────────
 
-/// <summary>A stat that layers can modify. Add cases here, not new buff fields.</summary>
+/// <summary>
+/// A stat that layers can modify. Add cases here, not new buff fields.
+///
+/// Keywords are stats too, held as counters rather than booleans, which is what lets
+/// them be granted and revoked by layers without losing track. A creature with printed
+/// Taunt that also gets Taunt from an aura sits at 2; when the aura source dies it drops
+/// to 1 and the creature correctly keeps its printed Taunt. A boolean would have lost that.
+/// </summary>
 public enum Stat
 {
     Attack,
     MaxHealth,
-    Taunt, // treated as a counter: > 0 means the creature has Taunt
+
+    // ── keywords, counters where > 0 means "has it" ──
+    Taunt,        // enemies must attack this first
+    Rush,         // may attack enemy creatures the turn it lands
+    Charge,       // may attack anything the turn it lands
+    DivineShield, // absorbs the first damage it would take
+    Lifesteal,    // damage it deals heals your caster
+    Windfury,     // may attack twice each turn
+    Poisonous,    // any creature it damages is destroyed
+    Stealth,      // cannot be targeted until it attacks or deals damage
+    SpellDamage,  // this creature adds N to your spell damage
 }
 
 /// <summary>One modifier: "+2 Attack", "+1 MaxHealth", "grant Taunt".</summary>

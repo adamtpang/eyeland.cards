@@ -8,7 +8,6 @@ namespace Eyeland.Duel;
 public sealed class BoardCreature
 {
     public required CardDef Source { get; init; }
-    public bool CanAttack { get; set; }
 
     /// <summary>Damage taken. Never negative. Healing reduces this, it does not raise MaxHealth.</summary>
     public int Damage { get; private set; }
@@ -31,17 +30,67 @@ public sealed class BoardCreature
     public int Attack => Math.Max(0, Layered(Stat.Attack, Source.Attack));
     public int MaxHealth => Math.Max(1, Layered(Stat.MaxHealth, Source.Health));
     public int Health => MaxHealth - Damage;
-    public bool Taunt => Layered(Stat.Taunt, Source.Taunt ? 1 : 0) > 0;
     public bool IsAlive => Health > 0;
 
+    // ── keywords, resolved through the same layers ────────────────────────────
+    private bool Keyword(Stat stat) => Layered(stat, Source.Has(stat) ? 1 : 0) > 0;
+
+    public bool Taunt => Keyword(Stat.Taunt);
+    public bool Rush => Keyword(Stat.Rush);
+    public bool Charge => Keyword(Stat.Charge);
+    public bool Lifesteal => Keyword(Stat.Lifesteal);
+    public bool Windfury => Keyword(Stat.Windfury);
+    public bool Poisonous => Keyword(Stat.Poisonous);
+    public int SpellDamage => Math.Max(0, Layered(Stat.SpellDamage, Source.SpellDamage));
+
+    /// <summary>Divine Shield is consumed when it absorbs, so it needs its own spent flag.</summary>
+    public bool DivineShield => !_shieldSpent && Keyword(Stat.DivineShield);
+    private bool _shieldSpent;
+
+    /// <summary>Stealth drops permanently the moment this creature attacks or deals damage.</summary>
+    public bool Stealth => !_stealthBroken && Keyword(Stat.Stealth);
+    private bool _stealthBroken;
+
+    /// <summary>Frozen creatures skip their next chance to attack.</summary>
+    public bool Frozen { get; set; }
+
+    /// <summary>Attacks already made this turn, against the Windfury allowance.</summary>
+    public int AttacksThisTurn { get; set; }
+    public int AttacksAllowed => Windfury ? 2 : 1;
+
+    /// <summary>Whether this creature may attack right now, and if not, why not.</summary>
+    public bool CanAttackNow => IsAlive && !Frozen && Attack > 0
+                                && AttacksThisTurn < AttacksAllowed && !SummoningSick;
+
+    /// <summary>True until this creature's controller starts a turn with it on the board.</summary>
+    public bool SummoningSick { get; set; } = true;
+
+    /// <summary>
+    /// The turn this creature hit the board. Rush needs it: Rush and Charge both clear
+    /// summoning sickness, and the only thing separating them is that Rush may not hit
+    /// the enemy caster on its arrival turn specifically.
+    /// </summary>
+    public int LandedOnTurn { get; set; } = -1;
+
     // ── mutation ──────────────────────────────────────────────────────────────
-    /// <summary>Deals damage. Returns the amount actually dealt.</summary>
+    /// <summary>
+    /// Deals damage. Returns the amount actually dealt, which is 0 if Divine Shield
+    /// absorbed it. Poisonous is applied by the caller, not here, since it depends on
+    /// the source rather than the victim.
+    /// </summary>
     public int TakeDamage(int amount)
     {
         if (amount <= 0) return 0;
+        if (DivineShield) { _shieldSpent = true; return 0; }
         Damage += amount;
         return amount;
     }
+
+    /// <summary>Called when this creature deals damage: breaks Stealth.</summary>
+    public void OnDealtDamage() => _stealthBroken = true;
+
+    /// <summary>Kills outright, ignoring Divine Shield. For Poisonous and destroy effects.</summary>
+    public void Destroy() => Damage = MaxHealth + 999;
 
     /// <summary>Heals up to MaxHealth. Returns the amount actually restored.</summary>
     public int Restore(int amount)
@@ -58,11 +107,14 @@ public sealed class BoardCreature
     internal void ClearAuraBuffer() => Array.Clear(_auraBuffer);
     internal void ApplyAuraMod(StatMod mod) => _auraBuffer[(int)mod.Stat] += mod.Amount;
 
-    public static BoardCreature FromCard(CardDef card) => new()
+    public static BoardCreature FromCard(CardDef card)
     {
-        Source = card,
-        CanAttack = false, // summoning sickness until this caster's next turn start
-    };
+        var c = new BoardCreature { Source = card };
+        // Charge and Rush both mean "act the turn you land". They differ in what they may
+        // hit, which TryAttack enforces, not here.
+        c.SummoningSick = !(c.Charge || c.Rush);
+        return c;
+    }
 }
 
 public sealed class Caster
@@ -116,7 +168,19 @@ public sealed class Caster
         Pips = MaxPips;
         SpellsCastThisTurn = 0;
         foreach (var creature in Board)
-            creature.CanAttack = true;
+        {
+            creature.SummoningSick = false;
+            creature.AttacksThisTurn = 0;
+
+            // Freeze costs the creature this turn's attacks, then thaws. Spending the
+            // allowance rather than setting a flag means Windfury loses both swings,
+            // which is the behaviour Freeze is supposed to have.
+            if (creature.Frozen)
+            {
+                creature.Frozen = false;
+                creature.AttacksThisTurn = creature.AttacksAllowed;
+            }
+        }
         DrawCard(log);
     }
 }
@@ -222,6 +286,7 @@ public static class TurnEngine
         if (card.Type == CardType.Creature)
         {
             summoned = BoardCreature.FromCard(card);
+            summoned.LandedOnTurn = state.TurnNumber;
             owner.Board.Add(summoned);
         }
 
@@ -246,56 +311,142 @@ public static class TurnEngine
         return true;
     }
 
+    /// <summary>
+    /// Every target this creature may legally attack right now. Null in the returned list
+    /// means the enemy caster.
+    ///
+    /// Exists so the AI and the UI ask the engine what is legal instead of each
+    /// re-deriving Taunt, Rush, and Stealth and drifting out of sync. GreedyAI proposing
+    /// an attack TryAttack then refuses is an infinite loop, which is exactly what
+    /// happened when Rush was added.
+    /// </summary>
+    public static List<BoardCreature?> LegalAttackTargets(DuelState state, BoardCreature attacker)
+    {
+        var targets = new List<BoardCreature?>();
+        if (!state.Active.Board.Contains(attacker) || !attacker.CanAttackNow) return targets;
+
+        var opponent = state.Waiting;
+        var visible = opponent.Board.Where(c => c.IsAlive && !c.Stealth).ToList();
+        var taunts = visible.Where(c => c.Taunt).ToList();
+
+        if (taunts.Count > 0)
+        {
+            targets.AddRange(taunts);
+            return targets;
+        }
+
+        targets.AddRange(visible);
+
+        // Rush may not hit the enemy caster on the turn it lands; Charge may.
+        var justLanded = attacker.Rush && !attacker.Charge && state.TurnNumber == attacker.LandedOnTurn;
+        if (!justLanded) targets.Add(null);
+
+        return targets;
+    }
+
+    /// <summary>
+    /// Resolves one attack, applying every combat keyword.
+    ///
+    /// Order matters and follows Hearthstone's own: Taunt and Stealth restrict what may
+    /// be chosen; both damages are computed before either lands so a dying creature still
+    /// trades back; Divine Shield absorbs inside TakeDamage; Poisonous and Lifesteal read
+    /// the damage actually dealt, so a shielded hit neither poisons nor heals.
+    /// </summary>
     public static bool TryAttack(DuelState state, BoardCreature attacker, BoardCreature? target)
     {
         var owner = state.Active;
         var opponent = state.Waiting;
 
-        if (!owner.Board.Contains(attacker) || !attacker.CanAttack || !attacker.IsAlive)
+        if (!owner.Board.Contains(attacker) || !attacker.CanAttackNow)
             return false;
 
-        var enemyTaunts = opponent.Board.Where(c => c.Taunt && c.IsAlive).ToList();
+        // Rush may hit creatures but not the enemy caster on the turn it lands. Charge may
+        // hit anything. SummoningSick is already false for both by this point, so the
+        // distinction has to be drawn here.
+        var justLanded = attacker.AttacksThisTurn == 0 && attacker.Rush && !attacker.Charge
+                         && state.TurnNumber == attacker.LandedOnTurn;
+        if (target is null && justLanded)
+            return false;
+
+        // Stealth hides a creature from being chosen as a target.
+        var enemyTaunts = opponent.Board.Where(c => c.Taunt && c.IsAlive && !c.Stealth).ToList();
         if (enemyTaunts.Count > 0 && (target is null || !enemyTaunts.Contains(target)))
-            return false; // must attack into taunt if one is up
+            return false;
+        if (target is not null && target.Stealth)
+            return false;
 
-        attacker.CanAttack = false;
+        attacker.AttacksThisTurn++;
+        attacker.OnDealtDamage(); // attacking always breaks Stealth
 
+        int dealt;
         if (target is null)
         {
-            opponent.Health -= attacker.Attack;
-            state.Log.Add($"{attacker.Source.Name} attacks {opponent.Name} for {attacker.Attack}.");
+            dealt = attacker.Attack;
+            opponent.Health -= dealt;
+            state.Log.Add($"{attacker.Source.Name} attacks {opponent.Name} for {dealt}.");
         }
         else
         {
             if (!opponent.Board.Contains(target) || !target.IsAlive)
                 return false;
 
-            // Both damages are computed before either is applied, so a creature that
-            // dies still trades back for its full attack.
             var incoming = target.Attack;
-            target.TakeDamage(attacker.Attack);
-            attacker.TakeDamage(incoming);
-            state.Log.Add($"{attacker.Source.Name} trades with {target.Source.Name} ({attacker.Attack} <-> {target.Attack}).");
+            dealt = target.TakeDamage(attacker.Attack);
+            var taken = attacker.TakeDamage(incoming);
+
+            state.Log.Add($"{attacker.Source.Name} trades with {target.Source.Name} ({attacker.Attack} <-> {incoming}).");
+
+            if (dealt > 0 && attacker.Poisonous) { target.Destroy(); state.Log.Add($"{target.Source.Name} succumbs to poison."); }
+            if (taken > 0 && target.Poisonous) { attacker.Destroy(); state.Log.Add($"{attacker.Source.Name} succumbs to poison."); }
+
+            if (taken > 0)
+            {
+                target.OnDealtDamage();
+                if (target.Lifesteal)
+                {
+                    opponent.Health = Math.Min(opponent.MaxHealth, opponent.Health + taken);
+                    state.Log.Add($"{opponent.Name} drains {taken}.");
+                }
+            }
+        }
+
+        if (dealt > 0 && attacker.Lifesteal)
+        {
+            owner.Health = Math.Min(owner.MaxHealth, owner.Health + dealt);
+            state.Log.Add($"{owner.Name} drains {dealt}.");
         }
 
         CleanupDead(state);
         return true;
     }
 
-    /// <summary>
-    /// The single choke point for board changes. Deaths are resolved first, then every
-    /// aura is recomputed from scratch, so a buff whose source just died is gone in the
-    /// same step rather than lingering as a stale bonus.
-    ///
-    /// Removal loops until stable: losing an aura can lower a creature's MaxHealth below
-    /// the damage it has already taken, which kills it, which can drop another aura.
-    /// </summary>
     private static void CleanupDead(DuelState state)
     {
         for (var pass = 0; pass < 8; pass++)
         {
-            var removed = state.A.Board.RemoveAll(c => !c.IsAlive)
-                        + state.B.Board.RemoveAll(c => !c.IsAlive);
+            var removed = 0;
+            foreach (var (owner, opponent) in new[] { (state.A, state.B), (state.B, state.A) })
+            {
+                var dead = owner.Board.Where(c => !c.IsAlive).ToList();
+                if (dead.Count == 0) continue;
+
+                owner.Board.RemoveAll(c => !c.IsAlive);
+                removed += dead.Count;
+
+                // Deathrattles fire after the body leaves the board, so a rattle that
+                // summons cannot collide with the corpse for a board slot.
+                foreach (var corpse in dead.Where(c => c.Source.OnDeath is not null))
+                {
+                    state.Log.Add($"{corpse.Source.Name}'s deathrattle triggers.");
+                    var ctx = new DuelContext
+                    {
+                        State = state, Owner = owner, Opponent = opponent,
+                        Target = null, IsFirstSpellThisTurn = false, Log = new ResolutionLog(),
+                    };
+                    corpse.Source.OnDeath!(ctx);
+                    state.Log.AddRange(ctx.Log.Lines);
+                }
+            }
             AuraSystem.Refresh(state);
             if (removed == 0) break;
         }
