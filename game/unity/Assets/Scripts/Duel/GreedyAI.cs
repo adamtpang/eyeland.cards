@@ -44,6 +44,17 @@ public sealed class GreedyAI : IPlayerController
             }
         }
 
+        // Hero power before passing: unspent mana is wasted mana. Deliberately AFTER
+        // cards, since a card is almost always better value than 2 mana of hero power.
+        var power = CardSet.PowerFor(me.Class);
+        if (!me.HeroPowerUsedThisTurn && me.Pips >= power.Cost)
+        {
+            var needsTarget = power.Targeting == TargetRule.RequiredCreature;
+            var pick = opponent.Board.FirstOrDefault(c => c.IsAlive && !c.Stealth);
+            if (!needsTarget || pick is not null)
+                return new UseHeroPower(needsTarget ? pick : null);
+        }
+
         // Ask the engine what is legal rather than re-deriving Taunt/Rush/Stealth here.
         // Proposing an attack the engine then refuses would spin this loop forever.
         foreach (var candidate in me.Board.Where(c => c.CanAttackNow))

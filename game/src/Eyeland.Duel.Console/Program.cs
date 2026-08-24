@@ -106,16 +106,73 @@ sealed class ConsoleController : IPlayerController
 {
     public string Name => "You";
 
+    /// <summary>
+    /// Hearthstone's own turn budget. Lives in the console, NOT the engine: the engine
+    /// has to stay deterministic so --simulate can run thousands of games, and wall-clock
+    /// time in the rules would break that. Any front end enforces its own rope.
+    /// </summary>
+    public const int TurnSeconds = 75;
+    private const int RopeAt = 15;
+
+    private int _lastTurnSeen = -1;
+    private DateTime _turnStarted = DateTime.MinValue;
+    private bool _ropeShown;
+
+    /// <summary>Starts this turn's clock. Called once per turn, not once per command.</summary>
+    private void StartClock() { _turnStarted = DateTime.UtcNow; _ropeShown = false; }
+    private int SecondsLeft => Math.Max(0, TurnSeconds - (int)(DateTime.UtcNow - _turnStarted).TotalSeconds);
+
+    /// <summary>
+    /// Reads a line, but gives up when the turn budget runs out. Polls for keys rather
+    /// than blocking on ReadLine so the clock can actually expire mid-input.
+    /// Returns null when time is up.
+    /// </summary>
+    private string? ReadWithRope()
+    {
+        var buffer = new System.Text.StringBuilder();
+        Console.Write($"[{SecondsLeft,2}s] > ");
+
+        while (true)
+        {
+            if (SecondsLeft <= 0) return null;
+
+            if (!_ropeShown && SecondsLeft <= RopeAt)
+            {
+                _ropeShown = true;
+                Console.WriteLine();
+                Console.WriteLine($"  the rope is burning ({SecondsLeft}s)");
+                Console.Write($"[{SecondsLeft,2}s] > {buffer}");
+            }
+
+            if (!Console.KeyAvailable) { Thread.Sleep(50); continue; }
+
+            var key = Console.ReadKey(intercept: true);
+            if (key.Key == ConsoleKey.Enter) { Console.WriteLine(); return buffer.ToString().Trim().ToLowerInvariant(); }
+            if (key.Key == ConsoleKey.Backspace)
+            {
+                if (buffer.Length > 0) { buffer.Length--; Console.Write(" "); }
+                continue;
+            }
+            if (!char.IsControl(key.KeyChar)) { buffer.Append(key.KeyChar); Console.Write(key.KeyChar); }
+        }
+    }
+
     public PlayerAction ChooseAction(DuelState state, Caster me, Caster opponent)
     {
         FlushLog(state);
+        if (_lastTurnSeen != state.TurnNumber) { _lastTurnSeen = state.TurnNumber; StartClock(); }
         PrintState(state, me, opponent);
 
         while (true)
         {
-            Console.Write("> ");
-            var input = Console.ReadLine()?.Trim().ToLowerInvariant();
-            if (string.IsNullOrEmpty(input)) continue;
+            var input = ReadWithRope();
+            if (input is null)
+            {
+                Console.WriteLine();
+                Console.WriteLine("  ...the rope burns out. Your turn ends.");
+                return new PassTurn();
+            }
+            if (input.Length == 0) continue;
 
             var parts = input.Split(' ', StringSplitOptions.RemoveEmptyEntries);
             switch (parts[0])
@@ -127,8 +184,28 @@ sealed class ConsoleController : IPlayerController
                 case "help":
                     Console.WriteLine("p <handIndex> [targetBoardIndex] — play a card, optionally aimed at an enemy creature");
                     Console.WriteLine("a <yourBoardIndex> [enemyBoardIndex] — attack face, or a specific enemy creature");
+                    Console.WriteLine("hp [enemyBoardIndex] — use your hero power (2 mana, once per turn)");
                     Console.WriteLine("end — pass the turn");
                     continue;
+
+                case "hp":
+                {
+                    var power = CardSet.PowerFor(me.Class);
+                    if (me.HeroPowerUsedThisTurn) { Console.WriteLine("Already used this turn."); continue; }
+                    if (me.Pips < power.Cost) { Console.WriteLine($"{power.Name} costs {power.Cost}; you have {me.Pips}."); continue; }
+
+                    BoardCreature? hpTarget = null;
+                    if (parts.Length == 2)
+                    {
+                        if (!int.TryParse(parts[1], out var ti) || ti < 0 || ti >= opponent.Board.Count)
+                        { Console.WriteLine("No enemy creature at that index."); continue; }
+                        hpTarget = opponent.Board[ti];
+                    }
+                    if (power.Targeting == TargetRule.RequiredCreature && hpTarget is null)
+                    { Console.WriteLine($"{power.Name} needs a target: hp <enemyBoardIndex>"); continue; }
+
+                    return new UseHeroPower(hpTarget);
+                }
 
                 case "end":
                     return new PassTurn();

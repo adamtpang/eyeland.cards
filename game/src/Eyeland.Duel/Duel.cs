@@ -132,6 +132,12 @@ public sealed class Caster
     public int FatigueDamage { get; set; }
     public int SpellsCastThisTurn { get; set; }
 
+    /// <summary>The deck's class. Decides which hero power this caster gets.</summary>
+    public PlayerClass Class { get; init; } = PlayerClass.Neutral;
+
+    /// <summary>Hero powers are once per turn, which is the whole reason they are balanced at 2 mana.</summary>
+    public bool HeroPowerUsedThisTurn { get; set; }
+
     public bool IsAlive => Health > 0;
 
     public void DrawCard(ResolutionLog log)
@@ -167,6 +173,7 @@ public sealed class Caster
         MaxPips = Math.Min(MaxPips + 1, PipCap);
         Pips = MaxPips;
         SpellsCastThisTurn = 0;
+        HeroPowerUsedThisTurn = false;
         foreach (var creature in Board)
         {
             creature.SummoningSick = false;
@@ -215,6 +222,7 @@ public sealed class DuelState
 public abstract record PlayerAction;
 public sealed record PlayCard(CardDef Card, BoardCreature? Target) : PlayerAction;
 public sealed record AttackAction(BoardCreature Attacker, BoardCreature? Target) : PlayerAction; // Target null = enemy face
+public sealed record UseHeroPower(BoardCreature? Target) : PlayerAction;
 public sealed record PassTurn : PlayerAction;
 
 public interface IPlayerController
@@ -253,6 +261,9 @@ public static class TurnEngine
                     break;
                 case AttackAction attack:
                     TryAttack(state, attack.Attacker, attack.Target);
+                    break;
+                case UseHeroPower power:
+                    TryUseHeroPower(state, power.Target);
                     break;
                 case PassTurn:
                     EndTurn(state);
@@ -301,6 +312,7 @@ public static class TurnEngine
                 Opponent = opponent,
                 Target = target,
                 IsFirstSpellThisTurn = isFirstSpell,
+                SpellDamageApplies = card.Type == CardType.Spell,
                 Log = new ResolutionLog(),
             };
             effect(ctx);
@@ -352,6 +364,41 @@ public static class TurnEngine
     /// trades back; Divine Shield absorbs inside TakeDamage; Poisonous and Lifesteal read
     /// the damage actually dealt, so a shielded hit neither poisons nor heals.
     /// </summary>
+    /// <summary>
+    /// Uses the active caster's hero power. Once per turn, costs its own mana, and
+    /// resolves through the same effect pipeline as a card, so nothing about targeting
+    /// or Spell Damage needs a special case.
+    /// </summary>
+    public static bool TryUseHeroPower(DuelState state, BoardCreature? target)
+    {
+        var owner = state.Active;
+        var opponent = state.Waiting;
+        var power = CardSet.PowerFor(owner.Class);
+
+        if (owner.HeroPowerUsedThisTurn || owner.Pips < power.Cost) return false;
+        if (power.Targeting == TargetRule.RequiredCreature && target is null) return false;
+        if (target is not null && (!opponent.Board.Contains(target) || !target.IsAlive || target.Stealth))
+            return false;
+
+        owner.Pips -= power.Cost;
+        owner.HeroPowerUsedThisTurn = true;
+        state.Log.Add($"{owner.Name} uses {power.Name}.");
+
+        if (power.OnUse is { } effect)
+        {
+            var ctx = new DuelContext
+            {
+                State = state, Owner = owner, Opponent = opponent,
+                Target = target, IsFirstSpellThisTurn = false, Log = new ResolutionLog(),
+            };
+            effect(ctx);
+            state.Log.AddRange(ctx.Log.Lines);
+        }
+
+        CleanupDead(state);
+        return true;
+    }
+
     public static bool TryAttack(DuelState state, BoardCreature attacker, BoardCreature? target)
     {
         var owner = state.Active;

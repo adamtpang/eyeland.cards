@@ -392,6 +392,45 @@
     }
   ],
 
+  "heroPowers": {
+    "_comment": [
+      "One hero power per class, 2 mana, once per turn. A hero power is just a card",
+      "with a different lifecycle, so it reuses the same effect registry: no new",
+      "machinery, and adding one needs no C#.",
+      "Costed against Hearthstone's own 2-mana baseline (Mage 1 damage, Priest heal 2,",
+      "Paladin summon a 1/1, Warlock draw and take 2), and each follows its class verb."
+    ],
+    "neutral":   { "name": "Steady Hand",  "cost": 2, "text": "Restore 2 health to your caster.",
+                   "onPlay": [ { "effect": "healCaster", "amount": 2 } ] },
+    "barbarian": { "name": "Rage",         "cost": 2, "text": "Deal 2 to the enemy caster. Your caster takes 1.",
+                   "onPlay": [ { "effect": "damageEnemyCaster", "amount": 2 },
+                               { "effect": "damageOwnCaster", "amount": 1 } ] },
+    "bard":      { "name": "Encore",       "cost": 2, "text": "Give a creature +1/+1.", "targeting": "requiredCreature",
+                   "onPlay": [ { "effect": "buffTarget", "attack": 1, "health": 1, "card": "Encore" } ] },
+    "cleric":    { "name": "Benediction",  "cost": 2, "text": "Restore 3 health to your caster.",
+                   "onPlay": [ { "effect": "healCaster", "amount": 3 } ] },
+    "druid":     { "name": "Sprout",       "cost": 2, "text": "Summon a Stubborn Sapling.",
+                   "onPlay": [ { "effect": "summon", "card": "drd-sapling", "amount": 1 } ] },
+    "fighter":   { "name": "Weapon Swing", "cost": 2, "text": "Deal 1 damage to a creature.", "targeting": "requiredCreature",
+                   "onPlay": [ { "effect": "damage", "amount": 1 } ] },
+    "monk":      { "name": "Quick Strike", "cost": 2, "text": "Deal 1 damage at random.",
+                   "onPlay": [ { "effect": "damageRandomEnemyCreature", "amount": 1 } ] },
+    "paladin":   { "name": "Shield Wall",  "cost": 2, "text": "Give a creature +0/+2.", "targeting": "requiredCreature",
+                   "onPlay": [ { "effect": "buffTarget", "health": 2, "card": "Shield Wall" } ] },
+    "ranger":    { "name": "Take Aim",     "cost": 2, "text": "Deal 2 to the enemy caster.",
+                   "onPlay": [ { "effect": "damageEnemyCaster", "amount": 2 } ] },
+    "rogue":     { "name": "Pickpocket",   "cost": 2, "text": "Draw a card.",
+                   "onPlay": [ { "effect": "draw", "amount": 1 } ] },
+    "sorcerer":  { "name": "Wild Spark",   "cost": 2, "text": "Deal 2 damage at random.",
+                   "onPlay": [ { "effect": "damageRandomEnemyCreature", "amount": 2 } ] },
+    "warlock":   { "name": "Dark Pact",    "cost": 2, "text": "Draw a card. Your caster takes 2.",
+                   "onPlay": [ { "effect": "draw", "amount": 1 }, { "effect": "damageOwnCaster", "amount": 2 } ] },
+    "wizard":    { "name": "Arcane Bolt",  "cost": 2, "text": "Deal 1 damage.", "targeting": "optionalCreature",
+                   "onPlay": [ { "effect": "damage", "amount": 1 } ] },
+    "tinkerer":  { "name": "Fabricate",    "cost": 2, "text": "Summon a Scrap Servitor.",
+                   "onPlay": [ { "effect": "summon", "card": "tnk-scrap-servitor", "amount": 1 } ] }
+  },
+
   "starterDeck": {
     "_comment": "Unchanged: the symmetric neutral-only v0 starter. 16 cards. Class decks come at v1.",
     "counts": {

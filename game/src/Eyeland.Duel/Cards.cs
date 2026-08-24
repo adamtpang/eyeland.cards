@@ -44,6 +44,14 @@ public sealed class DuelContext
     public BoardCreature? Target { get; init; }
     public bool IsFirstSpellThisTurn { get; init; }
     public required ResolutionLog Log { get; init; }
+
+    /// <summary>
+    /// Whether Spell Damage applies to damage from this resolution. True only for spell
+    /// CARDS. Hearthstone's rule, and the one worth copying: Spell Damage boosts spells,
+    /// never hero powers and never battlecries. Without this a Wizard's 1-damage hero
+    /// power silently became 2 next to an apprentice.
+    /// </summary>
+    public bool SpellDamageApplies { get; init; }
 }
 
 public delegate void CardEffect(DuelContext ctx);
@@ -92,7 +100,7 @@ public static class Effects
 {
     /// <summary>Total Spell Damage the owner's board is contributing.</summary>
     public static int SpellPower(DuelContext ctx) =>
-        ctx.Owner.Board.Where(c => c.IsAlive).Sum(c => c.SpellDamage);
+        ctx.SpellDamageApplies ? ctx.Owner.Board.Where(c => c.IsAlive).Sum(c => c.SpellDamage) : 0;
 
     /// <summary>
     /// Damages the chosen target, or the opponent's face if no target was chosen.
@@ -266,6 +274,9 @@ public static class CardSet
     public static CardDef StormTotem => ById("storm-totem");
 
     public static IReadOnlyList<CardDef> All => Data.Cards;
+
+    /// <summary>The hero power for a class, falling back to neutral.</summary>
+    public static HeroPower PowerFor(PlayerClass cls) => Data.PowerFor(cls);
 
     /// <summary>
     /// The symmetric v0 starter deck, built from the recipe in the card file: 2 copies of

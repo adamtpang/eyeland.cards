@@ -36,9 +36,23 @@ public sealed record EffectStep(
 /// <summary>A deck recipe: how many copies of each card, in a stable order.</summary>
 public sealed record DeckRecipe(IReadOnlyList<string> Order, IReadOnlyDictionary<string, int> Counts);
 
+/// <summary>
+/// A hero power: 2 mana, once per turn. Deliberately modelled as a CardDef so it
+/// reuses the same effect registry and targeting rules as everything else.
+/// </summary>
+public sealed record HeroPower(string Name, int Cost, string Text, TargetRule Targeting, CardEffect? OnUse);
+
 /// <summary>The whole parsed card file.</summary>
-public sealed record CardData(IReadOnlyList<CardDef> Cards, DeckRecipe StarterDeck)
+public sealed record CardData(
+    IReadOnlyList<CardDef> Cards,
+    DeckRecipe StarterDeck,
+    IReadOnlyDictionary<PlayerClass, HeroPower> HeroPowers)
 {
+    public HeroPower PowerFor(PlayerClass cls) =>
+        HeroPowers.TryGetValue(cls, out var p) ? p
+        : HeroPowers.TryGetValue(PlayerClass.Neutral, out var n) ? n
+        : throw new KeyNotFoundException($"No hero power for {cls} and no neutral fallback.");
+
     public CardDef ById(string id) =>
         Cards.FirstOrDefault(c => c.Id == id)
         ?? throw new KeyNotFoundException($"No card with id '{id}'.");
@@ -132,7 +146,22 @@ public static class CardLoader
         foreach (var id in order)
             counts[id] = deckNode["counts"][id].AsInt(1);
 
-        return new CardData(cards, new DeckRecipe(order, counts));
+        var powers = new Dictionary<PlayerClass, HeroPower>();
+        var hpNode = root["heroPowers"];
+        foreach (var cls in System.Enum.GetValues<PlayerClass>())
+        {
+            var key = cls.ToString().ToLowerInvariant();
+            if (!hpNode.Has(key)) continue;
+            var n = hpNode[key];
+            powers[cls] = new HeroPower(
+                n["name"].AsString(key),
+                n["cost"].AsInt(2),
+                n["text"].AsString(),
+                Enum<TargetRule>(n["targeting"].AsString("none"), key, "heroPowers.targeting"),
+                ReadSteps(n["onPlay"], $"heroPower:{key}"));
+        }
+
+        return new CardData(cards, new DeckRecipe(order, counts), powers);
     }
 
     private static CardDef ReadCard(JsonValue n)
