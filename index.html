@@ -6,7 +6,7 @@
 <meta name="color-scheme" content="dark">
 <meta name="theme-color" content="#060a1a">
 <title>eyeland.cards - open-world card-combat MMORPG</title>
-<meta name="description" content="eyeland.cards is an open-world card-combat MMORPG across a floating archipelago. Collect spell-cards, raise creature companions, and follow the first itch.io pre-alpha build.">
+<meta name="description" content="Explore eyeland.cards, an open-world card-combat MMORPG in development. See its 5-step build plan and request the free first itch.io pre-alpha link.">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="/favicon.svg">
 <link rel="canonical" href="https://eyeland.cards/">
@@ -35,7 +35,7 @@
       "name": "eyeland.cards",
       "url": "https://eyeland.cards/",
       "logo": "https://eyeland.cards/og-image.png",
-      "description": "eyeland.cards is an open-world card-combat MMORPG across a floating archipelago, built in Unity with Claude.",
+      "description": "eyeland.cards is an open-world card-combat MMORPG in development across a floating archipelago.",
       "founder": { "@id": "https://eyeland.cards/#person" },
       "sameAs": ["https://adampang.com", "https://github.com/adamtpang"]
     },
@@ -52,7 +52,7 @@
       "@id": "https://eyeland.cards/#website",
       "name": "eyeland.cards",
       "url": "https://eyeland.cards/",
-      "description": "An open-world card-combat MMORPG across a floating archipelago. Collect spell-cards, raise creature companions, and follow the first itch.io pre-alpha build.",
+      "description": "Explore an open-world card-combat MMORPG in development and request the free first itch.io pre-alpha link.",
       "publisher": { "@id": "https://eyeland.cards/#organization" },
       "author": { "@id": "https://eyeland.cards/#person" },
       "inLanguage": "en"
@@ -70,7 +70,7 @@
   <canvas id="sky"></canvas>
 
   <!-- islands sprite defs -->
-  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <svg class="sprite-defs" width="0" height="0" aria-hidden="true">
     <defs>
       <linearGradient id="grass" x1="0" y1="0" x2="0" y2="1">
         <stop offset="0" stop-color="#57e0b0"/>
@@ -110,10 +110,10 @@
     <div class="container">
       <div class="hero__grid">
         <div class="hero__copy">
-          <p class="eyebrow">Unity pre-alpha · itch.io build next</p>
+          <div class="eyebrow">Unity pre-alpha · itch.io build next</div>
           <h1>eyeland.cards</h1>
-          <p class="hero__tagline">Explore the Eyeland, one card at a time.</p>
-          <p class="lede">An open-world card-combat MMORPG across floating islands. Collect spell-cards, raise creature companions, and turn every wild encounter into a tactical duel.</p>
+          <div class="hero__tagline">Explore the Eyeland, one card at a time.</div>
+          <p class="lede">eyeland.cards is an open-world card-combat MMORPG in development across floating islands. The design combines an explorable archipelago, collectible spell-cards, creature companions, and tactical turn-based duels.</p>
           <div class="hero__actions">
             <a class="btn btn--primary" href="#waitlist">Get the itch.io note</a>
             <a class="btn btn--ghost" href="#cards">See the cards</a>
@@ -139,34 +139,34 @@
   <!-- pillars -->
   <section class="section" id="world">
     <div class="container">
-      <p class="eyebrow reveal">How it plays</p>
+      <div class="eyebrow reveal">How it plays</div>
       <h2 class="reveal">Island-hopping meets card duels.</h2>
-      <p class="lede reveal" style="margin-top:1rem">The feeling is walking into a strange new town, finding a creature, and solving trouble with the deck in your hand.</p>
+      <p class="lede lede--spaced reveal">Eyeland's planned world connects exploration directly to deckbuilding: players visit floating islands, encounter creatures, discover cards, and use the deck in their hand to resolve tactical battles.</p>
       <div class="pillars">
-        <article class="pillar reveal">
+        <div class="pillar reveal">
           <div class="pillar__icon">
             <svg width="26" height="26" viewBox="0 0 28 28" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round"><circle cx="14" cy="14" r="11"/><path d="M14 5 L16.5 14 L14 23 L11.5 14 Z"/><circle cx="14" cy="14" r="1.4" fill="currentColor" stroke="none"/></svg>
           </div>
-          <p class="pillar__tag">Open world · <b>like Pokémon</b></p>
+          <div class="pillar__tag">Open world · <b>like Pokémon</b></div>
           <h3>Explore the Eyeland</h3>
-          <p>Wander a living archipelago of biomes, hidden coves, and wild encounters. Every island is a small mystery past the horizon.</p>
-        </article>
-        <article class="pillar reveal">
+          <div class="pillar__copy">Wander a living archipelago of biomes, hidden coves, and wild encounters. Every island is a small mystery past the horizon.</div>
+        </div>
+        <div class="pillar reveal">
           <div class="pillar__icon">
             <svg width="26" height="26" viewBox="0 0 28 28" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round"><rect x="5" y="8" width="12" height="16" rx="2" transform="rotate(-9 11 16)"/><rect x="11" y="6" width="12" height="16" rx="2" transform="rotate(9 17 14)"/></svg>
           </div>
-          <p class="pillar__tag">Deckbuilding · <b>like Hearthstone</b></p>
+          <div class="pillar__tag">Deckbuilding · <b>like Hearthstone</b></div>
           <h3>Build your spellbook</h3>
-          <p>Collect spell-cards and creature companions across the world, then craft the deck that fits your style.</p>
-        </article>
-        <article class="pillar reveal">
+          <div class="pillar__copy">Collect spell-cards and creature companions across the world, then craft the deck that fits your style.</div>
+        </div>
+        <div class="pillar reveal">
           <div class="pillar__icon">
             <svg width="26" height="26" viewBox="0 0 28 28" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round"><rect x="8" y="5" width="15" height="20" rx="2"/><path d="M16 9 L12 16 L15.5 16 L13.5 23 L20 14 L16.5 14 Z" fill="currentColor" stroke="none"/></svg>
           </div>
-          <p class="pillar__tag">Card duels · <b>like Wizard101</b></p>
+          <div class="pillar__tag">Card duels · <b>like Wizard101</b></div>
           <h3>Win the duel</h3>
-          <p>Combat is a hand of cards. Bank your pips, chain spells, summon allies, and read your opponent.</p>
-        </article>
+          <div class="pillar__copy">Combat is a hand of cards. Bank your pips, chain spells, summon allies, and read your opponent.</div>
+        </div>
       </div>
     </div>
   </section>
@@ -175,9 +175,9 @@
   <section class="section" id="cards">
     <div class="container">
       <div class="cards-head">
-        <p class="eyebrow reveal">The deck</p>
+        <div class="eyebrow reveal">The deck</div>
         <h2 class="reveal">Your spellbook is a deck.</h2>
-        <p class="lede reveal" style="margin-top:1rem">No menu maze, just cards in your hand. Spend pips to cast, combo spells together, and summon creatures to fight beside you. Three from the starter set:</p>
+        <p class="lede lede--spaced reveal">Eyeland's duel design keeps the active choices in a visible hand of cards. Players spend pips, combine spells, and summon creatures; Ember Bolt, Tidewisp, and Eye of the Storm are 3 starter-set examples.</p>
         <span class="hint reveal">↓ Hover a card</span>
       </div>
 
@@ -234,36 +234,36 @@
   <section class="section build" id="build">
     <div class="container">
       <div class="build__head">
-        <p class="eyebrow reveal">First playable</p>
+        <div class="eyebrow reveal">First playable</div>
         <h2 class="reveal">Ship the duel first. Open the world next.</h2>
-        <p class="lede reveal" style="margin-top:1rem">The itch.io build starts small on purpose: a readable card duel that proves pips, turns, spells, creatures, and rewards. The MMO layer waits until the game is fun alone.</p>
+        <p class="lede lede--spaced reveal">Eyeland follows a 5-step build ladder: Duel, Deck, Island, World, then Online. The current v0 terminal prototype implements the turn loop; a public itch.io build is still in development.</p>
       </div>
       <div class="build-ladder stagger reveal" aria-label="eyeland.cards build ladder">
-        <article class="build-step build-step--now">
+        <div class="build-step build-step--now">
           <span class="build-step__version">v0 now</span>
           <h3>Duel</h3>
-          <p>Pips, hands, turns, spell resolution, and a clean win state.</p>
-        </article>
-        <article class="build-step">
+          <div class="build-step__copy">Pips, hands, turns, spell resolution, and a clean win state.</div>
+        </div>
+        <div class="build-step">
           <span class="build-step__version">v1 next</span>
           <h3>Deck</h3>
-          <p>Starter spellbook, rewards, edits, and creature cards.</p>
-        </article>
-        <article class="build-step">
+          <div class="build-step__copy">Starter spellbook, rewards, edits, and creature cards.</div>
+        </div>
+        <div class="build-step">
           <span class="build-step__version">v2</span>
           <h3>Island</h3>
-          <p>A walkable island with wild encounters and a reason to explore.</p>
-        </article>
-        <article class="build-step">
+          <div class="build-step__copy">A walkable island with wild encounters and a reason to explore.</div>
+        </div>
+        <div class="build-step">
           <span class="build-step__version">v3</span>
           <h3>World</h3>
-          <p>More islands, quests, biomes, and a real collection loop.</p>
-        </article>
-        <article class="build-step">
+          <div class="build-step__copy">More islands, quests, biomes, and a real collection loop.</div>
+        </div>
+        <div class="build-step">
           <span class="build-step__version">v4</span>
           <h3>Online</h3>
-          <p>Friends, trading, duels, and the MMO layer after the core is strong.</p>
-        </article>
+          <div class="build-step__copy">Friends, trading, duels, and the MMO layer after the core is strong.</div>
+        </div>
       </div>
     </div>
   </section>
@@ -272,16 +272,16 @@
   <section class="section waitlist" id="waitlist">
     <div class="container">
       <div class="waitlist__card reveal">
-        <p class="eyebrow" style="justify-content:center">Itch.io pre-alpha</p>
+        <div class="eyebrow eyebrow--centered">Itch.io pre-alpha</div>
         <h2>Get the first playable link.</h2>
-        <p class="lede">The first public build goes to itch.io. Join for the link and tiny dev notes as the world comes together.</p>
+        <p class="lede">The Eyeland waitlist is for card-game and MMO players who want the first public itch.io link plus occasional, small development notes as the prototype becomes playable.</p>
         <form class="signup" id="signup" novalidate>
-          <label for="email" class="sr-only" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)">Email address</label>
+          <label for="email" class="sr-only">Email address</label>
           <input id="email" type="email" name="email" placeholder="you@example.com" autocomplete="email" required>
           <button class="btn btn--primary" type="submit">Send me the build</button>
         </form>
-        <p class="signup__note" id="note" role="status" aria-live="polite"></p>
-        <p class="fineprint">No spam, no fake beta promise. Just the playable link when it exists.</p>
+        <div class="signup__note" id="note" role="status" aria-live="polite"></div>
+        <p class="fineprint">The waitlist costs $0 and has no account, checkout, paid plan, or public download yet. Submitting this form opens a pre-filled email in your own mail app.</p>
       </div>
     </div>
   </section>
@@ -289,9 +289,9 @@
   <!-- footer -->
   <footer class="footer">
     <div class="container footer__inner">
-      <p><a class="wordmark" href="#top" style="font-size:1.1rem">eyeland<span class="dot">.cards</span></a></p>
-      <p>Open-world card-combat MMORPG · first build to itch.io</p>
-      <p>An Anchor Marianas project · 2026 · <a href="mailto:adamtpang@gmail.com">Contact</a></p>
+      <div><a class="wordmark wordmark--footer" href="#top">eyeland<span class="dot">.cards</span></a></div>
+      <div>Open-world card-combat MMORPG · first build to itch.io</div>
+      <div class="footer__links">An Anchor Marianas project · 2026 · <a href="/about.html">About</a> · <a href="/contact.html">Contact</a> · <a href="/privacy.html">Privacy</a></div>
     </div>
   </footer>
 </div>

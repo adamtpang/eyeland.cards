@@ -3,5 +3,8 @@
 *.md
 hearthstone/
 game/
+terraria/
+tests/
 .agents/
 .gitignore
+repos.yaml
