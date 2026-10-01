@@ -1,0 +1,789 @@
+[Licensing::Module] Trying to connect to existing licensing client channel...
+Built from '6000.5/staging' branch; Version is '6000.5.7f1 (017862109af0) revision 96354'; Using compiler version '194234433'; Build Type 'Release'
+OS: 'Windows 11  (10.0.26200) Core' Language: 'en' Physical Memory: 23968 MB
+[Licensing::IpcConnector] Channel LicenseClient-adamp doesn't exist
+BatchMode: 1, IsHumanControllingUs: 0, StartBugReporterOnCrash: 0, Is64bit: 1
+System  architecture: x64
+Process architecture: x64
+Date: 2026-09-11T07:39:28Z
+[Licensing::Module] Successfully launched the LicensingClient (PId: 28492)
+
+COMMAND LINE ARGUMENTS:
+C:\Users\adamp\AppData\Local\EyelandTools\Unity\6000.5.7f1\Editor\Unity.exe
+-batchmode
+-nographics
+-projectPath
+C:\Users\adamp\Aether\eyeland.cards/game/unity
+-runTests
+-testPlatform
+PlayMode
+-testResults
+C:\Users\adamp\Aether\eyeland.cards/game/card-art-tests.xml
+-logFile
+C:\Users\adamp\Aether\eyeland.cards/game/card-art-tests.log
+Successfully changed project path to: C:\Users\adamp\Aether\eyeland.cards/game/unity
+C:/Users/adamp/Aether/eyeland.cards/game/unity
+[UnityMemory] Configuration Parameters - Can be set up in boot.config
+    "memorysetup-temp-allocator-size-gi-baking-worker=262144"
+    "memorysetup-temp-allocator-size-gi-baking-worker=262144"
+    "memorysetup-temp-allocator-size-gi-baking-worker=262144"
+    "memorysetup-temp-allocator-size-gi-baking-worker=262144"
+    "memorysetup-temp-allocator-size-gi-baking-worker=262144"
+    "memorysetup-temp-allocator-size-nav-mesh-worker=65536"
+    "memorysetup-temp-allocator-size-audio-worker=65536"
+    "memorysetup-temp-allocator-size-cloud-worker=32768"
+    "memorysetup-temp-allocator-size-gfx=262144"
+    "memorysetup-temp-allocator-size-preload-manager=33554432"
+    "memorysetup-allocator-temp-initial-block-size-main=262144"
+    "memorysetup-allocator-temp-initial-block-size-worker=262144"
+    "memorysetup-temp-allocator-size-job-worker=262144"
+    "memorysetup-temp-allocator-size-background-worker=32768"
+    "memorysetup-bucket-allocator-granularity=16"
+    "memorysetup-bucket-allocator-bucket-count=8"
+    "memorysetup-bucket-allocator-block-size=33554432"
+    "memorysetup-bucket-allocator-block-count=8"
+    "memorysetup-main-allocator-block-size=16777216"
+    "memorysetup-thread-allocator-block-size=16777216"
+    "memorysetup-main-allocator-mimalloc-enabled=0"
+    "memorysetup-gfx-main-allocator-block-size=16777216"
+    "memorysetup-gfx-thread-allocator-block-size=16777216"
+    "memorysetup-cache-allocator-block-size=4194304"
+    "memorysetup-typetree-allocator-block-size=2097152"
+    "memorysetup-profiler-bucket-allocator-granularity=16"
+    "memorysetup-profiler-bucket-allocator-bucket-count=8"
+    "memorysetup-profiler-bucket-allocator-block-size=33554432"
+    "memorysetup-profiler-bucket-allocator-block-count=8"
+    "memorysetup-profiler-allocator-block-size=16777216"
+    "memorysetup-profiler-editor-allocator-block-size=1048576"
+    "memorysetup-temp-allocator-size-main=16777216"
+    "memorysetup-job-temp-allocator-block-size=2097152"
+    "memorysetup-job-temp-allocator-block-size-background=1048576"
+    "memorysetup-job-temp-allocator-reduction-small-platforms=262144"
+Logging is directed to a specific file, skipping project log.Player connection [14448]  Target information:
+
+Player connection [14448]  * "[IP] 172.20.10.2 [Port] 55504 [Flags] 2 [Guid] 2140026300 [EditorId] 2140026300 [Version] 1048832 [Id] WindowsEditor(7,bubba) [Debug] 1 [PackageName] WindowsEditor [ProjectName] Editor" 
+
+Player connection [14448]  * "[IP] 100.70.30.125 [Port] 55504 [Flags] 2 [Guid] 2140026300 [EditorId] 2140026300 [Version] 1048832 [Id] WindowsEditor(7,bubba) [Debug] 1 [PackageName] WindowsEditor [ProjectName] Editor" 
+
+Player connection [14448]  * "[IP] 192.168.0.3 [Port] 55504 [Flags] 2 [Guid] 2140026300 [EditorId] 2140026300 [Version] 1048832 [Id] WindowsEditor(7,bubba) [Debug] 1 [PackageName] WindowsEditor [ProjectName] Editor" 
+
+Player connection [14448] Host joined multi-casting on [225.0.0.222:54997]...
+Player connection [14448] Host joined alternative multi-casting on [225.0.0.222:34997]...
+Input System module state changed to: Initialized.
+[Physics::Module] Initialized fallback backend.
+[Physics::Module] Id: 0xdecafbad
+[Licensing::IpcConnector] Successfully connected to: "LicenseClient-adamp" at "2026-09-11T07:39:29.2677228Z"
+[Licensing::Client] Code 10 while verifying Licensing Client signature (process Id: 28492, path: "C:/Users/adamp/AppData/Local/Packages/OpenAI.Codex_2p2nqsd0c76g0/LocalCache/Local/EyelandTools/Unity/6000.5.7f1/Editor/Data/Resources/Licensing/Client/Unity.Licensing.Client.exe")
+[Licensing::Module] LicensingClient has failed validation; ignoring
+[Package Manager] Connected to IPC stream "Upm-4048" after 0.4 seconds.
+[Licensing::Module] Licensing is not yet initialized.
+[Licensing::Client] Handshaking with LicensingClient:
+  Version:                 1.18.1+9fbee8e
+  Session Id:              37ca6b3845a84a6296189b1e2d63eecf
+  Correlation Id:          5ff7c0bc2c5d2afbf32e6b15064e27ef
+  External correlation Id: 5727687239165917055
+  Machine Id:              2CcmeMMf6Plj3XpJxFPVv3zO5QI=
+[Licensing::Module] Successfully connected to LicensingClient on channel: "LicenseClient-adamp" (connect: 0.37s, validation: 0.28s, handshake: 0.06s)
+[Licensing::IpcConnector] Successfully connected to: "LicenseClient-adamp-notifications" at "2026-09-11T07:39:29.6145647Z"
+[Licensing::Module] Connected to LicensingClient (PId: 28492, launch time: 0.01, total connection time: 0.72s)
+[Licensing::Module] Error: Access token is unavailable; failed to update
+[Licensing::Client] Successfully resolved entitlement details
+[Licensing::Module] License group:
+  Id: F4-GEAS-PD3B-6689-JSPB-XXXX
+  Product: Unity Personal
+  Type: ULF
+  Expiration: 2026-10-19T08:04:33Z
+[Licensing::Client] Successfully updated license, isAsync: True, time: 0.01
+[Licensing::Module] Licensing Background thread has ended after 0.77s
+[Licensing::Module] Licensing is initialized (took 0.11s).
+[Licensing::Client] Successfully resolved entitlement details
+Library Redirect Path: Library/
+[Physics::Module] Selected backend.
+[Physics::Module] Name: PhysX
+[Physics::Module] Id: 0xf2b8ea05
+[Physics::Module] SDK Version: 4.1.2
+[Physics::Module] Integration Version: 1.0.0
+[Physics::Module] Threading Mode: Multi-Threaded
+Initialize engine version: 6000.5.7f1 (017862109af0)
+[Subsystems] Discovering subsystems at path C:/Users/adamp/AppData/Local/EyelandTools/Unity/6000.5.7f1/Editor/Data/Resources/UnitySubsystems
+[Subsystems] Discovering subsystems at path C:/Users/adamp/Aether/eyeland.cards/game/unity/Assets
+Forcing GfxDevice: Null
+GfxDevice: creating device client; kGfxThreadingModeNonThreaded
+NullGfxDevice:
+    Version:  NULL 1.0 [1.0]
+    Renderer: Null Device
+    Vendor:   Unity Technologies
+Initialize mono
+Mono path[0] = 'C:/Users/adamp/AppData/Local/EyelandTools/Unity/6000.5.7f1/Editor/Data/Managed'
+Mono path[1] = 'C:/Users/adamp/AppData/Local/EyelandTools/Unity/6000.5.7f1/Editor/Data/BCLExtensions/runtime/netstandard2.1'
+Mono path[2] = 'C:/Users/adamp/AppData/Local/EyelandTools/Unity/6000.5.7f1/Editor/Data/MonoBleedingEdge/lib/mono/unityjit-win32'
+Mono config path = 'C:/Users/adamp/AppData/Local/EyelandTools/Unity/6000.5.7f1/Editor/Data/MonoBleedingEdge/etc'
+Using monoOptions --debugger-agent=transport=dt_socket,embedding=1,server=y,suspend=n,address=127.0.0.1:56048
+CodeReloadManager initialized
+ImportWorker Server TCP listen port: 0
+AcceleratorClientConnectionCallback - disconnected - :0
+Begin MonoManager ReloadAssembly
+Registering precompiled unity dll's ...
+Register platform support module: C:/Users/adamp/AppData/Local/EyelandTools/Unity/6000.5.7f1/Editor/Data/PlaybackEngines/WebGLSupport/UnityEditor.WebGL.Extensions.dll
+Register platform support module: C:/Users/adamp/AppData/Local/EyelandTools/Unity/6000.5.7f1/Editor/Data/PlaybackEngines/WindowsStandaloneSupport/UnityEditor.WindowsStandalone.Extensions.dll
+Registered in 0.006225 seconds.
+Native extension for WindowsStandalone target not found
+Native extension for WebGL target not found
+Package Manager log level set to [2]
+ScheduleIndexationOnStartup MainProcess:False IndexOnStartup:True
+Mono: successfully reloaded assembly
+- Finished resetting the current domain, in  0.555 seconds
+Domain Reload Profiling: 1264ms
+	BeginReloadAssembly (200ms)
+		CreateAndSetChildDomain (12ms)
+	RebuildCommonClasses (5ms)
+	RebuildNativeTypeToScriptingClass (18ms)
+	initialDomainReloadingComplete (101ms)
+	LoadAllAssembliesAndSetupDomain (381ms)
+		LoadAssemblies (188ms)
+		AnalyzeDomain (272ms)
+			TypeCache.Refresh (271ms)
+				TypeCache.ScanAssembly (253ms)
+	FinalizeReload (558ms)
+		SetupLoadedEditorAssemblies (0ms)
+			InitializePlatformSupportModulesInManaged (3ms)
+			BeforeProcessingInitializeOnLoad (123ms)
+			ProcessInitializeOnLoadAttributes (115ms)
+			ProcessInitializeOnLoadMethodAttributes (230ms)
+[Licensing::Client] Successfully resolved entitlement details
+Application.AssetDatabase Initial Refresh Start
+[Package Manager] Restoring resolved packages state from cache
+[Licensing::Client] Successfully resolved entitlement details
+[Package Manager] Registered 52 packages:
+  Packages from [https://packages.unity.com]:
+    com.unity.nuget.newtonsoft-json@3.2.2 (location: C:\Users\adamp\Aether\eyeland.cards\game\unity\Library\PackageCache\com.unity.nuget.newtonsoft-json@4dfd81071c64)
+    com.unity.searcher@4.9.4 (location: C:\Users\adamp\Aether\eyeland.cards\game\unity\Library\PackageCache\com.unity.searcher@d45a78918735)
+    com.unity.burst@1.8.30 (location: C:\Users\adamp\Aether\eyeland.cards\game\unity\Library\PackageCache\com.unity.burst@2f3d916873ea)
+    com.unity.nuget.mono-cecil@1.11.6 (location: C:\Users\adamp\Aether\eyeland.cards\game\unity\Library\PackageCache\com.unity.nuget.mono-cecil@ecb9724e46ff)
+    com.unity.test-framework.performance@3.5.0 (location: C:\Users\adamp\Aether\eyeland.cards\game\unity\Library\PackageCache\com.unity.test-framework.performance@8b56083ec0f0)
+  Built-in packages:
+    com.unity.render-pipelines.universal@17.5.0 (location: C:\Users\adamp\Aether\eyeland.cards\game\unity\Library\PackageCache\com.unity.render-pipelines.universal@73b4c4ff130e)
+    com.unity.ugui@2.5.0 (location: C:\Users\adamp\Aether\eyeland.cards\game\unity\Library\PackageCache\com.unity.ugui@67707a67a4ab)
+    com.unity.multiplayer.center@1.0.1 (location: C:\Users\adamp\Aether\eyeland.cards\game\unity\Library\PackageCache\com.unity.multiplayer.center@b860850997d0)
+    com.unity.modules.accessibility@1.0.0 (location: C:\Users\adamp\Aether\eyeland.cards\game\unity\Library\PackageCache\com.unity.modules.accessibility)
+    com.unity.modules.adaptiveperformance@1.0.0 (location: C:\Users\adamp\Aether\eyeland.cards\game\unity\Library\PackageCache\com.unity.modules.adaptiveperformance)
+    com.unity.modules.ai@1.0.0 (location: C:\Users\adamp\Aether\eyeland.cards\game\unity\Library\PackageCache\com.unity.modules.ai)
+    com.unity.modules.androidjni@1.0.0 (location: C:\Users\adamp\Aether\eyeland.cards\game\unity\Library\PackageCache\com.unity.modules.androidjni)
+    com.unity.modules.animation@1.0.0 (location: C:\Users\adamp\Aether\eyeland.cards\game\unity\Library\PackageCache\com.unity.modules.animation)
+    com.unity.modules.assetbundle@1.0.0 (location: C:\Users\adamp\Aether\eyeland.cards\game\unity\Library\PackageCache\com.unity.modules.assetbundle)
+    com.unity.modules.audio@1.0.0 (location: C:\Users\adamp\Aether\eyeland.cards\game\unity\Library\PackageCache\com.unity.modules.audio)
+    com.unity.modules.cloth@1.0.0 (location: C:\Users\adamp\Aether\eyeland.cards\game\unity\Library\PackageCache\com.unity.modules.cloth)
+    com.unity.modules.director@1.0.0 (location: C:\Users\adamp\Aether\eyeland.cards\game\unity\Library\PackageCache\com.unity.modules.director)
+    com.unity.modules.imageconversion@1.0.0 (location: C:\Users\adamp\Aether\eyeland.cards\game\unity\Library\PackageCache\com.unity.modules.imageconversion)
+    com.unity.modules.imgui@1.0.0 (location: C:\Users\adamp\Aether\eyeland.cards\game\unity\Library\PackageCache\com.unity.modules.imgui)
+    com.unity.modules.jsonserialize@1.0.0 (location: C:\Users\adamp\Aether\eyeland.cards\game\unity\Library\PackageCache\com.unity.modules.jsonserialize)
+    com.unity.modules.particlesystem@1.0.0 (location: C:\Users\adamp\Aether\eyeland.cards\game\unity\Library\PackageCache\com.unity.modules.particlesystem)
+    com.unity.modules.physics@1.0.0 (location: C:\Users\adamp\Aether\eyeland.cards\game\unity\Library\PackageCache\com.unity.modules.physics)
+    com.unity.modules.physics2d@1.0.0 (location: C:\Users\adamp\Aether\eyeland.cards\game\unity\Library\PackageCache\com.unity.modules.physics2d)
+    com.unity.modules.physicscore2d@1.0.0 (location: C:\Users\adamp\Aether\eyeland.cards\game\unity\Library\PackageCache\com.unity.modules.physicscore2d)
+    com.unity.modules.screencapture@1.0.0 (location: C:\Users\adamp\Aether\eyeland.cards\game\unity\Library\PackageCache\com.unity.modules.screencapture)
+    com.unity.modules.terrain@1.0.0 (location: C:\Users\adamp\Aether\eyeland.cards\game\unity\Library\PackageCache\com.unity.modules.terrain)
+    com.unity.modules.terrainphysics@1.0.0 (location: C:\Users\adamp\Aether\eyeland.cards\game\unity\Library\PackageCache\com.unity.modules.terrainphysics)
+    com.unity.modules.tilemap@1.0.0 (location: C:\Users\adamp\Aether\eyeland.cards\game\unity\Library\PackageCache\com.unity.modules.tilemap)
+    com.unity.modules.ui@1.0.0 (location: C:\Users\adamp\Aether\eyeland.cards\game\unity\Library\PackageCache\com.unity.modules.ui)
+    com.unity.modules.uielements@1.0.0 (location: C:\Users\adamp\Aether\eyeland.cards\game\unity\Library\PackageCache\com.unity.modules.uielements)
+    com.unity.modules.umbra@1.0.0 (location: C:\Users\adamp\Aether\eyeland.cards\game\unity\Library\PackageCache\com.unity.modules.umbra)
+    com.unity.modules.unityanalytics@1.0.0 (location: C:\Users\adamp\Aether\eyeland.cards\game\unity\Library\PackageCache\com.unity.modules.unityanalytics)
+    com.unity.modules.unitywebrequest@1.0.0 (location: C:\Users\adamp\Aether\eyeland.cards\game\unity\Library\PackageCache\com.unity.modules.unitywebrequest)
+    com.unity.modules.unitywebrequestassetbundle@1.0.0 (location: C:\Users\adamp\Aether\eyeland.cards\game\unity\Library\PackageCache\com.unity.modules.unitywebrequestassetbundle)
+    com.unity.modules.unitywebrequestaudio@1.0.0 (location: C:\Users\adamp\Aether\eyeland.cards\game\unity\Library\PackageCache\com.unity.modules.unitywebrequestaudio)
+    com.unity.modules.unitywebrequesttexture@1.0.0 (location: C:\Users\adamp\Aether\eyeland.cards\game\unity\Library\PackageCache\com.unity.modules.unitywebrequesttexture)
+    com.unity.modules.unitywebrequestwww@1.0.0 (location: C:\Users\adamp\Aether\eyeland.cards\game\unity\Library\PackageCache\com.unity.modules.unitywebrequestwww)
+    com.unity.modules.vectorgraphics@1.0.0 (location: C:\Users\adamp\Aether\eyeland.cards\game\unity\Library\PackageCache\com.unity.modules.vectorgraphics)
+    com.unity.modules.vehicles@1.0.0 (location: C:\Users\adamp\Aether\eyeland.cards\game\unity\Library\PackageCache\com.unity.modules.vehicles)
+    com.unity.modules.video@1.0.0 (location: C:\Users\adamp\Aether\eyeland.cards\game\unity\Library\PackageCache\com.unity.modules.video)
+    com.unity.modules.wind@1.0.0 (location: C:\Users\adamp\Aether\eyeland.cards\game\unity\Library\PackageCache\com.unity.modules.wind)
+    com.unity.modules.xr@1.0.0 (location: C:\Users\adamp\Aether\eyeland.cards\game\unity\Library\PackageCache\com.unity.modules.xr)
+    com.unity.modules.subsystems@1.0.0 (location: C:\Users\adamp\Aether\eyeland.cards\game\unity\Library\PackageCache\com.unity.modules.subsystems)
+    com.unity.modules.hierarchycore@1.0.0 (location: C:\Users\adamp\Aether\eyeland.cards\game\unity\Library\PackageCache\com.unity.modules.hierarchycore)
+    com.unity.render-pipelines.core@17.5.0 (location: C:\Users\adamp\Aether\eyeland.cards\game\unity\Library\PackageCache\com.unity.render-pipelines.core@645717f21c5f)
+    com.unity.shadergraph@17.5.0 (location: C:\Users\adamp\Aether\eyeland.cards\game\unity\Library\PackageCache\com.unity.shadergraph@8d7376ec43ee)
+    com.unity.render-pipelines.universal-config@17.5.0 (location: C:\Users\adamp\Aether\eyeland.cards\game\unity\Library\PackageCache\com.unity.render-pipelines.universal-config@fdda01c80fe3)
+    com.unity.test-framework@1.7.0 (location: C:\Users\adamp\Aether\eyeland.cards\game\unity\Library\PackageCache\com.unity.test-framework@1405238725ab)
+    com.unity.collections@6.5.0 (location: C:\Users\adamp\Aether\eyeland.cards\game\unity\Library\PackageCache\com.unity.collections@ec2c217e4cb2)
+    com.unity.ext.nunit@2.1.0 (location: C:\Users\adamp\Aether\eyeland.cards\game\unity\Library\PackageCache\com.unity.ext.nunit@44f7d31723bd)
+    com.unity.mathematics@1.4.0 (location: C:\Users\adamp\Aether\eyeland.cards\game\unity\Library\PackageCache\com.unity.mathematics@981956d94fb6)
+  Git packages:
+    com.coplaydev.unity-mcp@https://github.com/CoplayDev/unity-mcp.git?path=/MCPForUnity#main (location: C:\Users\adamp\Aether\eyeland.cards\game\unity\Library\PackageCache\com.coplaydev.unity-mcp@8bd91ce7bd3a)
+[Subsystems] No new subsystems found in resolved package list.
+[Package Manager] Done registering packages in 0.03 seconds
+AcceleratorClientConnectionCallback - disconnected - :0
+[ScriptCompilation] Requested script compilation because: AssetDatabase observed changes in script compilation related files
+Starting: C:\Users\adamp\AppData\Local\EyelandTools\Unity\6000.5.7f1\Editor\Data\Tools\BuildPipeline\bee_backend.exe --ipc --defer-dag-verification --dagfile="Library/Bee/2000b0aE.dag" --continue-on-failure --profile="Library/Bee/backend1.traceevents" ScriptAssemblies
+WorkingDir: C:/Users/adamp/Aether/eyeland.cards/game/unity
+DisplayProgressbar: Compiling Scripts
+ExitCode: 4 Duration: 3s378ms
+Rebuilding DAG because FileSignature timestamp changed: Library/Bee/2000b0aE-inputdata.json
+[536/675    0s] ILPP-Configuration Library/ilpp-configuration.nevergeneratedoutput
+*** Tundra requires additional run (3.29 seconds), 2 items updated, 535 evaluated
+Starting: C:\Users\adamp\AppData\Local\EyelandTools\Unity\6000.5.7f1\Editor\Data\netcorerun\netcorerun.exe "C:\Users\adamp\AppData\Local\EyelandTools\Unity\6000.5.7f1\Editor\Data\Tools\BuildPipeline\ScriptCompilationBuildProgram.exe" "Library/Bee/2000b0aE.dag.json" "Library/Bee/2000b0aE-inputdata.json" "Library\Bee\buildprogram0.traceevents"
+WorkingDir: C:/Users/adamp/Aether/eyeland.cards/game/unity
+ExitCode: 0 Duration: 2s449ms
+Starting: C:\Users\adamp\AppData\Local\EyelandTools\Unity\6000.5.7f1\Editor\Data\Tools\BuildPipeline\bee_backend.exe --ipc --defer-dag-verification --dagfile="Library/Bee/2000b0aE.dag" --continue-on-failure --dagfilejson="Library\Bee\2000b0aE.dag.json" --profile="Library/Bee/backend2.traceevents" ScriptAssemblies
+WorkingDir: C:/Users/adamp/Aether/eyeland.cards/game/unity
+ExitCode: 0 Duration: 4s511ms
+Finished compiling graph: 678 nodes, 11419 flattened edges (9757 ToBuild, 98 ToUse), maximum node priority 686
+[403/675    0s] WriteText Library/Bee/artifacts/2000b0aE.dag/Eyeland.Game.rsp
+[536/675    0s] ILPP-Configuration Library/ilpp-configuration.nevergeneratedoutput
+[663/675    0s] Csc Library/Bee/artifacts/2000b0aE.dag/Eyeland.Game.dll (+2 others)
+Assets\Scripts\Duel\CardLoader.cs(202,30): warning CS8632: The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
+
+Assets\Scripts\Duel\CardLoader.cs(43,100): warning CS8632: The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
+
+Assets\Scripts\Duel\CardLoader.cs(33,11): warning CS8632: The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
+
+Assets\Scripts\Duel\CardLoader.cs(34,11): warning CS8632: The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
+
+Assets\Scripts\Duel\CardLoader.cs(208,39): warning CS8632: The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
+
+Assets\Scripts\Duel\CardSource.cs(33,25): warning CS8632: The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
+
+Assets\Scripts\Duel\CardSource.cs(44,25): warning CS8632: The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
+
+Assets\Scripts\Duel\CardSource.cs(46,26): warning CS8632: The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
+
+Assets\Scripts\Duel\CardSource.cs(62,26): warning CS8632: The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
+
+Assets\Scripts\Duel\Cards.cs(54,25): warning CS8632: The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
+
+Assets\Scripts\Duel\Cards.cs(93,15): warning CS8632: The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
+
+Assets\Scripts\Duel\Cards.cs(94,12): warning CS8632: The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
+
+Assets\Scripts\Duel\Cards.cs(95,24): warning CS8632: The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
+
+Assets\Scripts\Duel\Cards.cs(97,15): warning CS8632: The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
+
+Assets\Scripts\Duel\Cards.cs(267,35): warning CS8632: The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
+
+Assets\Scripts\Duel\Duel.cs(234,72): warning CS8632: The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
+
+Assets\Scripts\Duel\Cards.cs(258,28): warning CS8632: The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
+
+Assets\Scripts\Duel\Duel.cs(233,58): warning CS8632: The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
+
+Assets\Scripts\Duel\Duel.cs(222,18): warning CS8632: The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
+
+Assets\Scripts\Duel\Duel.cs(287,80): warning CS8632: The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
+
+Assets\Scripts\Duel\Duel.cs(345,37): warning CS8632: The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
+
+Assets\Scripts\Duel\Duel.cs(235,48): warning CS8632: The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
+
+Assets\Scripts\Duel\Duel.cs(382,70): warning CS8632: The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
+
+Assets\Scripts\Duel\Duel.cs(412,88): warning CS8632: The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
+
+Assets\Scripts\Duel\IslandRun.cs(26,68): warning CS8632: The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
+
+Assets\Scripts\Duel\Json.cs(30,28): warning CS8632: The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
+
+Assets\Scripts\Duel\Json.cs(32,29): warning CS8632: The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
+
+Assets\Scripts\Game\UIFactory.cs(79,17): warning CS0618: 'Object.FindFirstObjectByType<T>()' is obsolete: 'FindFirstObjectByType has been deprecated because it relies on instance ID ordering. Use FindAnyObjectByType instead, which does not depend on ordering.'
+
+Assets\Scripts\Duel\Duel.cs(306,22): warning CS8632: The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
+
+Assets\Scripts\Duel\GreedyAI.cs(31,26): warning CS8632: The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
+
+Assets\Scripts\Duel\Duel.cs(347,45): warning CS8632: The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
+[664/675    0s] ILPostProcess Library/Bee/artifacts/2000b0aE.dag/post-processed/Eyeland.Game.dll (+pdb)
+Processing assembly Library/Bee/artifacts/2000b0aE.dag/Eyeland.Game.dll, with 116 defines and 282 references
+
+processors: Unity.Jobs.CodeGen.JobsILPostProcessor, zzzUnity.Burst.CodeGen.BurstILPostProcessor
+
+running Unity.Jobs.CodeGen.JobsILPostProcessor
+
+running zzzUnity.Burst.CodeGen.BurstILPostProcessor
+[665/675    0s] CopyFiles Library/ScriptAssemblies/Eyeland.Game.pdb
+[666/675    0s] Csc Library/Bee/artifacts/2000b0aE.dag/Eyeland.PlayModeTests.dll (+2 others)
+[667/675    0s] CopyFiles Library/ScriptAssemblies/Eyeland.Game.dll
+[668/675    0s] ILPostProcess Library/Bee/artifacts/2000b0aE.dag/post-processed/Eyeland.PlayModeTests.dll (+pdb)
+Processing assembly Library/Bee/artifacts/2000b0aE.dag/Eyeland.PlayModeTests.dll, with 116 defines and 279 references
+
+processors: Unity.Jobs.CodeGen.JobsILPostProcessor, zzzUnity.Burst.CodeGen.BurstILPostProcessor
+
+running Unity.Jobs.CodeGen.JobsILPostProcessor
+
+running zzzUnity.Burst.CodeGen.BurstILPostProcessor
+[669/675    0s] CopyFiles Library/ScriptAssemblies/Eyeland.PlayModeTests.pdb
+[670/675    0s] CopyFiles Library/ScriptAssemblies/Eyeland.PlayModeTests.dll
+[671/675    3s] Csc Library/Bee/artifacts/2000b0aE.dag/Eyeland.Games.Editor.dll (+2 others)
+[672/675    0s] ILPostProcess Library/Bee/artifacts/2000b0aE.dag/post-processed/Eyeland.Games.Editor.dll (+pdb)
+Processing assembly Library/Bee/artifacts/2000b0aE.dag/Eyeland.Games.Editor.dll, with 114 defines and 297 references
+
+processors: Unity.Jobs.CodeGen.JobsILPostProcessor, zzzUnity.Burst.CodeGen.BurstILPostProcessor
+
+running Unity.Jobs.CodeGen.JobsILPostProcessor
+
+running zzzUnity.Burst.CodeGen.BurstILPostProcessor
+[673/675    0s] CopyFiles Library/ScriptAssemblies/Eyeland.Games.Editor.pdb
+[674/675    0s] CopyFiles Library/ScriptAssemblies/Eyeland.Games.Editor.dll
+*** Tundra build success (4.48 seconds), 14 items updated, 675 evaluated
+Assets\Scripts\Duel\CardLoader.cs(202,30): warning CS8632: The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
+Assets\Scripts\Duel\CardLoader.cs(43,100): warning CS8632: The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
+Assets\Scripts\Duel\CardLoader.cs(33,11): warning CS8632: The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
+Assets\Scripts\Duel\CardLoader.cs(34,11): warning CS8632: The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
+Assets\Scripts\Duel\CardLoader.cs(208,39): warning CS8632: The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
+Assets\Scripts\Duel\CardSource.cs(33,25): warning CS8632: The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
+Assets\Scripts\Duel\CardSource.cs(44,25): warning CS8632: The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
+Assets\Scripts\Duel\CardSource.cs(46,26): warning CS8632: The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
+Assets\Scripts\Duel\CardSource.cs(62,26): warning CS8632: The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
+Assets\Scripts\Duel\Cards.cs(54,25): warning CS8632: The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
+Assets\Scripts\Duel\Cards.cs(93,15): warning CS8632: The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
+Assets\Scripts\Duel\Cards.cs(94,12): warning CS8632: The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
+Assets\Scripts\Duel\Cards.cs(95,24): warning CS8632: The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
+Assets\Scripts\Duel\Cards.cs(97,15): warning CS8632: The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
+Assets\Scripts\Duel\Cards.cs(267,35): warning CS8632: The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
+Assets\Scripts\Duel\Duel.cs(234,72): warning CS8632: The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
+Assets\Scripts\Duel\Cards.cs(258,28): warning CS8632: The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
+Assets\Scripts\Duel\Duel.cs(233,58): warning CS8632: The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
+Assets\Scripts\Duel\Duel.cs(222,18): warning CS8632: The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
+Assets\Scripts\Duel\Duel.cs(287,80): warning CS8632: The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
+Assets\Scripts\Duel\Duel.cs(345,37): warning CS8632: The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
+Assets\Scripts\Duel\Duel.cs(235,48): warning CS8632: The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
+Assets\Scripts\Duel\Duel.cs(382,70): warning CS8632: The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
+Assets\Scripts\Duel\Duel.cs(412,88): warning CS8632: The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
+Assets\Scripts\Duel\IslandRun.cs(26,68): warning CS8632: The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
+Assets\Scripts\Duel\Json.cs(30,28): warning CS8632: The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
+Assets\Scripts\Duel\Json.cs(32,29): warning CS8632: The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
+Assets\Scripts\Game\UIFactory.cs(79,17): warning CS0618: 'Object.FindFirstObjectByType<T>()' is obsolete: 'FindFirstObjectByType has been deprecated because it relies on instance ID ordering. Use FindAnyObjectByType instead, which does not depend on ordering.'
+Assets\Scripts\Duel\Duel.cs(306,22): warning CS8632: The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
+Assets\Scripts\Duel\GreedyAI.cs(31,26): warning CS8632: The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
+Assets\Scripts\Duel\Duel.cs(347,45): warning CS8632: The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
+Total cache size 57927237
+Total cache size after purge 57927237, took 00:00:00.1416319
+AssetDatabase: script compilation time: 11.252376s
+Begin MonoManager ReloadAssembly
+Importing 'GUID: 00000000000000004000000000000000 - Path: ProjectSettings/ProjectSettings.asset' with importer (LibraryAssetImporter)
+Imported 'GUID: 00000000000000004000000000000000' -> (Import Result ID: 'e7df0ebc11aac79d344221da7f6ad0b5') in 0.018 seconds [static dependencies only]. Details - ImportResultOutputID=276a810dac73e1f29404d5e5f692e214 DependenciesID=87a1718d10c404874725362f48bc7c7b StaticDependenciesID=598126aca652ea926d89d92e21cc14a1 
+Importing 'GUID: 74947c452a503da42870fb8a7a368523 - Path: Assets/Resources/Art/Creatures' with importer (DefaultImporter)
+Imported 'GUID: 74947c452a503da42870fb8a7a368523' -> (Import Result ID: '5777c57cc9a492924d720c1847966e58') in 0.010 seconds [static dependencies only]. Details - ImportResultOutputID=c9bacba4aa998e08c731ee52e6635e4a DependenciesID=872dfd2357f2183d161d04955f7e128f StaticDependenciesID=cc51293912933e8882e3e2c79d7b4ba6 
+Native extension for WindowsStandalone target not found
+Native extension for WebGL target not found
+ScheduleIndexationOnStartup MainProcess:True IndexOnStartup:True
+Mono: successfully reloaded assembly
+- Finished resetting the current domain, in  5.088 seconds
+Domain Reload Profiling: 6640ms
+	BeginReloadAssembly (532ms)
+		DisableScriptedObjects (69ms)
+		CreateAndSetChildDomain (105ms)
+	RebuildCommonClasses (13ms)
+	RebuildNativeTypeToScriptingClass (23ms)
+	initialDomainReloadingComplete (102ms)
+	LoadAllAssembliesAndSetupDomain (880ms)
+		LoadAssemblies (710ms)
+		AnalyzeDomain (204ms)
+			TypeCache.Refresh (136ms)
+				TypeCache.ScanAssembly (123ms)
+			BuildScriptInfoCaches (58ms)
+			ResolveRequiredComponents (9ms)
+	FinalizeReload (5089ms)
+		SetupLoadedEditorAssemblies (0ms)
+			InitializePlatformSupportModulesInManaged (3ms)
+			BeforeProcessingInitializeOnLoad (159ms)
+			ProcessInitializeOnLoadAttributes (3976ms)
+			ProcessInitializeOnLoadMethodAttributes (199ms)
+			AfterProcessingInitializeOnLoad (17ms)
+		AwakeInstancesAfterBackupRestoration (52ms)
+Importing 'GUID: 11387bdbc72983a40a3184b9a4aac73c - Path: Assets/Resources/Art/Creatures/tide-guard.png' with importer (TextureImporter)
+Imported 'GUID: 11387bdbc72983a40a3184b9a4aac73c' -> (Import Result ID: '2f0b092a3fb1a644da426a7f53b7b370') in 0.117 seconds [static and dynamic dependencies]. Details - ImportResultOutputID=7f6f68160da807c3dc98108a1cd09925 DependenciesID=6ae54504f948a643689cacf6e561cd14 StaticDependenciesID=efeee8def49b00aff3ecb0005785ae44 
+Importing 'GUID: 1199f7db787325141ac322bad5ba3857 - Path: Assets/Resources/Art/Creatures/cinder-wolf.png' with importer (TextureImporter)
+Imported 'GUID: 1199f7db787325141ac322bad5ba3857' -> (Import Result ID: '3bb34287281820008ed1553c7b49ea1c') in 0.085 seconds [static and dynamic dependencies]. Details - ImportResultOutputID=43e561e79ef6aec5106c63229aeabcf8 DependenciesID=6cf7a2888684175df35885c344b066b6 StaticDependenciesID=6f77bf3e06106c4882ab7c2f88deada9 
+Importing 'GUID: 16175a4dfd952294fbba2e329b326b9c - Path: Assets/Resources/Art/Creatures/ember-reach-warden.png' with importer (TextureImporter)
+Imported 'GUID: 16175a4dfd952294fbba2e329b326b9c' -> (Import Result ID: '55be7d38489501c5ed834cc9184ce6d5') in 0.075 seconds [static and dynamic dependencies]. Details - ImportResultOutputID=5e78bcb84427158b38486a38511572e8 DependenciesID=25ed4752c65c3de1ab3448cd9576c9b5 StaticDependenciesID=7653e1d7340630c920620a7efa0164ec 
+Importing 'GUID: 49649374f5ee8df4cb8e223ce381df27 - Path: Assets/Resources/Art/Creatures/tidewisp.png' with importer (TextureImporter)
+Imported 'GUID: 49649374f5ee8df4cb8e223ce381df27' -> (Import Result ID: '2227518c08c2c596b1c8df5df924008a') in 0.085 seconds [static and dynamic dependencies]. Details - ImportResultOutputID=ed306c4ee904caf778036b3ed55837a9 DependenciesID=4aa79853cf5573614cba34403003a166 StaticDependenciesID=73c55b78bd92b5e3b3e0c0b9d61cfb92 
+Importing 'GUID: b9aa14690f8cc8748b2afc5bda2d608a - Path: Assets/Resources/Art/Creatures/stormcaller-elemental.png' with importer (TextureImporter)
+Imported 'GUID: b9aa14690f8cc8748b2afc5bda2d608a' -> (Import Result ID: '366c8bf6bed527ba5a81cefbb04f352f') in 0.108 seconds [static and dynamic dependencies]. Details - ImportResultOutputID=2341764027c5aa62563c926291b5a7e5 DependenciesID=4443552d46e084106fa047033d075ffb StaticDependenciesID=3fd746503392952961b1459c52eef705 
+Importing 'GUID: 4c2c1516849454344ab8faa68680e89c - Path: Assets/Resources/Art/Creatures/galehart.png' with importer (TextureImporter)
+Imported 'GUID: 4c2c1516849454344ab8faa68680e89c' -> (Import Result ID: 'c9b57e7477a5e403999d8e5a8ab2f3b0') in 0.080 seconds [static and dynamic dependencies]. Details - ImportResultOutputID=66f0a7c7ff21980c2f05712438058281 DependenciesID=907800097c1330cd2ddb95dadd1ac583 StaticDependenciesID=26afb2ef5b8d6a09aba5a5aab7eb4b48 
+Importing 'GUID: 1d3ca45e98c87414992fd577089c48ea - Path: Assets/Resources/Art/Creatures/squall-caller.png' with importer (TextureImporter)
+Imported 'GUID: 1d3ca45e98c87414992fd577089c48ea' -> (Import Result ID: 'ddaf229158cb076f7571408f36e32dc4') in 0.083 seconds [static and dynamic dependencies]. Details - ImportResultOutputID=23a04702f5958de80001669c6c57b0bd DependenciesID=c97a58025eae9073b47e638594df71e5 StaticDependenciesID=27582ce100d88e8c4d3ac069452b7135 
+Importing 'GUID: be69b27d15ff44943a0265cd66a4de5d - Path: Assets/Resources/Art/Creatures/glowing-ember.png' with importer (TextureImporter)
+Imported 'GUID: be69b27d15ff44943a0265cd66a4de5d' -> (Import Result ID: 'ad3b02fe888d7fcd870504e13d6aec47') in 0.095 seconds [static and dynamic dependencies]. Details - ImportResultOutputID=3ab4c5b4779e0aaef380722cbd923e2d DependenciesID=a7ded1904bbc7597dff8055cbf63233f StaticDependenciesID=5274d7dfdbd0bd762e3818ebdad72347 
+Starting new worker id: 0 with log in C:/Users/adamp/Aether/eyeland.cards/game/unity/Logs/AssetImportWorkerHW0.log
+
+Asset Pipeline Refresh (id=71690bd0dbbe3d0468ff8e45bc822fc3): Total: 19.911 seconds - Initiated by InitialRefreshV2(ForceSynchronousImport)
+	(Values over 0.05ms)
+	Summary:
+		Imports: total=10 (actual=10, local cache=0, cache server=0)
+		Asset DB Process Time: managed=7 ms, native=6588 ms
+		Asset DB Callback time: managed=249 ms, native=69 ms
+		Scripting: domain reloads=1, domain reload time=1652 ms, compile time=11254 ms, other=88 ms
+		Project Asset Count: scripts=872, non-scripts=1497
+		Asset File Changes: new=10, changed=13, moved=0, deleted=0
+		Scan Filter Count: 0
+	InvokePackagesCallback: 32.983ms
+	ApplyChangesToAssetFolders: 0.988ms
+	Scan: 151.357ms
+	Collect global state as custom dependencies: 58.883ms
+	OnSourceAssetsModified: 0.961ms
+	CategorizeScriptCompilationAssets: 28.618ms
+	ProcessAssetsWithTransientArtifactChanges: 60.210ms
+	CategorizeAssets: 99.710ms
+	CompileScripts: 11254.430ms
+	ImportOutOfDateAssets: 5980.480ms (5106.972ms without children)
+		ImportManagerImport: 766.171ms (4.656ms without children)
+			UpdateCategorizedAssets: 0.210ms
+		ReloadNativeAssets: 0.100ms
+		UnloadImportedAssets: 2.259ms
+		EnsureUptoDateAssetsAreRegisteredWithGuidPM: 1.196ms
+		ImportSchedulerStart: 103.763ms
+	PostProcessAllAssets: 430.882ms
+		VersionControlSettings.HiddenFilePostprocess 0.379ms
+		PostProcessCallbackCreateDeferredMaterials 0.118ms
+		ShaderAssetModifiedCallback 0.076ms
+		MonoPostProcessAllAssets: 247.674ms
+			AssetPostprocessor.OnPostprocessAllAssets 116.226ms
+			StyleCatalogPostProcessor.OnPostprocessAllAssets 29.595ms
+			UniversalRenderPipelineGlobalSettingsPostprocessor.OnPostprocessAllAssets 28.072ms
+			BuilderAssetPostprocessor.OnPostprocessAllAssets 11.818ms
+			ShaderGraphAssetPostProcessor.OnPostprocessAllAssets 5.717ms
+			TextAssetPostProcessor.OnPostprocessAllAssets 4.363ms
+			AssetChangedListener.OnPostprocessAllAssets 4.027ms
+			SpeedTree9Postprocessor.OnPostprocessAllAssets 3.079ms
+			WindowAssetPostprocessingWatcher.OnPostprocessAllAssets 2.917ms
+			SyncVS.PostprocessSyncProject 2.401ms
+			RetainedModeAssetPostprocessor.OnPostprocessAllAssets 2.296ms
+			EditModeScopePostprocessor.OnPostprocessAllAssets 2.087ms
+			RenderPipelineGlobalSettingsPostprocessor.OnPostprocessAllAssets 1.785ms
+			MaterialPostprocessor.OnPostprocessAllAssets 1.548ms
+			ArtifactBrowserPostProcessor.OnPostprocessAllAssets 1.028ms
+			SampleDependencyImporterPostProcessor.OnPostprocessAllAssets 0.734ms
+			ShaderReflectionAssetPostProcessor.OnPostprocessAllAssets 0.733ms
+			TMPro_TexturePostProcessor.OnPostprocessAllAssets 0.733ms
+			AudioMixerPostprocessor.OnPostprocessAllAssets 0.667ms
+			PostProcessor.OnPostprocessAllAssets 0.663ms
+			ReferencedClipsPostProcessor.OnPostprocessAllAssets 0.434ms
+			AssetEvents.OnPostprocessAllAssets 0.419ms
+			SpeedTreePostProcessor.OnPostprocessAllAssets 0.314ms
+			TerrainToolbarOverlayPostProcessor.OnPostprocessAllAssets 0.283ms
+			ConfigAssetsTracker.OnPostprocessAllAssets 0.240ms
+			AssetDatabaseCallbacks.OnPostprocessAllAssets 0.201ms
+			ScenarioDriftAssetsTracker.OnPostprocessAllAssets 0.170ms
+			AudioContainerPostProcessor.OnPostprocessAllAssets 0.141ms
+	PostAssetChangesProfiler: 4.158ms
+	GatherAllCurrentPrimaryImportResultRevisions: 0.096ms
+	UnloadStreamsBegin: 1.667ms
+	PersistCurrentRevisions: 0.345ms
+	GenerateScriptTypeHashes: 1.982ms
+	GenerateScriptTypeSerializationHashes: 3.254ms
+	Untracked: 1936.420ms
+
+Application.AssetDatabase Initial Refresh End
+Shader Hidden/ChartRasterizerHardware is not supported: GPU does not support conservative rasterization
+Scanning for USB devices : 6.682ms
+Initializing Unity extensions:
+[MODES] ModeService[none].Initialize
+[MODES] ModeService[none].LoadModes
+[MODES] Loading mode Default (0) for mode-current-id-unity
+Worker ready: AssetImportWorkerHW0 0
+Unloading 64 Unused Serialized files (Serialized files now loaded: 0)
+Unloading 3574 unused Assets / (8.9 MB). Loaded Objects now: 4415.
+Memory consumption went from 343.7 MB to 334.8 MB.
+Total: 14.406200 ms (FindLiveObjects: 0.451000 ms CreateObjectMapping: 1.121000 ms MarkObjects: 8.148700 ms  DeleteObjects: 4.526200 ms)
+
+Microsoft Media Foundation video decoding to texture disabled: graphics device is Null, only Direct3D 11 and Direct3D 12 (only on desktop) are supported for hardware-accelerated video decoding.
+[Project] Loading completed in 25.094 seconds
+	Project init time: 				23.485 seconds
+		Template init time: 		0.000 seconds
+		Package Manager init time: 		0.529 seconds
+		Asset Database init time: 		0.538 seconds
+		Global illumination init time: 	0.004 seconds
+		Assemblies load time: 			1.431 seconds
+		Unity extensions init time: 	0.012 seconds
+		Asset Database refresh time: 	19.912 seconds
+	Scene opening time: 			1.402 seconds
+##utp:{"type":"ProjectInfo","version":2,"phase":"Immediate","time":1789112393972,"processId":4048,"projectLoad":25.0937072,"projectInit":23.4851789,"templateInit":0.0,"packageManagerInit":0.5286389,"assetDatabaseInit":0.5383118,"globalIlluminationInit":0.0036011,"assembliesLoad":1.4313974,"unityExtensionsInit":0.0121684,"assetDatabaseRefresh":19.9120322,"sceneOpening":1.4021958}
+##utp:{"type":"EditorInfo","version":2,"phase":"Immediate","time":1789112393972,"processId":4048,"editorVersion":"6000.5.7f1 (017862109af0)","branch":"6000.5/staging","buildType":"Release","platform":"Windows"}
+[Licensing::Client] Successfully resolved entitlement details
+Running tests for ExecutionSettings with details:
+targetPlatform = 
+playerHeartbeatTimeout = 600
+filters[0] = 
+   Filter with settings:
+   testMode = PlayMode
+   targetPlatform = 
+   testNames = null
+   groupNames = null
+   categoryNames = null
+   assemblyNames = null
+ignoreTests = {}
+featureFlags = null
+
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+UnityEditor.TestTools.TestRunner.CommandLineTest.Executer:InitializeAndExecuteRun (string[]) (at ./Library/PackageCache/com.unity.test-framework@1405238725ab/UnityEditor.TestRunner/CommandLineTest/Executer.cs:53)
+UnityEditor.TestTools.TestRunner.CommandLineTest.TestStarter:InitializeAndExecuteRun () (at ./Library/PackageCache/com.unity.test-framework@1405238725ab/UnityEditor.TestRunner/CommandLineTest/TestStarter.cs:64)
+UnityEditor.EditorApplication:Internal_CallUpdateFunctions ()
+
+(Filename: ./Library/PackageCache/com.unity.test-framework@1405238725ab/UnityEditor.TestRunner/CommandLineTest/Executer.cs Line: 53)
+
+Start Indexing on Editor startup
+[Indexing] Starting Initial Indexing for Assets
+[UnityConnectServicesConfig] config is NOT valid, switching to default
+Created GICache directory at C:/Users/adamp/AppData/LocalLow/Unity/Caches/GiCache. Took: 0.016s, timestamps: [25.100 - 25.116]
+Unloading 2 Unused Serialized files (Serialized files now loaded: 0)
+Unloading 0 unused Assets / (60.2 KB). Loaded Objects now: 4431.
+Memory consumption went from 331.5 MB to 331.5 MB.
+Total: 10.344800 ms (FindLiveObjects: 0.263800 ms CreateObjectMapping: 0.481500 ms MarkObjects: 9.588300 ms  DeleteObjects: 0.009800 ms)
+
+Importing 'GUID: f19845d5333f58d49b715abb09868eb7 - Path: Assets/InitTestScene7513d769-73c7-4d01-858b-7806fa8529b6.unity' with importer (DefaultImporter)
+Imported 'GUID: f19845d5333f58d49b715abb09868eb7' -> (Import Result ID: '6c247f60d544b428e07a7433ce47e308') in 0.002 seconds [static dependencies only]. Details - ImportResultOutputID=87aa9cdda802e03e4e57d5d142b933aa DependenciesID=e5219fa7d1b8ea12c68c6ddd146ba05a StaticDependenciesID=f43e0cbabf5132475bf3b5ebdc1e1cf1 
+Asset Pipeline Refresh (id=499dd487c050a054295ac949c7a317ca): Total: 0.091 seconds - Initiated by StopAssetImportingV2(NoUpdateAssetOptions)
+Executing IPrebuildSetup for: Unity.PerformanceTesting.Editor.TestRunBuilder.
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+UnityEditor.TestTools.TestRunner.TestRun.Tasks.BuildActionTaskBase`1/<ExecuteMethods>d__8<UnityEngine.TestTools.IPrebuildSetup>:MoveNext () (at ./Library/PackageCache/com.unity.test-framework@1405238725ab/UnityEditor.TestRunner/TestRun/Tasks/BuildActionTaskBase.cs:48)
+UnityEditor.TestTools.TestRunner.TestRun.Tasks.BuildActionTaskBase`1/<Execute>d__7<UnityEngine.TestTools.IPrebuildSetup>:MoveNext () (at ./Library/PackageCache/com.unity.test-framework@1405238725ab/UnityEditor.TestRunner/TestRun/Tasks/BuildActionTaskBase.cs:34)
+UnityEditor.TestTools.TestRunner.TestRun.TestJobRunner:ExecuteStep () (at ./Library/PackageCache/com.unity.test-framework@1405238725ab/UnityEditor.TestRunner/TestRun/TestJobRunner.cs:194)
+UnityEditor.TestTools.TestRunner.TestRun.TestJobRunner:ExecuteCallback () (at ./Library/PackageCache/com.unity.test-framework@1405238725ab/UnityEditor.TestRunner/TestRun/TestJobRunner.cs:129)
+UnityEditor.EditorApplication:Internal_CallUpdateFunctions ()
+
+(Filename: ./Library/PackageCache/com.unity.test-framework@1405238725ab/UnityEditor.TestRunner/TestRun/Tasks/BuildActionTaskBase.cs Line: 48)
+
+Reloading assemblies for play mode.
+Reloading assemblies after forced synchronous recompile.
+Begin MonoManager ReloadAssembly
+Native extension for WindowsStandalone target not found
+Native extension for WebGL target not found
+ScheduleIndexationOnStartup MainProcess:True IndexOnStartup:True
+Mono: successfully reloaded assembly
+- Finished resetting the current domain, in  2.706 seconds
+Domain Reload Profiling: 3731ms
+	BeginReloadAssembly (604ms)
+		DisableScriptedObjects (40ms)
+		CreateAndSetChildDomain (337ms)
+	RebuildCommonClasses (12ms)
+	RebuildNativeTypeToScriptingClass (18ms)
+	initialDomainReloadingComplete (91ms)
+	LoadAllAssembliesAndSetupDomain (298ms)
+		LoadAssemblies (198ms)
+		AnalyzeDomain (35ms)
+			TypeCache.Refresh (6ms)
+			ResolveRequiredComponents (27ms)
+	FinalizeReload (2708ms)
+		SetupLoadedEditorAssemblies (0ms)
+			InitializePlatformSupportModulesInManaged (3ms)
+			BeforeProcessingInitializeOnLoad (135ms)
+			ProcessInitializeOnLoadAttributes (1707ms)
+			ProcessInitializeOnLoadMethodAttributes (324ms)
+			AfterProcessingInitializeOnLoad (17ms)
+		AwakeInstancesAfterBackupRestoration (112ms)
+No restricted APIs configured; Validation skipped.
+Checking 12 assemblies for restricted APIs found 0 usage(s) in 6 ms
+
+Asset Pipeline Refresh (id=1304f2345dd1f5a469f1a1e5045ff3ce): Total: 4.764 seconds - Initiated by StopAssetImportingV2(ForceSynchronousImport | ForceDomainReload)
+	(Values over 0.05ms)
+	Summary:
+		Imports: total=0 (actual=0, local cache=0, cache server=0)
+		Asset DB Process Time: managed=0 ms, native=3014 ms
+		Asset DB Callback time: managed=363 ms, native=274 ms
+		Scripting: domain reloads=1, domain reload time=1109 ms, compile time=2 ms, other=0 ms
+		Project Asset Count: scripts=872, non-scripts=1498
+		Asset File Changes: new=0, changed=0, moved=0, deleted=0
+		Scan Filter Count: 0
+	InvokePackagesCallback: 3.023ms
+	ApplyChangesToAssetFolders: 0.418ms
+	Collect global state as custom dependencies: 4.795ms
+	ProcessAssetsWithTransientArtifactChanges: 148.993ms
+	CategorizeAssets: 54.425ms
+	CompileScripts: 1.962ms
+	ImportOutOfDateAssets: 2753.845ms (2718.073ms without children)
+		CollectScriptTypesHashes: 1.865ms
+		ReloadNativeAssets: 1.653ms
+		UnloadImportedAssets: 0.532ms
+		EnsureUptoDateAssetsAreRegisteredWithGuidPM: 0.764ms
+		ImportSchedulerStart: 32.792ms
+	PostProcessAllAssets: 636.071ms
+		PostProcessCallbackCreateDeferredMaterials 30.312ms
+		ShaderAssetModifiedCallback 19.285ms
+		AssemblyValidation.PostprocessAllAssets 16.805ms
+		RaytracingShaderImportPostprocess 9.139ms
+		ComputeShaderImportPostprocess 8.833ms
+		SpeedTreeImporter.PostprocessAllAssets 8.458ms
+		LocalizationDatabase.AssetDatabasePostprocessCallback 3.215ms
+		BlockShaderImporter.PostprocessAllAssets 2.893ms
+		MonoPostProcessAllAssets: 362.142ms
+			ShaderGraphAssetPostProcessor.OnPostprocessAllAssets 109.803ms
+			MaterialPostprocessor.OnPostprocessAllAssets 33.552ms
+			AssetPostprocessor.OnPostprocessAllAssets 32.798ms
+			StyleCatalogPostProcessor.OnPostprocessAllAssets 30.208ms
+			PostProcessor.OnPostprocessAllAssets 24.552ms
+			TextAssetPostProcessor.OnPostprocessAllAssets 20.919ms
+			UniversalRenderPipelineGlobalSettingsPostprocessor.OnPostprocessAllAssets 17.370ms
+			BuilderAssetPostprocessor.OnPostprocessAllAssets 9.975ms
+			AssetChangedListener.OnPostprocessAllAssets 9.967ms
+			SpeedTree9Postprocessor.OnPostprocessAllAssets 7.115ms
+			RenderPipelineGlobalSettingsPostprocessor.OnPostprocessAllAssets 5.071ms
+			WindowAssetPostprocessingWatcher.OnPostprocessAllAssets 4.618ms
+			SyncVS.PostprocessSyncProject 3.602ms
+			RetainedModeAssetPostprocessor.OnPostprocessAllAssets 2.326ms
+			ArtifactBrowserPostProcessor.OnPostprocessAllAssets 1.448ms
+			TMPro_TexturePostProcessor.OnPostprocessAllAssets 0.771ms
+			ReferencedClipsPostProcessor.OnPostprocessAllAssets 0.699ms
+			AudioMixerPostprocessor.OnPostprocessAllAssets 0.682ms
+			AssetEvents.OnPostprocessAllAssets 0.646ms
+			SampleDependencyImporterPostProcessor.OnPostprocessAllAssets 0.575ms
+			EditModeScopePostprocessor.OnPostprocessAllAssets 0.566ms
+			ShaderReflectionAssetPostProcessor.OnPostprocessAllAssets 0.506ms
+			SpeedTreePostProcessor.OnPostprocessAllAssets 0.494ms
+			TerrainToolbarOverlayPostProcessor.OnPostprocessAllAssets 0.317ms
+			AssetDatabaseCallbacks.OnPostprocessAllAssets 0.316ms
+			ScenarioDriftAssetsTracker.OnPostprocessAllAssets 0.251ms
+			ConfigAssetsTracker.OnPostprocessAllAssets 0.232ms
+			AudioContainerPostProcessor.OnPostprocessAllAssets 0.164ms
+	PostAssetChangesProfiler: 1.251ms
+	GatherAllCurrentPrimaryImportResultRevisions: 0.108ms
+	UnloadStreamsBegin: 0.253ms
+	PersistCurrentRevisions: 0.079ms
+	GenerateScriptTypeHashes: 4.760ms
+	GenerateScriptTypeSerializationHashes: 7.464ms
+	Untracked: 1151.043ms
+
+Eyeland: loaded 72 cards.
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+Eyeland.Game.CardDataBootstrap:Load () (at Assets/Scripts/Game/CardDataBootstrap.cs:33)
+
+(Filename: Assets/Scripts/Game/CardDataBootstrap.cs Line: 33)
+
+Loaded scene 'Temp/__Backupscenes/0.backup'
+	Deserialize:            2.625 ms
+	Integration:            554.217 ms
+	Integration of assets:  0.005 ms
+	Thread Wait Time:       0.009 ms
+	Total Operation Time:   556.857 ms
+[MODES] ModeService[none].Initialize
+[MODES] ModeService[none].LoadModes
+[Licensing::Client] Successfully resolved entitlement details
+<b><color=#2EA3FF>MCP-FOR-UNITY</color></b>: [TestRunnerNoThrottle] Applied No Throttling for test run.
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+MCPForUnity.Editor.Helpers.McpLog:Info (string,bool) (at ./Library/PackageCache/com.coplaydev.unity-mcp@8bd91ce7bd3a/Editor/Helpers/McpLog.cs:40)
+MCPForUnity.Editor.Services.TestRunnerNoThrottle:ApplyNoThrottling () (at ./Library/PackageCache/com.coplaydev.unity-mcp@8bd91ce7bd3a/Editor/Services/TestRunnerNoThrottle.cs:101)
+MCPForUnity.Editor.Services.TestRunnerNoThrottle/TestCallbacks:RunStarted (UnityEditor.TestTools.TestRunner.Api.ITestAdaptor) (at ./Library/PackageCache/com.coplaydev.unity-mcp@8bd91ce7bd3a/Editor/Services/TestRunnerNoThrottle.cs:138)
+UnityEditor.TestTools.TestRunner.Api.CallbacksDelegator/<>c__DisplayClass7_0:<RunStarted>b__0 (UnityEditor.TestTools.TestRunner.Api.ICallbacks) (at ./Library/PackageCache/com.unity.test-framework@1405238725ab/UnityEditor.TestRunner/Api/CallbacksDelegator.cs:42)
+UnityEditor.TestTools.TestRunner.Api.CallbacksDelegator:TryInvokeAllCallbacks (System.Action`1<UnityEditor.TestTools.TestRunner.Api.ICallbacks>) (at ./Library/PackageCache/com.unity.test-framework@1405238725ab/UnityEditor.TestRunner/Api/CallbacksDelegator.cs:135)
+UnityEditor.TestTools.TestRunner.Api.CallbacksDelegator:RunStarted (NUnit.Framework.Interfaces.ITest) (at ./Library/PackageCache/com.unity.test-framework@1405238725ab/UnityEditor.TestRunner/Api/CallbacksDelegator.cs:42)
+UnityEngine.Events.InvokableCall`1<NUnit.Framework.Interfaces.ITest>:Invoke (NUnit.Framework.Interfaces.ITest)
+UnityEngine.Events.UnityEvent`1<NUnit.Framework.Interfaces.ITest>:Invoke (NUnit.Framework.Interfaces.ITest)
+UnityEngine.Events.InvokableCall`1<NUnit.Framework.Interfaces.ITest>:Invoke (NUnit.Framework.Interfaces.ITest)
+UnityEngine.Events.UnityEvent`1<NUnit.Framework.Interfaces.ITest>:Invoke (NUnit.Framework.Interfaces.ITest)
+UnityEngine.TestTools.TestRunner.PlaymodeTestsController/<Run>d__25:MoveNext () (at ./Library/PackageCache/com.unity.test-framework@1405238725ab/UnityEngine.TestRunner/TestRunner/PlaymodeTestsController.cs:140)
+UnityEngine.SetupCoroutine:InvokeMoveNext (System.Collections.IEnumerator,intptr)
+
+(Filename: ./Library/PackageCache/com.coplaydev.unity-mcp@8bd91ce7bd3a/Editor/Helpers/McpLog.cs Line: 40)
+
+<b><color=#2EA3FF>MCP-FOR-UNITY</color></b>: [TestRunnerNoThrottle] Restored Interaction Mode after test run.
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+MCPForUnity.Editor.Helpers.McpLog:Info (string,bool) (at ./Library/PackageCache/com.coplaydev.unity-mcp@8bd91ce7bd3a/Editor/Helpers/McpLog.cs:40)
+MCPForUnity.Editor.Services.TestRunnerNoThrottle:RestoreThrottling () (at ./Library/PackageCache/com.coplaydev.unity-mcp@8bd91ce7bd3a/Editor/Services/TestRunnerNoThrottle.cs:114)
+MCPForUnity.Editor.Services.TestRunnerNoThrottle/TestCallbacks:RunFinished (UnityEditor.TestTools.TestRunner.Api.ITestResultAdaptor) (at ./Library/PackageCache/com.coplaydev.unity-mcp@8bd91ce7bd3a/Editor/Services/TestRunnerNoThrottle.cs:143)
+UnityEditor.TestTools.TestRunner.Api.CallbacksDelegator/<>c__DisplayClass9_0:<RunFinished>b__0 (UnityEditor.TestTools.TestRunner.Api.ICallbacks) (at ./Library/PackageCache/com.unity.test-framework@1405238725ab/UnityEditor.TestRunner/Api/CallbacksDelegator.cs:55)
+UnityEditor.TestTools.TestRunner.Api.CallbacksDelegator:TryInvokeAllCallbacks (System.Action`1<UnityEditor.TestTools.TestRunner.Api.ICallbacks>) (at ./Library/PackageCache/com.unity.test-framework@1405238725ab/UnityEditor.TestRunner/Api/CallbacksDelegator.cs:135)
+UnityEditor.TestTools.TestRunner.Api.CallbacksDelegator:RunFinished (NUnit.Framework.Interfaces.ITestResult) (at ./Library/PackageCache/com.unity.test-framework@1405238725ab/UnityEditor.TestRunner/Api/CallbacksDelegator.cs:55)
+UnityEngine.Events.InvokableCall`1<NUnit.Framework.Interfaces.ITestResult>:Invoke (NUnit.Framework.Interfaces.ITestResult)
+UnityEngine.Events.UnityEvent`1<NUnit.Framework.Interfaces.ITestResult>:Invoke (NUnit.Framework.Interfaces.ITestResult)
+UnityEngine.Events.InvokableCall`1<NUnit.Framework.Interfaces.ITestResult>:Invoke (NUnit.Framework.Interfaces.ITestResult)
+UnityEngine.Events.UnityEvent`1<NUnit.Framework.Interfaces.ITestResult>:Invoke (NUnit.Framework.Interfaces.ITestResult)
+UnityEngine.TestTools.TestRunner.PlaymodeTestsController/<TestRunnerCoroutine>d__24:MoveNext () (at ./Library/PackageCache/com.unity.test-framework@1405238725ab/UnityEngine.TestRunner/TestRunner/PlaymodeTestsController.cs:110)
+UnityEngine.SetupCoroutine:InvokeMoveNext (System.Collections.IEnumerator,intptr)
+
+(Filename: ./Library/PackageCache/com.coplaydev.unity-mcp@8bd91ce7bd3a/Editor/Helpers/McpLog.cs Line: 40)
+
+Saving results to: C:/Users/adamp/AppData/LocalLow/DefaultCompany/unity\TestResults.xml
+Saving results to: C:\Users\adamp\Aether\eyeland.cards/game/card-art-tests.xml
+Unloading 16 Unused Serialized files (Serialized files now loaded: 0)
+Loaded scene 'Temp/__Backupscenes/0.backup'
+	Deserialize:            0.759 ms
+	Integration:            208.420 ms
+	Integration of assets:  0.002 ms
+	Thread Wait Time:       0.015 ms
+	Total Operation Time:   209.196 ms
+Unloading 3122 unused Assets / (6.8 MB). Loaded Objects now: 4454.
+Memory consumption went from 363.4 MB to 356.6 MB.
+Total: 13.786500 ms (FindLiveObjects: 0.485800 ms CreateObjectMapping: 1.006600 ms MarkObjects: 10.063200 ms  DeleteObjects: 2.229000 ms)
+
+Executing IPostBuildCleanup for: Unity.PerformanceTesting.Editor.TestRunBuilder.
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+UnityEditor.TestTools.TestRunner.TestRun.Tasks.BuildActionTaskBase`1/<ExecuteMethods>d__8<UnityEngine.TestTools.IPostBuildCleanup>:MoveNext () (at ./Library/PackageCache/com.unity.test-framework@1405238725ab/UnityEditor.TestRunner/TestRun/Tasks/BuildActionTaskBase.cs:48)
+UnityEditor.TestTools.TestRunner.TestRun.Tasks.BuildActionTaskBase`1/<Execute>d__7<UnityEngine.TestTools.IPostBuildCleanup>:MoveNext () (at ./Library/PackageCache/com.unity.test-framework@1405238725ab/UnityEditor.TestRunner/TestRun/Tasks/BuildActionTaskBase.cs:34)
+UnityEditor.TestTools.TestRunner.TestRun.TestJobRunner:ExecuteStep () (at ./Library/PackageCache/com.unity.test-framework@1405238725ab/UnityEditor.TestRunner/TestRun/TestJobRunner.cs:194)
+UnityEditor.TestTools.TestRunner.TestRun.TestJobRunner:ExecuteCallback () (at ./Library/PackageCache/com.unity.test-framework@1405238725ab/UnityEditor.TestRunner/TestRun/TestJobRunner.cs:129)
+UnityEditor.EditorApplication:Internal_CallUpdateFunctions ()
+
+(Filename: ./Library/PackageCache/com.unity.test-framework@1405238725ab/UnityEditor.TestRunner/TestRun/Tasks/BuildActionTaskBase.cs Line: 48)
+
+Unloading 0 Unused Serialized files (Serialized files now loaded: 0)
+Unloading 0 unused Assets / (0 B). Loaded Objects now: 4459.
+Memory consumption went from 347.0 MB to 347.0 MB.
+Total: 9.370100 ms (FindLiveObjects: 0.230200 ms CreateObjectMapping: 0.368300 ms MarkObjects: 8.757400 ms  DeleteObjects: 0.012500 ms)
+
+Asset Pipeline Refresh (id=c26aed11e54bc0348b57e0a795095162): Total: 0.064 seconds - Initiated by StopAssetImportingV2(NoUpdateAssetOptions)
+DisplayProgressbar: Undo
+Test run completed. Exiting with code 0 (Ok). Run completed.
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+UnityEditor.TestTools.TestRunner.CommandLineTest.Executer:ExitApplication (UnityEditor.TestTools.TestRunner.CommandLineTest.Executer/ReturnCodes,string) (at ./Library/PackageCache/com.unity.test-framework@1405238725ab/UnityEditor.TestRunner/CommandLineTest/Executer.cs:81)
+UnityEditor.TestTools.TestRunner.CommandLineTest.Executer:ExitIfRunIsCompleted () (at ./Library/PackageCache/com.unity.test-framework@1405238725ab/UnityEditor.TestRunner/CommandLineTest/Executer.cs:74)
+UnityEditor.EditorApplication:Internal_CallUpdateFunctions ()
+
+(Filename: ./Library/PackageCache/com.unity.test-framework@1405238725ab/UnityEditor.TestRunner/CommandLineTest/Executer.cs Line: 81)
+
+MonoPathRemapper: Attempts to remap: 24796; Successful remaps: 4068
+Serialized file version minimum: 22, current 23
+AcceleratorClientConnectionCallback - disconnected - :0
+Importing 'GUID: 00000000000000004000000000000000 - Path: ProjectSettings/ProjectSettings.asset' with importer (LibraryAssetImporter)
+Imported 'GUID: 00000000000000004000000000000000' -> (Import Result ID: 'b9b7480b139dc07c44fe246a4d557452') in 0.006 seconds [static dependencies only]. Details - ImportResultOutputID=276a810dac73e1f29404d5e5f692e214 DependenciesID=ebb6b79e7abad7042674e32860c8663d StaticDependenciesID=453fb02e9b9470d6f1c05a0461e6ee18 
+Asset Pipeline Refresh (id=cfe82addefbd8094b88c1f6268669686): Total: 0.063 seconds - Initiated by StopAssetImportingV2(NoUpdateAssetOptions)
+[Physics::Module] Cleanup current backend.
+[Physics::Module] Id: 0xf2b8ea05
+Input System module state changed to: ShutdownInProgress.
+Input Polling Thread exited.
+Input System module state changed to: Shutdown.
+[Licensing::IpcConnector] LicenseClient-adamp-notifications channel disconnected successfully.
+[Licensing::IpcConnector] LicenseClient-adamp channel disconnected successfully.
+AcceleratorClientConnectionCallback - disconnected - :0
+Cleanup mono
+CodeReloadManager destroyed
+Checking for leaked weakptr:
+  Found no leaked weakptrs.
+[Package Manager] Server process was shutdown
+##utp:{"type":"MemoryLeaks","version":2,"phase":"Immediate","time":1789112407005,"processId":4048,"allocatedMemory":14707699,"memoryLabels":[{"Default":189722},{"Permanent":15516},{"NewDelete":66987},{"Thread":4197560},{"Manager":34629},{"VertexData":8},{"Geometry":816},{"Texture":24},{"Shader":849117},{"Material":24},{"GfxDevice":55328},{"Animation":952},{"Audio":880},{"FreeType":8},{"FontEngine":736},{"Physics":2146},{"Physics2D":16},{"Serialization":952},{"Input":42840},{"JobScheduler":256},{"TextLib":280},{"Mono":48},{"MonoCode":64},{"ScriptingNativeRuntime":1662556},{"BaseObject":1623176},{"Resource":1208},{"Renderer":3080},{"Transform":4685},{"File":12904},{"WebCam":616},{"Culling":32},{"Terrain":11442},{"Wind":24},{"STL":40},{"String":13994},{"StaticString":3808},{"Utility":2673782},{"Curl":2478},{"PoolAlloc":2264},{"AI":80},{"TypeTree":17165},{"CodeReload":448},{"RuntimeInitializeOnLoadManager":64},{"Sprites":102},{"SpriteAtlas":120},{"GI":7816},{"Director":8296},{"CloudService":432},{"WebRequest":552},{"VR":47114},{"SceneManager":608},{"Video":64},{"LazyScriptCache":32},{"Camera":17},{"Secure":2377},{"SerializationCache":1576},{"APIUpdating":10320},{"Subsystems":336},{"VirtualTexturing":57888},{"StaticSafetyDebugInfo":278528},{"Analytics":424},{"Hierarchy":1176},{"UIElements":72},{"CoreStats":13688},{"Identifiers":6768},{"Gui":128},{"EditorUtility":112689},{"VersionControl":8},{"Undo":931},{"AssetDatabase":2606698},{"AssetImporter":40},{"EditorGi":328},{"UnityConnect":38929},{"Upm":1912},{"UpmDiagnostics":8},{"AssetCompliance":64},{"DrivenProperties":72},{"LocalIPC":211},{"ProfilerEditor":9746},{"CoreBusinessMetrics":3226},{"Windowing":456},{"Licensing":1232},{"AssetReference":32},{"IPCStream":32}]}

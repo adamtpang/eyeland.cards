@@ -95,7 +95,7 @@ game/unity/Assets/Scripts/
   Game/                    v1 Deck: click-driven UI on top of the same engine
     UIFactory.cs             runtime-constructed uGUI helpers (no hand-edited .unity
                               scene files, no Inspector wiring to keep in sync)
-    DeckBuilderUI.cs         pick your deck (10-card pool, 2 copies each, 1 for the
+    DeckBuilderUI.cs         pick your deck (70-card pool, 2 copies each, 1 for the
                               Legendary, 12-card minimum) before the duel starts
     DuelUI.cs                the actual duel screen: human turns are click-driven,
                               AI turns run in a tight synchronous loop since GreedyAI
@@ -104,29 +104,39 @@ game/unity/Assets/Scripts/
     GameFlow.cs              boots with zero scene wiring via RuntimeInitializeOnLoadMethod
 ```
 
-## v1 Deck in Unity: what's actually verified vs. what needs your own eyes
+## v1 Deck in Unity: verified 2026-08-25
 
-**Verified, via real clicks in Play mode, not just "it compiles":**
-- Clean compile (0 errors) after fixing real issues along the way (see below)
-- `RuntimeInitializeOnLoadMethod` correctly boots the whole UI with zero scene setup
-- The deckbuilder renders all 10 real cards with correct cost/stats/rarity
-- `+`/`-` clicks correctly increment/decrement, correctly cap (2 copies, 1 for the
-  Legendary), and the running deck-size counter is correct and turns from red to
-  white exactly at the 12-card minimum
+Verified from an isolated copy of the real Unity project with Unity 6000.5.7f1:
 
-**Not fully click-verified, a real gap, not glossed over:** I could not get Unity's
-Game-view preview to show the full canvas at a size where I could reliably click
-"Start Duel" and walk the actual duel screen end-to-end. This is a Game-view preview
-*zoom* control (separate from the actual `CanvasScaler`, which is set to
-`ScaleWithScreenSize` and sizes correctly to a real screen/build regardless) that I
-could not get to respond reliably through computer-use clicks/drags. **If you hit the
-same thing:** the Scale slider next to the Game tab, or the Free Aspect dropdown's
-resolution presets, or just un-maximizing/resizing the Unity window, should get the
-whole canvas back into view; any one of those should take you a few seconds with a
-mouse in a way it didn't for me. `DuelUI` reuses the exact same `TurnEngine.TryPlayCard`
-/ `TryAttack` / `EndTurn` calls already proven correct via v0's real 10-turn console
-playthrough, so the underlying logic is on solid ground: what's unverified is
-specifically the click-wiring glue in `DuelUI`, not the rules engine.
+- Clean Unity compile with zero C# errors.
+- Four PlayMode tests pass. They cover the fixed-width deckbuilder, the clipped
+  70-card scroll view, visible footer action widths, and the full deckbuilder to
+  playable duel flow.
+- The `.NET` engine builds cleanly, `sync-unity.mjs --check` passes, and the
+  final 1,000-game same-deck simulation completed at 56.1% / 43.9%, with no
+  draws and an 11.8-turn average. That is verification evidence, not a claim
+  that first-player balance is solved.
+- The Eyeland Duel WebGL build succeeds with zero errors at roughly 49.9 MB.
+- A Playwright smoke test loads the real WebGL canvas in Edge, reports all 70
+  cards loaded, and catches browser-visible layout regressions. The verification
+  pass fixed an overflowing card list and zero-width Quick Play / Start Duel
+  buttons found this way.
+
+Run the same PlayMode suite from a shell:
+
+```powershell
+& 'C:\Program Files\Unity\Hub\Editor\6000.5.7f1\Editor\Unity.exe' `
+  -batchmode -nographics -runTests -testPlatform PlayMode `
+  -projectPath game\unity -testResults game\unity\playmode-results.xml
+```
+
+Build the itch.io-ready WebGL folder through the checked-in editor method:
+
+```powershell
+& 'C:\Program Files\Unity\Hub\Editor\6000.5.7f1\Editor\Unity.exe' `
+  -batchmode -nographics -quit -projectPath game\unity -buildTarget WebGL `
+  -executeMethod Eyeland.Games.Editor.GamesBuildScript.BuildEyelandDuelWebGL
+```
 
 ## Real compile bugs found and fixed while porting v0 into Unity
 
@@ -151,6 +161,11 @@ recur the moment more code gets ported:
 - **Bare `Object` is ambiguous** the moment both `using System;` and `using UnityEngine;`
   are in scope (`System.Object` vs `UnityEngine.Object`, both spelled `Object`):
   needs `UnityEngine.Object.Destroy(...)` etc. spelled out fully.
+- **Unity's runtime lacks newer convenience overloads** used by the .NET build:
+  generic `Enum.GetValues<T>()` and one-argument `Array.Clear(...)` were replaced
+  with their compatible overloads in the portable duel core.
+- **UI code must follow engine API renames**: the browser checkpoint caught stale
+  `BoardCreature.CanAttack` references after the engine moved to `CanAttackNow`.
 
 ## Not yet built (later rungs, not v1's job)
 
@@ -158,3 +173,15 @@ recur the moment more code gets ported:
 - Real card art: the current UI uses colored panels + text, functional not pretty
 - The "going first" imbalance noted above: still open, now matters more since real
   deckbuilding makes the signal harder to isolate the longer it's left
+
+## 2026-09-11: Ember Reach local playable prototype
+
+The default Unity boot now opens a connected solo expedition: three camps and a Warden, timed real-engine duels, defeated-creature card rewards, ember shards, owned 12-card deck editing and browser-local saves. Common/Rare/Epic/Legendary are represented. The route is an encounter menu with seeded supporting cards and shuffles; a walkable 3D island, crafting recipes and multiplayer are still not implemented.
+
+Play instructions: game/PLAY-EMBER-REACH.md. Local URL: http://127.0.0.1:8765/ while the server runs; restart with game/scripts/play-ember-reach.ps1. Build with game/scripts/build-ember-reach.ps1. Unity 6000.5.7f1 plus WebGL was restored under Adam's AppData/Local/EyelandTools; see game/LOCAL-UNITY-RUNTIME.md. Production was not deployed.
+
+MVP-READINESS.md records 100/100 for the fixed local technical scope: final 10/10 Unity tests, a four-encounter UI-handler journey, 400 terminating engine simulations, and native Helium first victory -> reward -> deck edit -> reload -> earned card in next duel. The full four-fight journey was not played through native browser input. Human enjoyment and session length remain unvalidated. MVP-NEXT-PROMPT.md starts with Adam's unaided playtest; preserve prior research and unrelated working-tree changes.
+
+## 2026-09-20: Brainstorm Island Cards desktop takeover
+
+Read `game/docs/README.md` for the complete recovered design-context set (14 requested systems/scope documents with explicit direction versus hypotheses), and `game/docs/IMPLEMENTATION_STATUS.md` for verified implementation state. The existing React/TypeScript web client is retained; no Godot/Unity restart. Default entry now offers an authored Home Island story sketch with movement, three starter classes, four elements, five-card decks, Legendary placeholders and one real-engine encounter/reward/rest loop. `game/docs/PLAY_STARTER_ISLAND.md` explains local play. New story progress is session-only; existing Ember Reach saves and practice remain separate. Baseline 81 engine checks plus 300 starter simulations, typecheck and build pass. No publishing/deployment/commit was performed. Co-op, market, crafting, fizzle/evolution and full story remain design work.

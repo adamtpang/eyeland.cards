@@ -1,0 +1,50 @@
+[
+  {
+    "id": "glowing-ember",
+    "asset": "unity/Assets/Resources/Art/Creatures/glowing-ember.png",
+    "tool": "built-in image_gen",
+    "prompt": "One square full-bleed original fantasy trading-card illustration for Eyeland. Subject: a tiny living ember spirit, bright coal body, big expressive golden eyes, flame ears and little charcoal paws, hopping across warm volcanic pebbles. Creature fills 75% of image; centered face and upper body, recognizable silhouette, generous breathing room. Luminous painterly storybook adventure art, rich teal sky and amber/violet accents, polished hand-painted collectible card art, appealing and expressive. Floating island setting. No card frame, no text, no letters, no numbers, no logo. Original character, no existing franchise characters."
+  },
+  {
+    "id": "tide-guard",
+    "asset": "unity/Assets/Resources/Art/Creatures/tide-guard.png",
+    "tool": "built-in image_gen",
+    "prompt": "One square full-bleed original fantasy trading-card illustration for Eyeland. Subject: a stout turquoise sea-turtle guardian with a huge shell of layered coral shields, determined eyes, braced protectively on a coastal floating island. Creature fills 75% of image; centered face and upper body, recognizable silhouette, generous breathing room. Luminous painterly storybook adventure art, rich teal sky and amber/violet accents, polished hand-painted collectible card art, appealing and expressive. Floating island setting. No card frame, no text, no letters, no numbers, no logo. Original character, no existing franchise characters."
+  },
+  {
+    "id": "squall-caller",
+    "asset": "unity/Assets/Resources/Art/Creatures/squall-caller.png",
+    "tool": "built-in image_gen",
+    "prompt": "One square full-bleed original fantasy trading-card illustration for Eyeland. Subject: a small clever lavender feathered owl-like wind spirit with a sweeping feather crest, calling little spiral gusts from its wings on a high floating rock. Creature fills 75% of image; centered face and upper body, recognizable silhouette, generous breathing room. Luminous painterly storybook adventure art, rich teal sky and amber/violet accents, polished hand-painted collectible card art, appealing and expressive. Floating island setting. No card frame, no text, no letters, no numbers, no logo. Original character, no existing franchise characters."
+  },
+  {
+    "id": "stormcaller-elemental",
+    "asset": "unity/Assets/Resources/Art/Creatures/stormcaller-elemental.png",
+    "tool": "built-in image_gen",
+    "prompt": "One square full-bleed original fantasy trading-card illustration for Eyeland. Subject: a towering muscular elemental made from purple storm clouds and floating slate rocks, cyan lightning eyes and arms, powerful friendly guardian silhouette. Creature fills 75% of image; centered face and upper body, recognizable silhouette, generous breathing room. Luminous painterly storybook adventure art, rich teal sky and amber/violet accents, polished hand-painted collectible card art, appealing and expressive. Floating island setting. No card frame, no text, no letters, no numbers, no logo. Original character, no existing franchise characters."
+  },
+  {
+    "id": "tidewisp",
+    "asset": "unity/Assets/Resources/Art/Creatures/tidewisp.png",
+    "tool": "built-in image_gen",
+    "prompt": "One square full-bleed original fantasy trading-card illustration for Eyeland. Subject: an elegant translucent turquoise water spirit shaped like a small swimming dragon with luminous fins and a curling watery tail, hovering over a moonlit pool. Creature fills 75% of image; centered face and upper body, recognizable silhouette, generous breathing room. Luminous painterly storybook adventure art, rich teal sky and amber/violet accents, polished hand-painted collectible card art, appealing and expressive. Floating island setting. No card frame, no text, no letters, no numbers, no logo. Original character, no existing franchise characters."
+  },
+  {
+    "id": "galehart",
+    "asset": "unity/Assets/Resources/Art/Creatures/galehart.png",
+    "tool": "built-in image_gen",
+    "prompt": "One square full-bleed original fantasy trading-card illustration for Eyeland. Subject: a majestic white stag with branching violet crystal antlers, silver windswept fur and ribbons of teal wind around its body, standing on high floating grassland. Creature fills 75% of image; centered face and upper body, recognizable silhouette, generous breathing room. Luminous painterly storybook adventure art, rich teal sky and amber/violet accents, polished hand-painted collectible card art, appealing and expressive. Floating island setting. No card frame, no text, no letters, no numbers, no logo. Original character, no existing franchise characters."
+  },
+  {
+    "id": "ember-reach-warden",
+    "asset": "unity/Assets/Resources/Art/Creatures/ember-reach-warden.png",
+    "tool": "built-in image_gen",
+    "prompt": "One square full-bleed original fantasy trading-card illustration for Eyeland. Subject: an ancient colossal volcanic stone guardian with a lion-like face, crown of amber crystals, mossy shoulders and fiery cracks, guarding a floating island summit. Creature fills 75% of image; centered face and upper body, recognizable silhouette, generous breathing room. Luminous painterly storybook adventure art, rich teal sky and amber/violet accents, polished hand-painted collectible card art, appealing and expressive. Floating island setting. No card frame, no text, no letters, no numbers, no logo. Original character, no existing franchise characters."
+  },
+  {
+    "id": "cinder-wolf",
+    "asset": "unity/Assets/Resources/Art/Creatures/cinder-wolf.png",
+    "tool": "built-in image_gen",
+    "prompt": "Create one square full-bleed original fantasy trading-card illustration, no card frame, no text or numbers. Subject: Cinder Wolf, an alert charcoal-furred wolf with glowing ember cracks, fiery orange mane and tail, standing on mossy floating-island rocks with wisps of smoke. Expressive recognizable face and powerful silhouette, entire head and upper body centered with breathing room, luminous painterly storybook adventure art, rich teal sky and amber light, polished hand-painted game card art, appealing rather than terrifying. The creature fills 75% of the image. This is a production creature portrait for Eyeland, not an existing franchise character."
+  }
+]

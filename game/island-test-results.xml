@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<test-run id="2" testcasecount="10" result="Passed" total="10" passed="10" failed="0" inconclusive="0" skipped="0" asserts="0" engine-version="3.5.0.0" clr-version="4.0.30319.42000" start-time="2026-09-11 07:04:51Z" end-time="2026-09-11 07:04:54Z" duration="2.376842">
+  <test-suite type="TestSuite" id="1018" name="unity" fullname="unity" runstate="Runnable" testcasecount="10" result="Passed" start-time="2026-09-11 07:04:51Z" end-time="2026-09-11 07:04:54Z" duration="2.376842" total="10" passed="10" failed="0" inconclusive="0" skipped="0" asserts="0">
+    <properties>
+      <property name="platform" value="PlayMode" />
+    </properties>
+    <test-suite type="Assembly" id="1013" name="Eyeland.PlayModeTests.dll" fullname="C:/Users/adamp/Aether/eyeland.cards/game/unity/Library/ScriptAssemblies/Eyeland.PlayModeTests.dll" runstate="Runnable" testcasecount="10" result="Passed" start-time="2026-09-11 07:04:51Z" end-time="2026-09-11 07:04:54Z" duration="2.367319" total="10" passed="10" failed="0" inconclusive="0" skipped="0" asserts="0">
+      <properties>
+        <property name="_PID" value="14412" />
+        <property name="_APPDOMAIN" value="Unity Child Domain" />
+        <property name="platform" value="PlayMode" />
+        <property name="EditorOnly" value="False" />
+      </properties>
+      <test-suite type="TestSuite" id="1014" name="Eyeland" fullname="Eyeland" runstate="Runnable" testcasecount="10" result="Passed" start-time="2026-09-11 07:04:51Z" end-time="2026-09-11 07:04:54Z" duration="2.366649" total="10" passed="10" failed="0" inconclusive="0" skipped="0" asserts="0">
+        <properties />
+        <test-suite type="TestSuite" id="1015" name="Tests" fullname="Eyeland.Tests" runstate="Runnable" testcasecount="10" result="Passed" start-time="2026-09-11 07:04:51Z" end-time="2026-09-11 07:04:54Z" duration="2.366342" total="10" passed="10" failed="0" inconclusive="0" skipped="0" asserts="0">
+          <properties />
+          <test-suite type="TestFixture" id="1001" name="DeckBuilderFlowTests" fullname="Eyeland.Tests.DeckBuilderFlowTests" classname="Eyeland.Tests.DeckBuilderFlowTests" runstate="Runnable" testcasecount="4" result="Passed" start-time="2026-09-11 07:04:51Z" end-time="2026-09-11 07:04:53Z" duration="1.230090" total="4" passed="4" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-case id="1005" name="CanBuildADeckAndReachAPlayableDuel" fullname="Eyeland.Tests.DeckBuilderFlowTests.CanBuildADeckAndReachAPlayableDuel" methodname="CanBuildADeckAndReachAPlayableDuel" classname="Eyeland.Tests.DeckBuilderFlowTests" runstate="Runnable" seed="1512620213" result="Passed" start-time="2026-09-11 07:04:51Z" end-time="2026-09-11 07:04:52Z" duration="0.687092" asserts="0">
+              <properties>
+                <property name="_JOINTYPE" value="UnityCombinatorial" />
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1003" name="CardPoolUsesAClippedScrollView" fullname="Eyeland.Tests.DeckBuilderFlowTests.CardPoolUsesAClippedScrollView" methodname="CardPoolUsesAClippedScrollView" classname="Eyeland.Tests.DeckBuilderFlowTests" runstate="Runnable" seed="1519104789" result="Passed" start-time="2026-09-11 07:04:52Z" end-time="2026-09-11 07:04:52Z" duration="0.196627" asserts="0">
+              <properties>
+                <property name="_JOINTYPE" value="UnityCombinatorial" />
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1002" name="DeckBuilderColumnIsWidthCappedAndResponsive" fullname="Eyeland.Tests.DeckBuilderFlowTests.DeckBuilderColumnIsWidthCappedAndResponsive" methodname="DeckBuilderColumnIsWidthCappedAndResponsive" classname="Eyeland.Tests.DeckBuilderFlowTests" runstate="Runnable" seed="254859143" result="Passed" start-time="2026-09-11 07:04:52Z" end-time="2026-09-11 07:04:53Z" duration="0.172787" asserts="0">
+              <properties>
+                <property name="_JOINTYPE" value="UnityCombinatorial" />
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1004" name="FooterActionsHaveVisibleStableWidths" fullname="Eyeland.Tests.DeckBuilderFlowTests.FooterActionsHaveVisibleStableWidths" methodname="FooterActionsHaveVisibleStableWidths" classname="Eyeland.Tests.DeckBuilderFlowTests" runstate="Runnable" seed="1943181022" result="Passed" start-time="2026-09-11 07:04:53Z" end-time="2026-09-11 07:04:53Z" duration="0.158355" asserts="0">
+              <properties>
+                <property name="_JOINTYPE" value="UnityCombinatorial" />
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+          </test-suite>
+          <test-suite type="TestFixture" id="1006" name="IslandFlowTests" fullname="Eyeland.Tests.IslandFlowTests" classname="Eyeland.Tests.IslandFlowTests" runstate="Runnable" testcasecount="6" result="Passed" start-time="2026-09-11 07:04:53Z" end-time="2026-09-11 07:04:54Z" duration="1.134739" total="6" passed="6" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-case id="1010" name="CorruptSaveRequiresConfirmationAndSaveFailureCanRetry" fullname="Eyeland.Tests.IslandFlowTests.CorruptSaveRequiresConfirmationAndSaveFailureCanRetry" methodname="CorruptSaveRequiresConfirmationAndSaveFailureCanRetry" classname="Eyeland.Tests.IslandFlowTests" runstate="Runnable" seed="290885488" result="Passed" start-time="2026-09-11 07:04:53Z" end-time="2026-09-11 07:04:53Z" duration="0.033710" asserts="0">
+              <properties>
+                <property name="_JOINTYPE" value="UnityCombinatorial" />
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1011" name="FourEncounterUiJourneyPersistsRewardsAndEditedDeck" fullname="Eyeland.Tests.IslandFlowTests.FourEncounterUiJourneyPersistsRewardsAndEditedDeck" methodname="FourEncounterUiJourneyPersistsRewardsAndEditedDeck" classname="Eyeland.Tests.IslandFlowTests" runstate="Runnable" seed="643824000" result="Passed" start-time="2026-09-11 07:04:53Z" end-time="2026-09-11 07:04:54Z" duration="1.057713" asserts="0">
+              <properties>
+                <property name="_JOINTYPE" value="UnityCombinatorial" />
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1008" name="InvalidInventoryAndSaveAreRejected" fullname="Eyeland.Tests.IslandFlowTests.InvalidInventoryAndSaveAreRejected" methodname="InvalidInventoryAndSaveAreRejected" classname="Eyeland.Tests.IslandFlowTests" runstate="Runnable" seed="314724900" result="Passed" start-time="2026-09-11 07:04:54Z" end-time="2026-09-11 07:04:54Z" duration="0.009978" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1007" name="RewardsAreOwnedOnceAndDeckSurvivesRoundtrip" fullname="Eyeland.Tests.IslandFlowTests.RewardsAreOwnedOnceAndDeckSurvivesRoundtrip" methodname="RewardsAreOwnedOnceAndDeckSurvivesRoundtrip" classname="Eyeland.Tests.IslandFlowTests" runstate="Runnable" seed="1390581990" result="Passed" start-time="2026-09-11 07:04:54Z" end-time="2026-09-11 07:04:54Z" duration="0.002926" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1009" name="SeededEncountersAreReproducibleAndPlayable" fullname="Eyeland.Tests.IslandFlowTests.SeededEncountersAreReproducibleAndPlayable" methodname="SeededEncountersAreReproducibleAndPlayable" classname="Eyeland.Tests.IslandFlowTests" runstate="Runnable" seed="1825285015" result="Passed" start-time="2026-09-11 07:04:54Z" end-time="2026-09-11 07:04:54Z" duration="0.001377" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1012" name="TimerEndsPendingTurnAndReportsLossOnce" fullname="Eyeland.Tests.IslandFlowTests.TimerEndsPendingTurnAndReportsLossOnce" methodname="TimerEndsPendingTurnAndReportsLossOnce" classname="Eyeland.Tests.IslandFlowTests" runstate="Runnable" seed="1391661910" result="Passed" start-time="2026-09-11 07:04:54Z" end-time="2026-09-11 07:04:54Z" duration="0.024151" asserts="0">
+              <properties>
+                <property name="_JOINTYPE" value="UnityCombinatorial" />
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+              <output><![CDATA[<b><color=#2EA3FF>MCP-FOR-UNITY</color></b>: [TestRunnerNoThrottle] Restored Interaction Mode after test run.
+Saving results to: C:/Users/adamp/AppData/LocalLow/DefaultCompany/unity\TestResults.xml
+]]></output>
+            </test-case>
+          </test-suite>
+        </test-suite>
+      </test-suite>
+    </test-suite>
+  </test-suite>
+</test-run>

@@ -13,7 +13,7 @@ public sealed class BoardCreature
     public int Damage { get; private set; }
 
     private readonly List<Enchantment> _enchantments = new();
-    private readonly int[] _auraBuffer = new int[Enum.GetValues<Stat>().Length];
+    private readonly int[] _auraBuffer = new int[Enum.GetValues(typeof(Stat)).Length];
 
     public IReadOnlyList<Enchantment> Enchantments => _enchantments;
 
@@ -104,7 +104,7 @@ public sealed class BoardCreature
     public void AddEnchantment(Enchantment enchantment) => _enchantments.Add(enchantment);
     public bool RemoveEnchantment(string name) => _enchantments.RemoveAll(e => e.Name == name) > 0;
 
-    internal void ClearAuraBuffer() => Array.Clear(_auraBuffer);
+    internal void ClearAuraBuffer() => Array.Clear(_auraBuffer, 0, _auraBuffer.Length);
     internal void ApplyAuraMod(StatMod mod) => _auraBuffer[(int)mod.Stat] += mod.Amount;
 
     public static BoardCreature FromCard(CardDef card)

@@ -14,7 +14,7 @@ public enum Element { Fire, Water, Storm }
 
 public enum CardType { Spell, Creature }
 
-public enum Rarity { Common, Rare, Legendary }
+public enum Rarity { Common, Rare, Legendary, Epic }
 
 /// <summary>
 /// A card's class. Neutral cards go in any deck; the rest are class-locked.

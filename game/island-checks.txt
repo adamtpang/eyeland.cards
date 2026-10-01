@@ -1,0 +1,6 @@
+PASS: reward, ownership, deck integrity, four rarities, completion
+Camp 1: 78/100 player AI wins; longest 12 turns. Synthetic balance signal, not human fun evidence.
+Camp 2: 100/100 player AI wins; longest 10 turns. Synthetic balance signal, not human fun evidence.
+Camp 3: 98/100 player AI wins; longest 11 turns. Synthetic balance signal, not human fun evidence.
+Camp 4: 86/100 player AI wins; longest 12 turns. Synthetic balance signal, not human fun evidence.
+Four-win fixture seeds: 0,1,2,4,8,10,11,12

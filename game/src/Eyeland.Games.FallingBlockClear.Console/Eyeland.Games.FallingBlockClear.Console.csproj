@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <RootNamespace>Eyeland.Games.FallingBlockClear.Console</RootNamespace>
+    <AssemblyName>falling-block-clear</AssemblyName>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Eyeland.Games.FallingBlockClear\Eyeland.Games.FallingBlockClear.csproj" />
+  </ItemGroup>
+
+</Project>

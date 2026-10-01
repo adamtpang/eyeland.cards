@@ -138,7 +138,7 @@ public static class CardLoader
 
         var powers = new Dictionary<PlayerClass, HeroPower>();
         var hpNode = root["heroPowers"];
-        foreach (var cls in System.Enum.GetValues<PlayerClass>())
+        foreach (PlayerClass cls in System.Enum.GetValues(typeof(PlayerClass)))
         {
             var key = cls.ToString().ToLowerInvariant();
             if (!hpNode.Has(key)) continue;

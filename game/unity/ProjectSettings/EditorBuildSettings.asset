@@ -4,5 +4,11 @@
 EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
-  m_Scenes: []
+  m_Scenes:
+  - enabled: 1
+    path: Assets/Scenes/Games/002-FallingBlockClear.unity
+    guid: 6d18cc4f711eddf4d8f9935e9b348cc0
+  - enabled: 1
+    path: Assets/Scenes/Games/001-EyelandDuel.unity
+    guid: 889bc83ae70660541a81e04c0ab79acf
   m_configObjects: {}

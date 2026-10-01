@@ -21,7 +21,7 @@
     "Rarity tiers follow Adam's own Milanote tiering, not a new invention:",
     "  common fighter/ranger · uncommon barbarian/rogue/cleric/bard",
     "  rare paladin/tinkerer/monk/wizard · epic druid/sorcerer/warlock",
-    "Since the engine has three rarities, that maps to: common, rare, legendary,",
+    "The initial class pool mapped to common, rare and legendary; the island adds epic,",
     "with a class's signature card carrying the highest rarity it is entitled to.",
     "",
     "Effects: damage · damageEnemyCaster · damageAllEnemyCreatures · damageOwnCaster",
@@ -38,6 +38,7 @@
       "name": "The Common Collection",
       "note": "Playable in every deck. The shared floor the classes are measured against.",
       "cards": [
+
         { "id": "ember-bolt", "name": "Ember Bolt", "cost": 2, "type": "spell", "element": "fire", "rarity": "common",
           "text": "Deal 3 damage. If it's the first spell you've cast this turn, draw a card.",
           "targeting": "optionalCreature",
@@ -77,6 +78,8 @@
           "rarity": "rare", "text": "Deal 4 damage to a creature.",
           "targeting": "requiredCreature", "onPlay": [ { "effect": "damage", "amount": 4 } ] },
 
+        { "id": "galehart", "name": "Galehart", "cost": 4, "type": "creature", "element": "storm", "rarity": "epic", "attack": 3, "health": 5, "text": "Your other creatures have +1 Attack.", "aura": { "scope": "friendlyOthers", "mods": [{ "stat": "attack", "amount": 1 }] } },
+        { "id": "ember-reach-warden", "name": "Ember Reach Warden", "cost": 6, "type": "creature", "element": "fire", "rarity": "legendary", "attack": 5, "health": 6, "taunt": true, "text": "Taunt. Battlecry: Deal 2 damage to all enemy creatures.", "onPlay": [{ "effect": "damageAllEnemyCreatures", "amount": 2 }] },
         { "id": "storm-totem", "name": "Storm Totem", "cost": 3, "type": "creature", "element": "storm",
           "rarity": "rare", "attack": 0, "health": 4,
           "text": "Your other creatures have +1 Attack.",
