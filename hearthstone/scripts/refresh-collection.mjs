@@ -22,6 +22,7 @@ import { existsSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { execFileSync } from "node:child_process";
+import { collectionCounts } from "./collection-counts.mjs";
 
 const HEARTHSTONE_DIR = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
 const RAW_PATH = path.join(HEARTHSTONE_DIR, "collection-raw.json");
@@ -61,18 +62,6 @@ function buildDbfIndex(cardDefs) {
   return byDbfId;
 }
 
-function buildNameIndex(cardDefs) {
-  // Collectible cards only; first match wins (cards.json can have dupes
-  // across sets when a card is reprinted, e.g. into Core).
-  const byName = new Map();
-  for (const card of cardDefs) {
-    if (!card.collectible) continue;
-    const key = card.name.trim().toLowerCase();
-    if (!byName.has(key)) byName.set(key, card);
-  }
-  return byName;
-}
-
 async function main() {
   const forceRefresh = process.argv.includes("--refresh-cards");
 
@@ -89,7 +78,6 @@ async function main() {
   const collection = raw.collection ?? raw; // tolerate either shape
   const cardDefs = await loadCardDefs({ forceRefresh });
   const byDbfId = buildDbfIndex(cardDefs);
-  const byName = buildNameIndex(cardDefs);
 
   // --- collection-full.json: every owned card, general purpose ---
   const owned = [];
@@ -97,9 +85,8 @@ async function main() {
     const dbfId = Number(dbfIdStr);
     const card = byDbfId.get(dbfId);
     if (!card) continue; // unknown dbfId (e.g. non-collectible internal entry)
-    const normalCount = counts[0] ?? 0;
-    const goldCount = counts[1] ?? 0;
-    if (normalCount === 0 && goldCount === 0) continue;
+    const ownedCounts = collectionCounts(counts);
+    if (ownedCounts.totalCount === 0) continue;
     owned.push({
       dbfId,
       name: card.name,
@@ -107,19 +94,27 @@ async function main() {
       rarity: card.rarity ?? null,
       cost: card.cost ?? null,
       cardClass: card.cardClass ?? null,
-      normalCount,
-      goldCount,
-      totalCount: normalCount + goldCount,
+      ...ownedCounts,
     });
   }
   owned.sort((a, b) => a.name.localeCompare(b.name));
+
+  // Reprints have different dbfIds but share deck-building ownership by name.
+  // Aggregating all owned printings also avoids the old first-match bug where
+  // collection.md could report an owned card (such as Timethief Rafaam) missing.
+  const ownedCountByName = new Map();
+  for (const card of owned) {
+    const key = card.name.trim().toLowerCase();
+    ownedCountByName.set(key, (ownedCountByName.get(key) ?? 0) + card.totalCount);
+  }
 
   await writeFile(
     FULL_PATH,
     JSON.stringify(
       {
         generatedAt: new Date().toISOString(),
-        sourceLastModified: raw._sourceLastModified ?? null,
+        sourceLastModified: raw.lastModified ?? raw._sourceLastModified ?? null,
+        fetchedAt: raw._fetchedAt ?? null,
         cardCount: owned.length,
         cards: owned,
       },
@@ -153,8 +148,7 @@ async function main() {
       return `${dash}✅${countPart}${namePart}${rest}`;
     }
 
-    const match = byName.get(cardName.toLowerCase());
-    const haveCount = match ? owned.find((c) => c.dbfId === match.dbfId)?.totalCount ?? 0 : 0;
+    const haveCount = ownedCountByName.get(cardName.toLowerCase()) ?? 0;
 
     let marker;
     let ownedNote = "";

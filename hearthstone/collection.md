@@ -19,7 +19,7 @@ build · `cycle` = cycle/removal build · `tech` = fringe/flex.
 
 ## The Rafaam package (the whole point of the deck)
 
-- [ ] 1× **Timethief Rafaam**: Legendary · Across the Timeways · **1600** · both
+- ✅ 1× **Timethief Rafaam**: Legendary · Across the Timeways · **1600** · both
   : 10 mana 10/10. *Fabled+. Your deck size is 40, but has 10 Rafaams.
   Battlecry: If you played the rest, destroy the enemy hero.*
 
@@ -43,7 +43,7 @@ Mindflayer R'faam (7), Giant (8), Archmage (9).
   : deal 5 to a minion, its owner draws
 - ✅ 2× **Eternal Toil**: Rare · Across the Timeways · **200/pair** · cycle
   : deal 1; survives → draw, dies → summon random 1-cost
-- [ ] 2× (own 1/2) **Rotheart Dryad**: Rare · Into the Emerald Dream · **200/pair** · cycle
+- ✅ 2× **Rotheart Dryad**: Rare · Into the Emerald Dream · **200/pair** · cycle
   : 1/1, Deathrattle: draw a 7+ cost minion
 - ✅ 2× **Critter Caretaker**: Common · Into the Emerald Dream · **80/pair** · cycle
   : 2/2, end of turn: restore 3 to both heroes

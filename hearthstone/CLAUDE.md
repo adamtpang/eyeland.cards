@@ -2,6 +2,13 @@
 
 ## Goal
 
+**2026-09-10 update:** the active product use case is Adam's own Egg Priest
+deck. Read `PRODUCT.md`. Help identify synergies and structural design issues,
+then recommend explained changes within his collection. Obtain the exact deck
+code before reviewing it. The Rafaam goal below is historical, not the current
+default. `collection-full.json` is the general collection; `collection.md` is
+only the old Rafaam-specific checklist. Do not use it to judge Priest ownership.
+
 Build and iterate a competitive **Rafaam Warlock** list for current Standard,
 optimized for **ladder winrate within Adam's collection**: not theorycraft.
 The collection lives in [collection.md](collection.md); treat unchecked cards as
@@ -62,6 +69,9 @@ discount it. HSGuru (hsguru.com / d0nkey.top) proved the best live archetype
 source in week-1 conditions when vS hadn't published yet.
 
 ## Working style
+
+- Adam prefers two copies of non-Legendary cards. Default to two-for-two swaps,
+  not singleton tech cards; Legendaries remain one copy.
 
 - **Lead with the decision, then the reasoning.** Adam often reads on mobile:
   short lines, verdict first.

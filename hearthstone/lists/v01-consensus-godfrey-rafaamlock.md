@@ -1,4 +1,4 @@
-# v01 — Consensus Godfrey Rafaamlock (starting point)
+# v01: Consensus Godfrey Rafaamlock (starting point)
 
 **Date:** 2026-07-11 · **Meta:** Escape from Violet Hold week 1 (patch 36.0,
 live 2026-07-07)
@@ -12,14 +12,14 @@ hearthstone-oracle: legal 40-card Standard Warlock deck.
 
 **Honest meta read (as of 2026-07-11):** archetype "Rafaamlock" sits at
 **44.2% WR over 37,274 games** (HSGuru, Diamond–Legend, past week); this exact
-list 45.1% over 5,534. It farms slow decks — Priest 69.1%, Demon Hunter 59.0%,
-Death Knight 58.6% — and folds to the tempo classes that rule week 1: Hunter
+list 45.1% over 5,534. It farms slow decks (Priest 69.1%, Demon Hunter 59.0%,
+Death Knight 58.6%) and folds to the tempo classes that rule week 1: Hunter
 35.1%, Rogue 38.2% (22.5% of the field!), Shaman 40.0%. First Violet Hold vS
 Data Reaper Report isn't out yet; re-check the numbers before big changes.
 
 ## Gameplan
 
-Godfrey the Betrayer (Start of Game) makes overdraw free — overdrawn cards
+Godfrey the Betrayer (Start of Game) makes overdraw free: overdrawn cards
 return to hand at a 1-mana discount. So: cycle violently (The Unseen Atlas,
 Shadow Rounds, Cursed Catacombs, Defias Smuggler, RAFAAM LADDER!!, Elise)
 through the 40-card deck, play all 9 generated Rafaams, then **Timethief
