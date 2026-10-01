@@ -104,3 +104,20 @@ WorldClaw (Tencent Hunyuan, Aug 2026) turns one prompt into an editable 3D open 
 - **A "WorldClaw-lite" is reproducible without Tencent's code:** Claude writes a region plan, a script builds terrain (Godot `world_3d.gd` already does this in code), an image-to-3D model generates assets, glTF export into Godot or the Three.js island. Blender 4.4 is installed; asset generation needs a large GPU or a paid hosted service.
 - **Cheapest first test (after the playtest):** one afternoon, one Ember Reach region plan plus one generated landmark dropped into the island, to check it fits the storybook art direction before building any pipeline.
 - **Revisit if** Tencent releases code/weights, or the playtest shows the world feels empty.
+
+## Lesson: iterate on feel first (Thariq's AI-built game thread, reviewed 2026-10-01)
+Source: [Thariq (@trq212), 2026-09-30](https://x.com/trq212/status/2105333496768319969), a former games founder who works on Claude Code. Only the thread text was read; the four videos were not watched, so nothing here judges how his game looks.
+
+What he does: a real-time brawler prototype (Brawl Stars, Avatar, Street Fighter). He has not decided 1v1 or 3v3 and iterates on characters first. The thing he iterates on most is feel ("Do they feel satisfying and powerful?"). He started with one character, tried 2 to 3 control variations for a single jump, calls it prototype quality, and expects 3 to 4 versions of that character before a real game. His rule: the creative process is the satisfying part, so do not outsource it to AI; use AI to bring your own vision to life.
+
+What it means for Eyeland:
+- **We went wide before proving one thing feels great:** 100 cards, three clients (Unity, web, Godot) and hundreds of automated checks, with no human playtest. Automated checks cannot tell whether a battle is satisfying.
+- **Decide by playing variations, not by writing documents.** Open design questions get settled by 2 to 3 playable versions, picked by feel.
+- **Adam's taste is the game.** Decisions about what feels fun come from him playing, not from the agent building.
+
+Working rule until one fight feels satisfying to Adam:
+1. Pick one battle moment (play a creature, attack, the hit landing) and polish its animation, timing, sound and impact. The web client has no sound yet.
+2. Build 2 to 3 variations of that moment; Adam plays each for a minute and picks.
+3. No new cards or systems until then.
+
+This is the same gate as the unaided playtest: play it, name the one thing that feels worst, iterate on that.
