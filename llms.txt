@@ -12,6 +12,9 @@ There is no payment, account, or download yet. The only action on the page is an
 - [The Cards](https://eyeland.cards/#cards): the deckbuilding and card-duel pillars, with sample cards.
 - [First Build](https://eyeland.cards/#build): the v0-v4 build ladder from duel prototype to full MMO.
 - [Get the build](https://eyeland.cards/#waitlist): join to get the first itch.io pre-alpha link.
+- [About](https://eyeland.cards/about.html): project scope, operator, and current build stage.
+- [Contact](https://eyeland.cards/contact.html): the operator's direct email and what to include.
+- [Privacy](https://eyeland.cards/privacy.html): current data handling, hosting, and email disclosure.
 
 Note: the site is deployed at eyeland.cards (matches robots.txt, sitemap.xml, and canonical tag).
 

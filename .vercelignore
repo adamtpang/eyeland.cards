@@ -3,7 +3,14 @@
 *.md
 hearthstone/
 game/
+terraria/
+tests/
 .agents/
 .gitignore
 
 knowledge-private/
+repos.yaml
+eafc/
+wizard101/
+company/
+.claude/

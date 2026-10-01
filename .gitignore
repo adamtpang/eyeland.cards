@@ -63,3 +63,4 @@ eafc/sbc/dresden.json
 .claude/settings.json.bak-*
 .firecrawl/
 game/research/*-transcript.md
+.env*
