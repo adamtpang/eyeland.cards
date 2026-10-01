@@ -1,0 +1,200 @@
+{
+  "name": "League & Nation Advanced: 3 Leagues & 2 Nations",
+  "formation": "GK CB CB CB RM CM CM LM RW ST LW",
+  "requirements": {
+    "exact_leagues": 3,
+    "exact_nations": 2,
+    "max_same_league": 6,
+    "max_same_nation": 6,
+    "min_player_rating": 75,
+    "min_chemistry": 30
+  },
+  "pools": [
+    {
+      "rating": [
+        75,
+        79
+      ],
+      "nation": 14
+    },
+    {
+      "rating": [
+        75,
+        79
+      ],
+      "nation": 45
+    },
+    {
+      "rating": [
+        75,
+        79
+      ],
+      "nation": 37
+    },
+    {
+      "rating": [
+        75,
+        79
+      ],
+      "nation": 21
+    },
+    {
+      "rating": [
+        75,
+        79
+      ],
+      "nation": 18
+    },
+    {
+      "rating": [
+        75,
+        79
+      ],
+      "nation": 27
+    },
+    {
+      "rating": [
+        75,
+        79
+      ],
+      "nation": 38
+    },
+    {
+      "rating": [
+        75,
+        79
+      ],
+      "nation": 34
+    },
+    {
+      "rating": [
+        75,
+        79
+      ],
+      "nation": 54
+    },
+    {
+      "rating": [
+        75,
+        79
+      ],
+      "nation": 52
+    },
+    {
+      "rating": [
+        75,
+        79
+      ],
+      "nation": 7
+    },
+    {
+      "rating": [
+        75,
+        79
+      ],
+      "nation": 42
+    },
+    {
+      "rating": [
+        75,
+        79
+      ],
+      "league": 13
+    },
+    {
+      "rating": [
+        75,
+        79
+      ],
+      "league": 53
+    },
+    {
+      "rating": [
+        75,
+        79
+      ],
+      "league": 19
+    },
+    {
+      "rating": [
+        75,
+        79
+      ],
+      "league": 31
+    },
+    {
+      "rating": [
+        75,
+        79
+      ],
+      "league": 16
+    },
+    {
+      "rating": [
+        75,
+        79
+      ],
+      "league": 308
+    },
+    {
+      "rating": [
+        75,
+        79
+      ],
+      "league": 10
+    },
+    {
+      "rating": [
+        75,
+        79
+      ],
+      "league": 66
+    },
+    {
+      "rating": [
+        75,
+        79
+      ],
+      "league": 350
+    }
+  ],
+  "source": "https://www.futbin.com/27/squad-building-challenge/10",
+  "slots": [
+    "GK",
+    "CB",
+    "CB",
+    "CB",
+    "RM",
+    "CM",
+    "CM",
+    "LM",
+    "RW",
+    "ST",
+    "LW"
+  ],
+  "nation_ids": {
+    "England": 14,
+    "Spain": 45,
+    "Poland": 37,
+    "Germany": 21,
+    "France": 18,
+    "Italy": 27,
+    "Portugal": 38,
+    "Netherlands": 34,
+    "Brazil": 54,
+    "Argentina": 52,
+    "Belgium": 7,
+    "Scotland": 42
+  },
+  "league_ids": {
+    "Premier League": 13,
+    "LALIGA EA SPORTS": 53,
+    "Bundesliga": 19,
+    "Serie A TIM": 31,
+    "Ligue 1 McDonald's": 16,
+    "Liga Portugal": 308,
+    "Eredivisie": 10,
+    "PKO BP Ekstraklasa": 66,
+    "ROSHN Saudi League": 350
+  }
+}

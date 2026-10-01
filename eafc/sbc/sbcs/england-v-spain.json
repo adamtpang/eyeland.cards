@@ -1,0 +1,214 @@
+{
+  "name": "Marquee Matchups: England v Spain",
+  "expires": "2026-10-01T18:00:00Z",
+  "source": "https://www.futbin.com/27/squad-building-challenges/Challenges/46/england-v-spain",
+  "slots": [
+    "GK",
+    "RB",
+    "CB",
+    "CB",
+    "CB",
+    "LB",
+    "CM",
+    "CM",
+    "CAM",
+    "ST",
+    "ST"
+  ],
+  "requirements": {
+    "min_from_nations": {
+      "nations": [
+        "England",
+        "Spain"
+      ],
+      "count": 2
+    },
+    "min_same_nation": 4,
+    "max_same_club": 3,
+    "max_leagues": 5,
+    "min_rating": 75,
+    "min_chemistry": 26
+  },
+  "base_squad": [
+    "13136",
+    "13149",
+    "13153",
+    "13152",
+    "856",
+    "861",
+    "13167",
+    "782",
+    "13139",
+    "13156",
+    "574"
+  ],
+  "pools": [
+    {
+      "rating": [
+        64,
+        64
+      ],
+      "nation": 37
+    },
+    {
+      "rating": [
+        64,
+        66
+      ]
+    },
+    {
+      "rating": [
+        45,
+        63
+      ]
+    },
+    {
+      "rating": [
+        74,
+        74
+      ]
+    },
+    {
+      "rating": [
+        75,
+        75
+      ]
+    },
+    {
+      "rating": [
+        76,
+        76
+      ]
+    },
+    {
+      "rating": [
+        77,
+        77
+      ]
+    },
+    {
+      "rating": [
+        78,
+        78
+      ]
+    },
+    {
+      "rating": [
+        79,
+        79
+      ]
+    },
+    {
+      "rating": [
+        80,
+        80
+      ]
+    },
+    {
+      "rating": [
+        81,
+        81
+      ]
+    },
+    {
+      "rating": [
+        82,
+        82
+      ]
+    },
+    {
+      "rating": [
+        83,
+        83
+      ]
+    },
+    {
+      "rating": [
+        84,
+        84
+      ]
+    },
+    {
+      "rating": [
+        85,
+        85
+      ]
+    },
+    {
+      "rating": [
+        82,
+        82
+      ],
+      "nation": 37
+    },
+    {
+      "rating": [
+        80,
+        85
+      ],
+      "nation": 14
+    },
+    {
+      "rating": [
+        80,
+        85
+      ],
+      "nation": 45
+    },
+    {
+      "rating": [
+        64,
+        64
+      ],
+      "position": "GK"
+    },
+    {
+      "rating": [
+        64,
+        64
+      ],
+      "position": "GK",
+      "nation": 37
+    },
+    {
+      "rating": [
+        83,
+        83
+      ],
+      "nation": 45
+    },
+    {
+      "rating": [
+        83,
+        83
+      ],
+      "nation": 14
+    }
+  ],
+  "nation_ids": {
+    "England": 14,
+    "Spain": 45,
+    "Poland": 37,
+    "Germany": 21,
+    "France": 18,
+    "Italy": 27,
+    "Portugal": 38,
+    "Netherlands": 34,
+    "Brazil": 54,
+    "Argentina": 52,
+    "Belgium": 7,
+    "Scotland": 42
+  },
+  "league_ids": {
+    "Premier League": 13,
+    "LALIGA EA SPORTS": 53,
+    "Bundesliga": 19,
+    "Serie A TIM": 31,
+    "Ligue 1 McDonald's": 16,
+    "Liga Portugal": 308,
+    "Eredivisie": 10,
+    "PKO BP Ekstraklasa": 66,
+    "ROSHN Saudi League": 350
+  },
+  "formation": "GK RB CB CB CB LB CM CM CAM ST ST"
+}

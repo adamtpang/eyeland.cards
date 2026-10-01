@@ -1,0 +1,51 @@
+{
+  "name": "League & Nation Advanced: 5 Leagues & 6 Nations",
+  "formation": "GK CB CB CB CDM RM CM CM LM ST ST",
+  "requirements": {
+    "exact_leagues": 5,
+    "exact_nations": 6,
+    "max_same_club": 2,
+    "min_rating": 81,
+    "min_chemistry": 25
+  },
+  "pools": [],
+  "source": "https://www.futbin.com/27/squad-building-challenge/10",
+  "slots": [
+    "GK",
+    "CB",
+    "CB",
+    "CB",
+    "CDM",
+    "RM",
+    "CM",
+    "CM",
+    "LM",
+    "ST",
+    "ST"
+  ],
+  "nation_ids": {
+    "England": 14,
+    "Spain": 45,
+    "Poland": 37,
+    "Germany": 21,
+    "France": 18,
+    "Italy": 27,
+    "Portugal": 38,
+    "Netherlands": 34,
+    "Brazil": 54,
+    "Argentina": 52,
+    "Belgium": 7,
+    "Scotland": 42
+  },
+  "league_ids": {
+    "Premier League": 13,
+    "LALIGA EA SPORTS": 53,
+    "Bundesliga": 19,
+    "Serie A TIM": 31,
+    "Ligue 1 McDonald's": 16,
+    "Liga Portugal": 308,
+    "Eredivisie": 10,
+    "PKO BP Ekstraklasa": 66,
+    "ROSHN Saudi League": 350
+  }
+}
