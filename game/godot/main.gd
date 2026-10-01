@@ -51,6 +51,9 @@ var step_phase=0.0
 var facing=Vector2.DOWN
 var world3d
 var world_prompt: Label
+var world_host: SubViewportContainer
+var world_plate: Control
+var scroll_filter=Control.MOUSE_FILTER_PASS
 var world_hint: Label
 var world_action: Button
 var mulligan_picks: Array=[]
@@ -106,6 +109,7 @@ func _ready():
 	scroll = ScrollContainer.new()
 	scroll.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	add_child(scroll)
+	scroll_filter=scroll.mouse_filter
 	var margin = MarginContainer.new()
 	margin.size_flags_horizontal=Control.SIZE_EXPAND_FILL
 	for side in ["left","right","top","bottom"]: margin.add_theme_constant_override("margin_"+side,24)
@@ -144,6 +148,7 @@ func button_at(parent: Node, text: String, action: Callable, disabled: bool = fa
 func row_at(parent: Node) -> HBoxContainer:
 	var r=HBoxContainer.new()
 	r.add_theme_constant_override("separation",10)
+	r.mouse_filter=Control.MOUSE_FILTER_IGNORE
 	parent.add_child(r)
 	return r
 
@@ -159,11 +164,11 @@ func panel(parent: Node, color: Color=UIStyle.PANEL) -> VBoxContainer:
 
 func eyebrow(parent: Node, value: String):
 	var l=label_at(parent,value,11)
-	l.modulate=UIStyle.GOLD
+	l.add_theme_color_override("font_color",UIStyle.P.eyebrow)
 
 func muted(parent: Node,value: String,size_value: int=13):
 	var l=label_at(parent,value,size_value)
-	l.modulate=UIStyle.MUTED
+	l.add_theme_color_override("font_color",UIStyle.MUTED)
 	return l
 
 func primary(parent: Node,value: String,action: Callable) -> Button:
@@ -198,6 +203,15 @@ func render():
 		save_world_position(world3d.player.position)
 		world3d.stop_input()
 		world3d=null
+	if is_instance_valid(world_host): world_host.queue_free()
+	world_host=null
+	# On the island the page is a HUD floating over a full-window 3D view, so the empty
+	# parts of the page must let the mouse through to the world.
+	var over_world=page=="map"
+	scroll.mouse_filter=Control.MOUSE_FILTER_IGNORE if over_world else scroll_filter
+	for layer in [body,body.get_parent()]:
+		layer.mouse_filter=Control.MOUSE_FILTER_IGNORE if over_world else Control.MOUSE_FILTER_PASS
+		layer.size_flags_vertical=Control.SIZE_EXPAND_FILL if over_world else Control.SIZE_FILL
 	if page!="map": held_keys.clear(); route.clear(); traveling=false
 	body.add_theme_constant_override("separation",6 if page=="battle" else 12)
 	for side in ["top","bottom"]: body.get_parent().add_theme_constant_override("margin_"+side,12 if page=="battle" else 24)
@@ -208,7 +222,8 @@ func render():
 	timer_bar=null
 	target_widgets={}
 	var header=row_at(body)
-	label_at(header,"eyeland.cards",28 if page=="battle" else 34)
+	var title=label_at(header,"eyeland.cards",28 if page=="battle" else 34)
+	if page=="map": hud_outline(title)
 	if page!="start":
 		if page in ["map","deck"]:
 			var nav=button_at(header,"Collection" if page=="map" else "Back to island",func(): page="deck" if page=="map" else "map"; swap_index=-1; render())
@@ -233,6 +248,7 @@ func render():
 		duel_board.size=previous_battle_rect.size
 	creature_feedback.present(self)
 	save_label=label_at(body,model.error if not model.error.is_empty() else (toast if not toast.is_empty() else "Adventure saved on this device"),11)
+	if page=="map": hud_outline(save_label)
 	if not constructed.error.is_empty(): save_label.text=constructed.error
 	save_label.visible=not model.error.is_empty() or not constructed.error.is_empty()
 	save_label.modulate=UIStyle.MUTED
@@ -284,39 +300,60 @@ func begin():
 	page="map"
 	render()
 
+## Text that sits directly on the 3D world gets an outline in the panel colour.
+func hud_outline(label: Label):
+	label.add_theme_constant_override("outline_size",8)
+	label.add_theme_color_override("font_outline_color",UIStyle.P.panel)
+
 func map_screen():
 	var p=model.profile
-	var top=row_at(body)
-	label_at(top,"Home Island",30)
-	muted(top,"♥ %d / 30   ◆ %d resin" % [p.hp,p.resin],14)
-	var host=SubViewportContainer.new()
-	host.stretch=true
-	host.custom_minimum_size=Vector2(800,510)
-	host.size_flags_horizontal=Control.SIZE_EXPAND_FILL
-	host.mouse_filter=Control.MOUSE_FILTER_STOP
-	body.add_child(host)
+	world_host=SubViewportContainer.new()
+	world_host.name="WorldView"
+	world_host.stretch=true
+	world_host.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	world_host.mouse_filter=Control.MOUSE_FILTER_STOP
+	add_child(world_host)
+	move_child(world_host,0)
 	var viewport=SubViewport.new()
-	viewport.size=Vector2i(1280,720)
 	viewport.own_world_3d=true
-	viewport.msaa_3d=Viewport.MSAA_2X
+	viewport.msaa_3d=Viewport.MSAA_4X
 	viewport.render_target_update_mode=SubViewport.UPDATE_ALWAYS
-	host.add_child(viewport)
+	world_host.add_child(viewport)
 	world3d=World3DScene.new()
 	world3d.element=p.element
+	world3d.job=p.get("job","warrior")
 	world3d.restored_garden=p.won
 	if p.has("world_position"):
 		world3d.spawn_position=Vector3(p.world_position[0],p.world_position[1],p.world_position[2])
 	else: world3d.spawn_position=Vector3((p.x-6)*6,2,(p.y-4)*6)
 	viewport.add_child(world3d)
-	host.gui_input.connect(func(event):
+	world_host.gui_input.connect(func(event):
 		if is_instance_valid(world3d) and not event is InputEventKey: world3d.input_event(event))
 	world3d.position_saved.connect(save_world_position)
 	world3d.interact_requested.connect(world_interact)
 	world3d.nearby_changed.connect(update_world_prompt)
+	# HUD plates float over the world: place and health top left, the nearby action bottom centre.
+	var top=row_at(body)
+	var info=panel(top)
+	info.get_parent().size_flags_horizontal=Control.SIZE_SHRINK_BEGIN
+	info.add_theme_constant_override("separation",0)
+	label_at(info,"Home Island",24).autowrap_mode=TextServer.AUTOWRAP_OFF
+	muted(info,"♥ %d / 30   ◆ %d resin" % [p.hp,p.resin],14).autowrap_mode=TextServer.AUTOWRAP_OFF
+	var gap=Control.new()
+	gap.size_flags_vertical=Control.SIZE_EXPAND_FILL
+	gap.mouse_filter=Control.MOUSE_FILTER_IGNORE
+	body.add_child(gap)
 	var hud=row_at(body)
-	world_prompt=label_at(hud,"",20)
+	hud.alignment=BoxContainer.ALIGNMENT_CENTER
+	var prompt=row_at(panel(hud))
+	world_plate=prompt.get_parent().get_parent()
+	world_plate.size_flags_horizontal=Control.SIZE_SHRINK_CENTER
+	world_plate.visible=false
+	prompt.add_theme_constant_override("separation",18)
+	world_prompt=label_at(prompt,"",22)
+	world_prompt.autowrap_mode=TextServer.AUTOWRAP_OFF
 	world_prompt.mouse_filter=Control.MOUSE_FILTER_STOP
-	world_action=primary(hud,"Interact · E",func():
+	world_action=primary(prompt,"Interact · E",func():
 		if is_instance_valid(world3d): world_interact(world3d.current_landmark))
 	world_action.size_flags_horizontal=Control.SIZE_SHRINK_END
 	world_action.visible=false
@@ -335,6 +372,7 @@ func near_location(id: String) -> bool:
 func update_world_prompt(id: String):
 	if not is_instance_valid(world_prompt): return
 	world_action.visible=not id.is_empty()
+	if is_instance_valid(world_plate): world_plate.visible=not id.is_empty()
 	var names={"home":"Home","friend":"Mira","crop":"Garden","encounter":"Resin Crab","camp":"Campfire","dock":"Lookout"}
 	world_prompt.text=names.get(id,"")
 	world_prompt.tooltip_text=note

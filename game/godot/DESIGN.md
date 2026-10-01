@@ -15,11 +15,11 @@ One layout, three looks. Every colour, font, outline and shadow comes from the t
 | Battle board, cards, tokens, gems, hero portraits | Applied (2026-10-01) |
 | Menus: collection, deck, buttons, panels, tooltips | Applied through the shared theme |
 | Card art restyle (cel by day, engraved at night) | Applied with `card_style.gdshader` |
-| Overworld (3D island, sky, water, characters) | Not started. Still the September prototype |
+| Overworld (3D island, sky, water, characters) | First pass applied (2026-10-01), see "The overworld" below |
 | Sound and music per look | Not started. Only the attack-hit cues exist |
 | In-game clock | Not built. The computer's clock picks the look (06:00 to 18:00 is day) |
 
-Checked by `tests/looks.gd` (16 automated checks plus screenshots in
+Checked by `tests/looks.gd` (27 automated checks plus screenshots in
 `game/evidence/looks-2026-10-01/`). No human has judged the look in motion yet.
 
 ## The two looks
@@ -79,13 +79,29 @@ Element accents (fire, water, earth, air) and rarity gems keep one set of colour
 - Tests always start in day, with the original attack feel, so results do not depend on the
   time they run.
 
-## Next: the overworld
+## The overworld
 
-The island is still the September prototype: a framed 3D view, flat sky, block character.
-The plan is a full-screen view with the HUD on top, a gradient sky with sun and moon, a
-water shader, toon shading with ink outlines by day and fog with glowing landmarks at
-night, and the CC0 KayKit Adventurers characters Adam approved on 2026-10-01 in place of the
-block figure.
+First pass, 2026-10-01 (`world_3d.gd`, `sky.gdshader`, `water.gdshader`):
+
+- **Full-window 3D view** with the HUD floating on top as plates: place and health top
+  left, the nearby action bottom centre. Empty HUD space passes the mouse to the world.
+- **Toon shading everywhere** (`DIFFUSE_TOON`, no highlights) with one shared ink outline
+  pass: navy by day, bone at night. Clouds, flowers and paths skip the outline.
+- **Sky:** flat two-colour gradient with a hard sun disc by day; indigo with a moon and
+  twinkling stars at night.
+- **Water:** flat cel colour, foam rings that breathe along the shore, drifting glints.
+- **Light:** day is a warm sun with pale blue shadows. Night is dim moonlight, fog, bloom,
+  and warm point lights at the cottage, campfire, garden crystals and dock lantern.
+- **Characters:** animated KayKit Adventurers (CC0, Kay Lousberg, in `assets/characters/`
+  with the licence). Warrior is the Knight, ranger the hooded Rogue, wizard the Mage; Mira
+  uses the Mage or Rogue. Idle, walk, run and jump animations. The old block figure remains
+  as a fallback if a model is missing.
+- **Scenery:** round and pine trees, bushes, rocks, flowers, a fenced cottage, tent, dock
+  posts and drifting clouds.
+
+Still prototype quality here: creatures (companion, Resin Crab) are simple shapes, the
+terrain has no texture or grass detail, there is no ambient sound or music, no day-to-night
+transition (the look is chosen when the island loads), and no NPC other than Mira.
 
 ## Fonts
 

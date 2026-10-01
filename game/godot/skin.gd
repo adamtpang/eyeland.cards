@@ -8,7 +8,7 @@ const LOOKS = {
 	"classic": {
 		"ink":Color("102833"),"panel":Color("183541"),"panel2":Color("142e39"),"panel_edge":Color("34505a"),"panel_r":14,
 		"accent":Color("e6be77"),"accent_hover":Color("f3d299"),"accent_press":Color("cba467"),"accent_edge":Color("f8d99b"),"accent_ink":Color("102833"),
-		"text":Color("f6eddc"),"muted":Color("a9bec1"),"good":Color("77d2bd"),"bg":Color(0.035,0.075,0.10),
+		"text":Color("f6eddc"),"muted":Color("a9bec1"),"good":Color("77d2bd"),"eyebrow":Color("e6be77"),"bg":Color(0.035,0.075,0.10),
 		"button":Color("183541"),"button_hover":Color("294957"),"button_press":Color("3a5760"),"button_disabled":Color("142d37"),
 		"edge":Color("355360"),"edge_hover":Color("e6be77"),"edge_disabled":Color("29414a"),"edge_w":1,"radius":12,
 		"shadow":Color(0,0,0,0),"shadow_offset":Vector2.ZERO,"shadow_size":0,
@@ -26,7 +26,7 @@ const LOOKS = {
 	"day": {
 		"ink":Color("1d2a4d"),"panel":Color("ffffff"),"panel2":Color("eaf7fd"),"panel_edge":Color("1d2a4d"),"panel_r":18,
 		"accent":Color("ffd23f"),"accent_hover":Color("ffe07a"),"accent_press":Color("f0b90f"),"accent_edge":Color("1d2a4d"),"accent_ink":Color("1d2a4d"),
-		"text":Color("1d2a4d"),"muted":Color("4f5f85"),"good":Color("12b886"),"bg":Color("7fd3ee"),
+		"text":Color("1d2a4d"),"muted":Color("4f5f85"),"good":Color("12b886"),"eyebrow":Color("ff6b57"),"bg":Color("7fd3ee"),
 		"button":Color("ffffff"),"button_hover":Color("fff3c4"),"button_press":Color("ffe07a"),"button_disabled":Color("d9e6ee"),
 		"edge":Color("1d2a4d"),"edge_hover":Color("1d2a4d"),"edge_disabled":Color("8a97b5"),"edge_w":3,"radius":14,
 		"shadow":Color("1d2a4d"),"shadow_offset":Vector2(0,4),"shadow_size":1,
@@ -44,7 +44,7 @@ const LOOKS = {
 	"night": {
 		"ink":Color("110f1a"),"panel":Color("1e1b2e"),"panel2":Color("181526"),"panel_edge":Color("4a4466"),"panel_r":4,
 		"accent":Color("e2643a"),"accent_hover":Color("f07a4f"),"accent_press":Color("c24f2a"),"accent_edge":Color("e2643a"),"accent_ink":Color("110f1a"),
-		"text":Color("d9cfb8"),"muted":Color("8f88a3"),"good":Color("8e7ff5"),"bg":Color("0d0b14"),
+		"text":Color("d9cfb8"),"muted":Color("8f88a3"),"good":Color("8e7ff5"),"eyebrow":Color("e2643a"),"bg":Color("0d0b14"),
 		"button":Color("1e1b2e"),"button_hover":Color("2a2540"),"button_press":Color("342e50"),"button_disabled":Color("15131f"),
 		"edge":Color("8f88a3"),"edge_hover":Color("e2643a"),"edge_disabled":Color("2c2840"),"edge_w":1,"radius":3,
 		"shadow":Color(0,0,0,0),"shadow_offset":Vector2.ZERO,"shadow_size":0,

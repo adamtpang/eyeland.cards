@@ -44,6 +44,23 @@ func run():
 		check(is_instance_valid(game.duel_board) and game.duel_board.hand_faces.size()>0,"%s: hand is drawn" % look)
 		var face=game.duel_board.hand_faces[0]
 		check(face.material!=null and is_equal_approx(face.material.get_shader_parameter("style"),float(UIStyle.P.art_style)),"%s: card art uses the look's art style" % look)
+	# the island: a full-window 3D view behind the HUD, in both looks
+	game.battle.outcome=1; game.after_action(); await create_timer(.2).timeout
+	game.page="map"
+	for look in ["day","night"]:
+		game.choose_look(look); game.render()
+		await create_timer(1.2).timeout
+		shot(folder,"island-%s.png" % look)
+		check(is_instance_valid(game.world3d) and game.world3d.player.is_on_floor(),"%s: island loads and the hero stands on it" % look)
+		check(game.world_host.get_index()==0 and game.world_host.size.is_equal_approx(game.size),"%s: the world fills the window behind the HUD" % look)
+		check(game.world3d.animator!=null and game.world3d.animator.current_animation=="Idle","%s: animated hero model is idling" % look)
+		check(game.world3d.night==(look=="night"),"%s: island lighting follows the look" % look)
+		game.world3d.player.position=Vector3(0,1,4.5)
+		await create_timer(.9).timeout
+		shot(folder,"island-%s-camp.png" % look)
+		check(game.world_plate.visible and game.world_action.text.begins_with("Rest"),"%s: nearby action plate appears" % look)
+	game.page="deck"; game.render(); await create_timer(.2).timeout
+	check(not is_instance_valid(game.world_host),"World view is removed when leaving the island")
 	game.choose_look("day"); game.render(); await process_frame
 	for expected in ["night","classic","day"]:
 		var key=InputEventKey.new(); key.keycode=KEY_F5; key.pressed=true
