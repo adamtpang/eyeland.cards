@@ -1,4 +1,5 @@
 extends Node
+const UIStyle=preload("res://skin.gd")
 ## Attack "feel" variations for playtesting. Variant 0 is the original lunge.
 ## In battle, F1 to F4 switch between them. Rules and outcomes never change, only presentation.
 const NAMES=["Original","A  Snap","B  Heavy","C  Slash"]
@@ -25,7 +26,7 @@ func set_variant(v: int):
 		tween.tween_property(label,"scale",Vector2.ONE,.16)
 
 func caption() -> String:
-	return "Attack feel: %s   (F1 original · F2 A · F3 B · F4 C)" % NAMES[variant]
+	return "Attack feel: %s  (F1 to F4)   ·   Look: %s  (F5)" % [NAMES[variant],UIStyle.mode]
 
 func _process(_delta):
 	if not is_instance_valid(game): return
@@ -41,6 +42,9 @@ func _process(_delta):
 		label.text=caption()
 		game.add_child(label)
 	label.visible=game.page=="battle"
+	label.text=caption()
+	label.add_theme_color_override("font_color",UIStyle.P.stat_text)
+	label.add_theme_color_override("font_outline_color",UIStyle.P.stat_outline)
 	label.position=Vector2(14,game.size.y-24)
 	if not shaking: return
 	var now=Time.get_ticks_usec()/1000000.0
@@ -83,11 +87,12 @@ func token(tex: Texture2D,side: float,label_name: String,layer: int) -> Panel:
 	art.stretch_mode=TextureRect.STRETCH_KEEP_ASPECT_COVERED
 	art.size=disc.size
 	art.mouse_filter=Control.MOUSE_FILTER_IGNORE
+	art.material=UIStyle.art_material(true)
 	disc.add_child(art)
 	var rim=Panel.new()
 	var edge=StyleBoxFlat.new()
 	edge.bg_color=Color(0,0,0,0)
-	edge.border_color=Color("e8c36a")
+	edge.border_color=UIStyle.P.token_idle
 	edge.set_border_width_all(3)
 	edge.set_corner_radius_all(int(side/2))
 	rim.add_theme_stylebox_override("panel",edge)

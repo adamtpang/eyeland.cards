@@ -18,10 +18,8 @@ func _ready():
 	for state in ["font_color","font_disabled_color","font_hover_color","font_pressed_color","font_focus_color"]:
 		add_theme_color_override(state,Color.TRANSPARENT)
 	for event in [mouse_entered,mouse_exited,focus_entered,focus_exited]: event.connect(queue_redraw)
-	if is_power:
-		material=ShaderMaterial.new()
-		material.shader=preload("res://card_unavailable.gdshader")
-		material.set_shader_parameter("unavailable",1.0 if disabled else 0.0)
+	material=UIStyle.art_material()
+	if is_power: material.set_shader_parameter("unavailable",1.0 if disabled else 0.0)
 
 func ellipse(center: Vector2,radius: Vector2) -> PackedVector2Array:
 	var points=PackedVector2Array()
@@ -29,13 +27,15 @@ func ellipse(center: Vector2,radius: Vector2) -> PackedVector2Array:
 	return points
 
 func _draw():
+	var p=UIStyle.P
 	var center=size/2
 	var radius=size/2-Vector2(5,5)
 	if is_power: radius=Vector2.ONE*(minf(size.x,size.y)/2-6)
-	var frame=UIStyle.GOLD if is_hovered() or has_focus() else Color("b49b6c")
+	var frame=UIStyle.GOLD if is_hovered() or has_focus() else p.token_idle
 	if is_power and available: frame=UIStyle.TEAL
-	draw_colored_polygon(ellipse(center+Vector2(0,3),radius+Vector2(4,4)),Color("10282d"))
+	draw_colored_polygon(ellipse(center+(p.token_drop if p.token_drop!=Vector2.ZERO else Vector2(0,3)),radius+Vector2(4,4)),p.gem_shadow)
 	draw_colored_polygon(ellipse(center,radius+Vector2(2,2)),frame)
+	if p.token_gap: draw_colored_polygon(ellipse(center,radius+Vector2(.4,.4)),p.ink)
 	var points=ellipse(center,radius-Vector2(3,3))
 	var uv=PackedVector2Array()
 	for point in points:
@@ -43,16 +43,17 @@ func _draw():
 		if portrait is AtlasTexture: local_uv=(portrait.region.position+local_uv*portrait.region.size)/portrait.atlas.get_size()
 		uv.append(local_uv)
 	if portrait:
-		draw_polygon(points,PackedColorArray([Color.WHITE]),uv,portrait.atlas if portrait is AtlasTexture else portrait)
+		draw_polygon(points,PackedColorArray([UIStyle.ART]),uv,portrait.atlas if portrait is AtlasTexture else portrait)
 	else: draw_colored_polygon(points,Color("35545a"))
 	if is_power:
 		var gem=Vector2(14,14)
-		draw_circle(gem,14,UIStyle.GOLD)
-		draw_circle(gem,11,Color("286d94"))
-		draw_string(UIStyle.sans,gem+Vector2(-12,6),"2",HORIZONTAL_ALIGNMENT_CENTER,24,17,Color.WHITE)
+		draw_circle(gem+p.gem_drop,15,p.gem_shadow)
+		draw_circle(gem,14,p.gem_ring)
+		draw_circle(gem,14-p.gem_w,p.mana)
+		draw_string(UIStyle.serif if p.gem_display else UIStyle.sans,gem+Vector2(-12,6),"2",HORIZONTAL_ALIGNMENT_CENTER,24,17,p.gem_text)
 		if used:
-			draw_style_box(UIStyle.box(Color("19333d"),UIStyle.GOLD,5,0),Rect2(center.x-25,size.y-25,50,19))
-			draw_string(UIStyle.sans,Vector2(center.x-25,size.y-11),"USED",HORIZONTAL_ALIGNMENT_CENTER,50,11,UIStyle.TEXT)
+			draw_style_box(UIStyle.box(p.token_plate,frame,5,0),Rect2(center.x-25,size.y-25,50,19))
+			draw_string(UIStyle.sans,Vector2(center.x-25,size.y-11),"USED",HORIZONTAL_ALIGNMENT_CENTER,50,11,p.token_plate_text)
 func _make_custom_tooltip(for_text: String) -> Object:
 	var content=VBoxContainer.new()
 	content.theme=UIStyle.theme()

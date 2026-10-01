@@ -84,7 +84,19 @@ var battle_effect_tweens: Array=[]
 var battle_effect_owner
 var settled_battle
 
+## Day uses the Sunlit Cel look and night the Inked Relic look. Until the island has its own
+## clock, the computer's clock decides; F5 cycles day, night and the earlier classic look.
+func choose_look(next: String=""):
+	if next.is_empty():
+		var hour=Time.get_datetime_dict_from_system().hour
+		next="day" if OS.get_cmdline_args().has("--script") or (hour>=6 and hour<18) else "night"
+	UIStyle.set_mode(next)
+	theme=UIStyle.theme()
+	# each look has a matching attack feel; F1 to F4 still override it
+	if not OS.get_cmdline_args().has("--script"): hit_feel.variant={"day":2,"night":3}.get(UIStyle.mode,0)
+
 func _ready():
+	choose_look()
 	add_child(battle_audio)
 	add_child(secret_reveal)
 	add_child(creature_feedback)
@@ -138,7 +150,7 @@ func row_at(parent: Node) -> HBoxContainer:
 func panel(parent: Node, color: Color=UIStyle.PANEL) -> VBoxContainer:
 	var frame=PanelContainer.new()
 	frame.size_flags_horizontal=Control.SIZE_EXPAND_FILL
-	frame.add_theme_stylebox_override("panel",UIStyle.box(color,Color("34505a"),14,18))
+	frame.add_theme_stylebox_override("panel",UIStyle.plate(color,UIStyle.P.panel_edge,UIStyle.P.panel_r,18))
 	parent.add_child(frame)
 	var content=VBoxContainer.new()
 	content.add_theme_constant_override("separation",12)
@@ -241,7 +253,7 @@ func start_screen():
 	portrait.mouse_filter=Control.MOUSE_FILTER_STOP
 	portrait.tooltip_text=model.cards[model.world.elements[element_index].starter].text
 	label_at(intro,model.cards[model.world.elements[element_index].starter].name,30)
-	var choices=panel(split,Color("142e39"))
+	var choices=panel(split,UIStyle.P.panel2)
 	eyebrow(choices,"CLASS")
 	label_at(choices,"Your adventure",32)
 	var jobs=row_at(choices)
@@ -814,6 +826,12 @@ func save_bug_snapshot() -> String:
 func _input(event):
 	if event is InputEventKey and event.pressed and not event.echo and event.keycode==KEY_F8:
 		save_bug_snapshot()
+		get_viewport().set_input_as_handled()
+		return
+	if event is InputEventKey and event.pressed and not event.echo and event.keycode==KEY_F5:
+		var looks=["day","night","classic"]
+		choose_look(looks[(looks.find(UIStyle.mode)+1)%looks.size()])
+		render()
 		get_viewport().set_input_as_handled()
 		return
 	if page=="battle" and event is InputEventKey and event.pressed and not event.echo and event.keycode in [KEY_F1,KEY_F2,KEY_F3,KEY_F4]:

@@ -49,13 +49,26 @@ func hero(id: String, side: int, y: float):
 	if state.get("frozen",false):
 		button.modulate=Color("8ecde8")
 		button.tooltip_text+="\nFrozen: cannot attack until an attack opportunity is missed."
-	var health=caption("♥ %d   ◇ %d" % [state.hp,state.armor],.5,y+69,120,16)
+	if not UIStyle.P.board_art:
+		# a name-plate under the portrait keeps health readable in the day and night looks
+		var stat_plate=Panel.new()
+		var stat_box=UIStyle.box(UIStyle.P.token_plate,UIStyle.P.token_idle,UIStyle.P.plate_r+3,0)
+		stat_box.set_border_width_all(UIStyle.P.plate_w)
+		stat_plate.add_theme_stylebox_override("panel",stat_box)
+		stat_plate.mouse_filter=Control.MOUSE_FILTER_IGNORE
+		add_child(stat_plate)
+		place(stat_plate,.5,y+75,Vector2(98,23))
+	var health=caption("♥ %d   ◇ %d" % [state.hp,state.armor],.5,y+69 if UIStyle.P.board_art else y+75,120,16 if UIStyle.P.board_art else 15)
 	health.name="HeroStats%d" % side
 	health.set_meta("state",{"hp":state.hp,"armor":state.armor,"frozen":state.get("frozen",false)})
 	health.mouse_filter=Control.MOUSE_FILTER_IGNORE
-	health.add_theme_color_override("font_color",Color("fff5db"))
-	health.add_theme_constant_override("outline_size",5)
-	health.add_theme_color_override("font_outline_color",Color("3a2924"))
+	if UIStyle.P.board_art:
+		health.add_theme_color_override("font_color",UIStyle.P.stat_text)
+		health.add_theme_constant_override("outline_size",5)
+		health.add_theme_color_override("font_outline_color",UIStyle.P.stat_outline)
+	else:
+		# a name-plate keeps health readable over any portrait
+		health.add_theme_color_override("font_color",UIStyle.P.token_plate_text)
 	if side==1: game.target_widgets[-1]=button
 	update_secrets(side,game.secret_display.get(side,state.get("secrets",[])))
 	update_weapon(side,game.weapon_display.get(side,state.get("weapon",{})))
@@ -103,7 +116,9 @@ func _ready():
 	var theirs=battle.sides[1]
 	for i in range(theirs.hand.size()):
 		var back=Panel.new()
-		back.add_theme_stylebox_override("panel",UIStyle.box(Color("284c55"),UIStyle.GOLD,7,0))
+		var back_box=UIStyle.box(UIStyle.P.back,UIStyle.P.back_edge,7,0)
+		back_box.set_border_width_all(maxi(1,UIStyle.P.edge_w-1))
+		back.add_theme_stylebox_override("panel",back_box)
 		add_child(back)
 		place(back,.5, -18+absf(i-(theirs.hand.size()-1)/2.0)*2,Vector2(44,57))
 		back.position.x+= (i-(theirs.hand.size()-1)/2.0)*29
@@ -190,14 +205,20 @@ func _ready():
 	if not end.disabled: UIStyle.primary(end)
 	for side in [1,0]:
 		var pile=Panel.new()
-		pile.add_theme_stylebox_override("panel",UIStyle.box(Color("293f41"),Color("ad9566"),7,0))
+		var pile_box=UIStyle.box(UIStyle.P.pile,UIStyle.P.pile_edge,7,0)
+		pile_box.set_border_width_all(UIStyle.P.edge_w)
+		pile_box.shadow_color=UIStyle.P.shadow; pile_box.shadow_size=UIStyle.P.shadow_size; pile_box.shadow_offset=UIStyle.P.shadow_offset
+		pile.add_theme_stylebox_override("panel",pile_box)
 		add_child(pile)
 		place(pile,.91,110 if side==1 else 330,Vector2(72,96))
-		caption(str(battle.sides[side].deck.size()),.91,143 if side==1 else 363,70,18)
+		var pile_count=caption(str(battle.sides[side].deck.size()),.91,143 if side==1 else 363,70,18)
+		pile_count.add_theme_color_override("font_color",UIStyle.P.stat_text)
+		pile_count.add_theme_constant_override("outline_size",5)
+		pile_count.add_theme_color_override("font_outline_color",UIStyle.P.stat_outline)
 		pile.tooltip_text="%d cards remaining" % battle.sides[side].deck.size()
 	var locked=int(yours.get("locked_mana",0))
 	var mana_label=caption("◆".repeat(yours.mana)+"◇".repeat(maxi(0,yours.max_mana-yours.mana-locked))+"▣".repeat(locked)+"  %d/%d" % [yours.mana,yours.max_mana],.84,438,260,15)
-	mana_label.modulate=Color("8dcde8")
+	mana_label.add_theme_color_override("font_color",UIStyle.P.mana_text)
 	mana_label.mouse_filter=Control.MOUSE_FILTER_STOP
 	mana_label.tooltip_text="%d mana locked this turn.\nOverload: %d mana locked next turn." % [locked,int(yours.get("overload",0))]
 	if yours.get("overload",0)>0: caption("Overload %d" % yours.overload,.84,460,180,13).modulate=Color("e8ba76")
@@ -207,8 +228,8 @@ func _ready():
 	game.timer_bar.show_percentage=false
 	add_child(game.timer_bar)
 	place(game.timer_bar,.5,241,Vector2(640,3))
-	game.timer_bar.add_theme_stylebox_override("background",UIStyle.box(Color("394d46"),Color.TRANSPARENT,1,0))
-	game.timer_bar.add_theme_stylebox_override("fill",UIStyle.box(UIStyle.GOLD,Color.TRANSPARENT,1,0))
+	game.timer_bar.add_theme_stylebox_override("background",UIStyle.box(UIStyle.P.timer_bg,Color.TRANSPARENT,1,0))
+	game.timer_bar.add_theme_stylebox_override("fill",UIStyle.box(UIStyle.GOLD if UIStyle.P.board_art else Color(UIStyle.P.board_edge,.55),Color.TRANSPARENT,1,0))
 	game.timer_label=caption("",.91,292,100,12)
 	var count=yours.hand.size()
 	for i in range(count):
@@ -296,9 +317,33 @@ func opening_hand():
 	UIStyle.primary(begin)
 
 func _draw():
-	if board_art: draw_texture_rect(board_art,Rect2(0,0,size.x,626),false)
-	else: draw_style_box(UIStyle.box(UIStyle.INK,UIStyle.GOLD,28,0),Rect2(0,0,size.x,626))
-	draw_line(Vector2(size.x*.16,241),Vector2(size.x*.81,241),Color(.75,.7,.5,.35),1)
+	var p=UIStyle.P
+	if p.board_art and board_art:
+		draw_texture_rect(board_art,Rect2(0,0,size.x,626),false)
+	else:
+		var table=UIStyle.box(p.board,p.board_edge,p.board_r,0)
+		table.set_border_width_all(p.board_edge_w)
+		table.shadow_color=p.shadow; table.shadow_size=p.shadow_size; table.shadow_offset=p.shadow_offset*1.5
+		draw_style_box(table,Rect2(2,0,size.x-4,622))
+		var middle=Vector2(size.x/2,241)
+		if UIStyle.mode=="night":
+			# engraved chart: faint diagonal hatching and two compass rings
+			var step=18.0
+			var x=-622.0
+			while x<size.x:
+				draw_line(Vector2(maxf(x,6),maxf(6,-x)),Vector2(minf(x+616,size.x-6),minf(616,size.x-6-x)),Color(p.board_edge,.035),1)
+				x+=step
+			draw_circle(middle,210,Color(0.56,0.5,0.96,.05))
+			draw_arc(middle,196,0,TAU,96,p.board_mark,1.5,true)
+			draw_arc(middle,206,0,TAU,96,Color(p.board_mark,.14),1,true)
+			for i in range(8): draw_line(middle+Vector2.from_angle(i*TAU/8)*196,middle+Vector2.from_angle(i*TAU/8)*214,p.board_mark,1.5,true)
+		else:
+			# sunlit table: a pale play circle and a soft sky band behind the opponent
+			draw_style_box(UIStyle.box(Color(1,1,1,.32),Color(1,1,1,0),p.board_r-6,0),Rect2(8,6,size.x-16,118))
+			draw_circle(middle,204,Color(1,1,1,.36))
+			draw_arc(middle,204,0,TAU,96,p.board_mark,3,true)
+	draw_line(Vector2(size.x*.16,241),Vector2(size.x*.81,241),p.board_mark,1 if p.board_art else 2)
+
 
 
 	if field_drag:
@@ -388,8 +433,8 @@ func draw_targeting():
 	if active:
 		var destination=drag_pointer if not game.drag_payload.is_empty() else get_local_mouse_position()
 		var direction=(destination-origin).normalized()
-		draw_line(origin,destination,Color("f0ba72"),4,true)
-		draw_colored_polygon(PackedVector2Array([destination,destination-direction.rotated(.5)*20,destination-direction.rotated(-.5)*20]),Color("f0ba72"))
+		draw_line(origin,destination,UIStyle.P.arrow,5,true)
+		draw_colored_polygon(PackedVector2Array([destination,destination-direction.rotated(.5)*20,destination-direction.rotated(-.5)*20]),UIStyle.P.arrow)
 
 
 func CollectionElement() -> String:

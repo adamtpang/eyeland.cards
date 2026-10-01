@@ -1,60 +1,94 @@
-> Latest: the painted-map exploration and flat battle rows described historically below have been replaced by a physical third-person island and tabletop battle layout. See [README](README.md), [parity status](PARITY.md), and [Jello lessons](../docs/JELLO_LESSONS.md).
+# Eyeland design system
 
-# Coastal storybook interface
+Decided by Adam on 2026-10-01 from the three-direction style board
+(https://claude.ai/artifact/7xkMjZQc1DLXjMemSC1nzw): **Sunlit Cel by day, Inked Relic at
+night.** The earlier painted look is kept as "classic" for comparison; its document is
+[DESIGN-2026-09-20-coastal-storybook.md](DESIGN-2026-09-20-coastal-storybook.md).
 
-Design pass: September 20, 2026. Native Godot UI, retaining the existing battle/model/save behavior.
+One layout, three looks. Every colour, font, outline and shadow comes from the tokens in
+`skin.gd` (`UIStyle.P`). Draw code must not hard-code a colour.
 
-## Reference and direction
+## Status
 
-Adam's named reference is Hearthstone. The [official card library](https://hearthstone.blizzard.com/en-us/cards) grounds the card hierarchy: creature illustration, mana, name, rules, attack and health. Eyeland uses original artwork and frames, not Blizzard assets. The adventure's coastal identity comes from the existing Eyeland design documents: a home worth protecting, collectible companions, a resource garden and the promise of islands beyond it.
-
-Direction: illustrated coastal fantasy, comfortable exploration and compact battles. Deep marine surfaces, warm parchment cards, brass actions, serif titles and readable sans-serif controls. The combat screen keeps hand, both boards, mana and End turn visible together. No web framework or dependencies were added.
-
-## Tokens
-
-| Role | Value |
+| Area | Day and night looks |
 |---|---|
-| Background | `#09131a` (existing Godot background) |
-| Ink | `#102833` |
-| Panel | `#183541` |
-| Foreground | `#f6eddc` |
-| Secondary text | `#a9bec1` |
-| Primary / focus | `#e6be77` |
-| Playable / success | `#77d2bd` |
-| Parchment | `#e8dcc3` |
-| Body | Poppins Regular |
-| Titles | Cormorant Garamond |
-| Panel radius | 14 px |
-| Button radius | 9–12 px |
-| Main spacing | 12 px; 6 px in battle |
-| Screen transition | 180 ms fade |
-| Walking | Continuous 3.6 navigation units/sec, normalized diagonals |
+| Battle board, cards, tokens, gems, hero portraits | Applied (2026-10-01) |
+| Menus: collection, deck, buttons, panels, tooltips | Applied through the shared theme |
+| Card art restyle (cel by day, engraved at night) | Applied with `card_style.gdshader` |
+| Overworld (3D island, sky, water, characters) | Not started. Still the September prototype |
+| Sound and music per look | Not started. Only the attack-hit cues exist |
+| In-game clock | Not built. The computer's clock picks the look (06:00 to 18:00 is day) |
 
-Fonts are local with OFL license files in `assets/fonts`. Native Godot theme tokens live in `skin.gd`; card frames/inspection in `card_face.gd`. This game has one intentional dark theme, not a website light/dark toggle.
+Checked by `tests/looks.gd` (16 automated checks plus screenshots in
+`game/evidence/looks-2026-10-01/`). No human has judged the look in motion yet.
 
-## Player-facing improvements
+## The two looks
 
-- Class selection previews the class power; companion selection previews the actual card and larger portrait.
-- A painted island, landmark pins, hover destination cue and pathfinding replace the block grid. The background is illustrative; the navigation still uses the existing logical grid.
-- A three-step quest journal shows family interaction, victory and equipped reward independently.
-- Contextual nearby actions, persistent deck navigation and an expandable how-to-play guide.
-- Parchment cards with blue mana, gold attack, red health and rarity gems. Hover inspection shows larger artwork, complete rules and current creature stats.
-- Ready/selected/target states carry text as well as border colors. Unaffordable hand cards explain the missing mana in their tooltip.
-- Stable opposing/friendly board lanes, visible mana crystals and a thin turn timer.
-- Floating damage numbers for targeted player actions. This is feedback, not a complete combat animation system; opponent actions still progress with the existing paced AI and log.
-- Escape cancels targeting. Retreat asks for confirmation and pauses the player's clock while the dialog is open.
-- Victory leads directly to deck editing; defeat offers immediate rest. Collection changes have a saved confirmation.
+| | Day: Sunlit Cel | Night: Inked Relic |
+|---|---|---|
+| Mood | Bright Saturday-morning adventure | An old sea chart read at night |
+| Shapes | Chunky, rounded (radius 14 to 18) | Sharp, engraved (radius 3 to 6) |
+| Outline | 3 px ink navy on everything | 1 px bone line, double ring on tokens |
+| Shadow | Hard drop shadow, no blur | None; a faint ember glow on cards |
+| Display font | Baloo 2, weight 800 | Cinzel, weight 600 |
+| Body font | Nunito, weight 700 | Spectral Regular |
+| Card art | Flat value bands, boosted colour, ink edges | Bone-on-indigo cross-hatching |
+| Gems | Round, outlined, offset shadow | Diamonds with a bone edge |
+| Attack feel | B Heavy | C Slash |
 
-## Verification
+## Colour tokens
 
-- 328/328 existing model/combat checks, including 300 simulated tutorial games.
-- 14/14 rendered journey checks after redesign: injected Godot mouse/keyboard input plus UI callbacks, real battle victory, earned-card swap, scene restart, earned-card play, retreat, rest, destination pathfinding and rejected ocean destination.
-- 18/18 design checks: desktop 1280×800 and window size 1024×720, horizontal bounds, battle vertical bounds, legal Taunt/spell targets, Escape, cancelled retreat, pathfinding. Screenshots include deliberately constructed battle fixtures; these are distinct from the real-engine journey.
-- Visually inspected setup, island, battle, collection and small-window captures in `../evidence/godot-design-2026-09-20`.
-- Calculated text contrast: foreground/panel 11.12:1; secondary/panel 6.66:1; primary button 8.74:1; card rules/parchment 11.25:1; gold/panel 7.39:1; success/panel 7.23:1. These verify the named flat-color pairs, not every antialiased pixel or illustration.
+| Role | Day | Night |
+|---|---|---|
+| Background | `#7fd3ee` sky | `#0d0b14` |
+| Ink / outline | `#1d2a4d` | `#110f1a` |
+| Panel | `#ffffff` | `#1e1b2e` |
+| Text | `#1d2a4d` | `#d9cfb8` bone |
+| Muted text | `#4f5f85` | `#8f88a3` |
+| Primary action | `#ffd23f` sun | `#e2643a` ember |
+| Playable / positive | `#12b886` | `#8e7ff5` spirit |
+| Board | `#f6dfa0` sand | `#1a1728` indigo |
+| Card face | `#ffffff` | `#1e1b2e` |
+| Name banner | `#ff6b57` coral, white text | `#110f1a`, ember text |
+| Mana | `#2f8fff` | `#8e7ff5` |
+| Attack | `#ffab00` | `#d9cfb8` |
+| Health | `#ff4d6d` | `#e2643a` |
 
-Still unverified: unaided player comprehension, human enjoyment, screen-reader access, touch devices, exported binaries and varied GPU/display configurations. Tooltips provide larger rules at small window sizes, but readability remains a playtest question. The map artwork does not add a free-roaming world or new collisions. No multiplayer, crafting, progression or engine-parity features were implied by this art pass.
+Element accents (fire, water, earth, air) and rarity gems keep one set of colours in every look.
 
-## Walking follow-up
+## Rules
 
-A 1.65× following camera and animated cloaked character replace the map marker. Hold WASD/arrows, click to pathfind or press E near a landmark. Battle hand availability uses a dedicated desaturation/dimming shader; collection colors are unchanged. See README for verification and collision limits.
+- **One accent per look.** Day spends yellow on the single primary action; night spends ember.
+  Everything else stays in ink, white and the board colour.
+- **State is shown by the outline**, not by a new fill: hover and focus use the primary
+  accent, playable uses the positive colour, idle uses ink (day) or bone (night).
+- **Numbers sit in gems; names sit on plates.** Health and attack never float over artwork
+  without a plate or gem behind them.
+- **Art is restyled, not replaced.** `card_style.gdshader` restyles only draws tagged with
+  `UIStyle.ART`, so frames and text are untouched. New art should be made for the look it
+  will mostly be seen in, then checked in the other.
+- **Motion matches the look.** Day: squash, bounce, hard hits (attack feel B). Night: sharp,
+  fast, glowing (attack feel C). F1 to F4 still switch the attack feel by hand.
+- **Layout does not change between looks.** Positions and sizes are shared, so every layout
+  test covers all three.
+
+## Switching
+
+- Normal play picks day or night from the computer's clock until the island has its own.
+- **F5** cycles day, night and classic on any screen.
+- Tests always start in day, with the original attack feel, so results do not depend on the
+  time they run.
+
+## Next: the overworld
+
+The island is still the September prototype: a framed 3D view, flat sky, block character.
+The plan is a full-screen view with the HUD on top, a gradient sky with sun and moon, a
+water shader, toon shading with ink outlines by day and fog with glowing landmarks at
+night, and the CC0 KayKit Adventurers characters Adam approved on 2026-10-01 in place of the
+block figure.
+
+## Fonts
+
+All Open Font License, from Google Fonts' GitHub, in `assets/fonts/` with their licence
+files: Baloo 2, Nunito, Cinzel, Spectral (added 2026-10-01); Cormorant Garamond and Poppins
+(classic look).
