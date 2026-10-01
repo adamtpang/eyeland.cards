@@ -57,7 +57,7 @@ func run():
 	check(is_zero_approx(world.mix) and not world.night,"Island starts in daylight")
 	check(world.grass_blades>500,"Meadow has swaying grass")
 	check(world.crab_claws.size()==2 and world.crab_legs.size()==6,"Resin Crab has claws and legs")
-	check(world.companion.get_child_count()>=12,"Companion has a face and an element feature")
+	check(world.pet_animator!=null and world.pet_animator.is_playing(),"Companion is an animated creature model")
 	check(world.audio.waves.playing and world.audio.counts.get("land",0)==0,"Sea ambience is playing, with no thud on arrival")
 	# walking makes footsteps
 	var walk=InputEventKey.new(); walk.keycode=KEY_D; walk.pressed=true
@@ -87,6 +87,18 @@ func run():
 	game.choose_look("day"); game.render()
 	await create_timer(2.2).timeout
 	shot(folder,"island-day-crab.png")
+	# each element's companion model loads and animates
+	for kind in ["fire","water","earth","air"]:
+		world.element=kind
+		var old_pet=world.companion
+		world.pet_animator=null
+		world.companion=world.make_companion()
+		world.add_child(world.companion)
+		world.companion.position=old_pet.position
+		old_pet.queue_free()
+		await create_timer(.5).timeout
+		check(world.pet_animator!=null and world.pet_animator.is_playing(),"%s companion model animates" % kind)
+		shot(folder,"companion-%s.png" % kind)
 	check(is_zero_approx(world.mix),"Night blends back to day")
 	var mute_before=game.battle_audio.muted
 	game.battle_audio.toggle(); game.render(); await process_frame

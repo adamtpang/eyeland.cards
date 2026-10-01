@@ -19,7 +19,7 @@ One layout, three looks. Every colour, font, outline and shadow comes from the t
 | Sound and music per look | Synthesized ambience and placeholder tunes on the island; battle has hit cues only |
 | In-game clock | Built (2026-10-01): 12-minute days on the island, shown in the HUD, saved |
 
-Checked by `tests/looks.gd` (42 automated checks plus screenshots in
+Checked by `tests/looks.gd` (46 automated checks plus screenshots in
 `game/evidence/looks-2026-10-01/`). No human has judged the look in motion yet.
 
 ## The two looks
@@ -126,9 +126,16 @@ Third pass, 2026-10-01:
   nobody has listened to them yet, and a composed track would be better.
 - **In-game clock**, described under "Switching".
 
-Still open: no creature models beyond code shapes (a CC0 pack, Quaternius Ultimate
-Monsters, was found but not downloaded), no NPC other than Mira, and no human has judged
-how any of this looks in motion or how it sounds.
+- **Companion models:** four animated monsters from Quaternius's CC0 "Ultimate Monsters"
+  bundle (in `assets/creatures/` with the licence): Dragon for fire, Fish for water,
+  Mushnub for earth, Birb for air. They idle and walk or fly behind the hero, with their
+  own thinner outline pass because their rigs are authored at a different scale. The
+  code-built friend remains as a fallback. Their colours do not all match their element
+  yet (the earth Mushnub is blue).
+
+Still open: the Resin Crab is still built from shapes in code (the pack has no crab), no
+NPC other than Mira, and no human has judged how any of this looks in motion or how it
+sounds.
 
 ## Fonts
 

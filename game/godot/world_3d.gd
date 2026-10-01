@@ -53,6 +53,11 @@ var pet_wings: Array=[]
 var crab_claws: Array=[]
 var crab_legs: Array=[]
 var stride=0.0
+var pet_animator: AnimationPlayer
+var pet_ink: StandardMaterial3D
+var pet_idle=""
+var pet_move=""
+const PET_SCALE=.28
 var airborne=false
 var landmarks={"home":Vector3(-18,0,-6),"friend":Vector3(-6,0,-12),"crop":Vector3(6,0,-6),"encounter":Vector3(18,0,-6),"camp":Vector3(0,0,6),"dock":Vector3(18,0,6)}
 const WALK=4.2
@@ -128,6 +133,9 @@ func _ready():
 	ink.shading_mode=BaseMaterial3D.SHADING_MODE_UNSHADED
 	ink.cull_mode=BaseMaterial3D.CULL_FRONT
 	ink.grow=true
+	# The creature models are authored 100 times smaller inside their rigs, so they need
+	# their own outline pass with a proportionally thinner grow.
+	pet_ink=ink.duplicate()
 	var environment=WorldEnvironment.new()
 	env=Environment.new()
 	sky_material=ShaderMaterial.new()
@@ -178,6 +186,8 @@ func apply_look(t: float):
 	mix=t
 	ink.albedo_color=Color("1d2a4d").lerp(Color("a59d8b"),t)
 	ink.grow_amount=lerpf(.045,.025,t)
+	pet_ink.albedo_color=ink.albedo_color
+	pet_ink.grow_amount=ink.grow_amount/(100.0*PET_SCALE)*.7
 	var dusk=sin(PI*t)  # peaks halfway through a change: a short orange sunset
 	sky_material.set_shader_parameter("top_color",Color("2f9be6").lerp(Color("0d0b1e"),t))
 	sky_material.set_shader_parameter("horizon_color",Color("b9ecff").lerp(Color("2c2552"),t).lerp(Color("ff9a5a"),dusk*.6))
@@ -199,6 +209,7 @@ func apply_look(t: float):
 	water_material.set_shader_parameter("foam",Color("ffffff").lerp(Color("b9b3e6"),t))
 	water_material.set_shader_parameter("glints",lerpf(.6,.35,t))
 	for entry in glows: entry[0].emission_energy_multiplier=lerpf(entry[1].x,entry[1].y,t)
+	lamps=lamps.filter(func(entry): return is_instance_valid(entry[0]))
 	for entry in lamps:
 		entry[0].light_energy=lerpf(entry[1],entry[2],t)
 		entry[0].visible=entry[0].light_energy>.02
@@ -468,20 +479,25 @@ func make_character(kind: String,held_items: Array) -> Node3D:
 	model.scale=Vector3.ONE*.8
 	for slot in model.find_children("handslot_*","BoneAttachment3D",true,false):
 		for item in slot.get_children(): item.visible=held_items.has(String(item.name))
+	toonify(model)
+	return model
+
+## Give an imported model the island's toon shading and shared ink outline.
+func toonify(model: Node3D,outline: StandardMaterial3D=null):
+	if outline==null: outline=ink
 	for part in model.find_children("*","MeshInstance3D",true,false):
 		for i in range(part.mesh.get_surface_count()):
 			var source=part.mesh.surface_get_material(i)
-			var key=["character",source]
+			var key=["character",source,outline]
 			if not materials.has(key):
 				var toon=source.duplicate() if source is BaseMaterial3D else StandardMaterial3D.new()
 				toon.diffuse_mode=BaseMaterial3D.DIFFUSE_TOON
 				toon.specular_mode=BaseMaterial3D.SPECULAR_DISABLED
 				toon.roughness=1.0
 				toon.metallic=0.0
-				toon.next_pass=ink
+				toon.next_pass=outline
 				materials[key]=toon
 			part.set_surface_override_material(i,materials[key])
-	return model
 
 func make_person(color: Color) -> Node3D:
 	var person=Node3D.new()
@@ -509,6 +525,22 @@ func make_person(color: Color) -> Node3D:
 ## The starter companion: a round friend with big eyes and one feature for its element.
 func make_companion() -> Node3D:
 	var pet=Node3D.new()
+	# Animated Quaternius monsters (CC0) when present; the code-built friend is the fallback.
+	var models={"fire":["Dragon","Flying_Idle","Fast_Flying",.9],"water":["Fish","Idle","Run",0.0],"earth":["Mushnub","Idle","Walk",0.0],"air":["Birb","Idle","Walk",0.0]}
+	var pick=models.get(element,models.fire)
+	var path="res://assets/creatures/%s.glb" % pick[0]
+	if ResourceLoader.exists(path):
+		var model=load(path).instantiate()
+		model.scale=Vector3.ONE*PET_SCALE
+		model.position.y=pick[3]
+		toonify(model,pet_ink)
+		pet.add_child(model)
+		pet_animator=model.find_child("AnimationPlayer",true,false)
+		pet_idle="CharacterArmature|"+pick[1]
+		pet_move="CharacterArmature|"+pick[2]
+		loop_and_play(pet_animator,pet_idle)
+		lamp(pet,Vector3(0,.6,0),{"fire":Color("ff8a3d"),"water":Color("4fb8ee"),"earth":Color("6fcf5a"),"air":Color("c9b6ff")}.get(element,Color("ff8a3d")),3.5,0,.7)
+		return pet
 	var tones={"fire":[Color("ff8a3d"),Color("ffd27a")],"water":[Color("4fb8ee"),Color("c9f1ff")],"earth":[Color("6fcf5a"),Color("d9f2a6")],"air":[Color("c9b6ff"),Color("ffffff")]}
 	var tone=tones.get(element,tones.fire)
 	var navy=Color("1d2a4d")
@@ -614,8 +646,10 @@ func _process(delta):
 		for i in range(crab_legs.size()): crab_legs[i].rotation.y=.18*sin(clock*5.0+i*1.1)
 	if is_instance_valid(companion):
 		var hopping=player!=null and Vector2(player.velocity.x,player.velocity.z).length()>.5
-		var squash=.09*sin(clock*9.0) if hopping else .03*sin(clock*2.4)
-		companion.scale=Vector3(1.0-squash*.5,1.0+squash,1.0-squash*.5)
+		if pet_animator!=null: loop_and_play(pet_animator,pet_move if hopping else pet_idle)
+		else:
+			var squash=.09*sin(clock*9.0) if hopping else .03*sin(clock*2.4)
+			companion.scale=Vector3(1.0-squash*.5,1.0+squash,1.0-squash*.5)
 		for i in range(pet_wings.size()): pet_wings[i].rotation.x=.5*sin(clock*(12.0 if hopping else 4.0)+i*PI)
 
 func input_event(event):
@@ -693,7 +727,7 @@ func _physics_process(delta):
 	pivot.position=pivot.position.lerp(player.position+Vector3(0,1.45,0),1-exp(-12*delta))
 	pivot.rotation=Vector3(pitch,yaw,0)
 	var follow=player.position+Vector3(1.2,0,1.2)
-	follow.y=ground_height(follow.x,follow.z)+(.14*absf(sin(clock*9.0)) if movement.length()>.01 else 0.0)
+	follow.y=ground_height(follow.x,follow.z)+(.14*absf(sin(clock*9.0)) if movement.length()>.01 and pet_animator==null else 0.0)
 	companion.position=companion.position.lerp(follow,minf(1,delta*3))
 	companion.rotation.y=avatar.rotation.y
 	var nearby=""
