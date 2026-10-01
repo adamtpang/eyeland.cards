@@ -19,7 +19,7 @@ One layout, three looks. Every colour, font, outline and shadow comes from the t
 | Sound and music per look | Not started. Only the attack-hit cues exist |
 | In-game clock | Not built. The computer's clock picks the look (06:00 to 18:00 is day) |
 
-Checked by `tests/looks.gd` (27 automated checks plus screenshots in
+Checked by `tests/looks.gd` (33 automated checks plus screenshots in
 `game/evidence/looks-2026-10-01/`). No human has judged the look in motion yet.
 
 ## The two looks
@@ -99,9 +99,24 @@ First pass, 2026-10-01 (`world_3d.gd`, `sky.gdshader`, `water.gdshader`):
 - **Scenery:** round and pine trees, bushes, rocks, flowers, a fenced cottage, tent, dock
   posts and drifting clouds.
 
-Still prototype quality here: creatures (companion, Resin Crab) are simple shapes, the
-terrain has no texture or grass detail, there is no ambient sound or music, no day-to-night
-transition (the look is chosen when the island loads), and no NPC other than Mira.
+Second pass, 2026-10-01 (`terrain.gdshader`, `grass.gdshader`, `world_audio.gd`):
+
+- **Creatures:** the companion has a face, feet and one feature for its element (flame
+  tuft, fins, leaf sprout or wings) and hops while it follows. The Resin Crab has a spotted
+  shell, eye stalks, snapping claws and six moving legs. Both are still built from simple
+  shapes in code, not sculpted models.
+- **Ground:** hard-edged brush dabs and sun patches on the grass, speckle on the sand, and
+  about 2,000 swaying grass blades drawn as one MultiMesh, kept off the paths.
+- **Sound:** synthesized in code, no recordings. Sea wash, birdsong by day, crickets at
+  night, footsteps, jump, landing and an interact chime. The Sound button on the island
+  silences island and battle sound together.
+- **Day to night blends** on the same island over 1.8 seconds: the sun sweeps round, the
+  sky passes through a short orange sunset, and lights, fog, stars and crickets fade.
+  Re-rendering the HUD no longer rebuilds the world.
+
+Still open: no music, no creature models beyond code shapes, no NPC other than Mira, no
+in-game clock (the computer's clock or F5 picks the look), and no human has judged how it
+looks in motion or how it sounds.
 
 ## Fonts
 

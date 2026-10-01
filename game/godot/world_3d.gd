@@ -36,6 +36,24 @@ var clouds: Array=[]
 var flame: Node3D
 var creature: Node3D
 var clock=0.0
+var mix=0.0  # 0 is day, 1 is night
+var env: Environment
+var sun: DirectionalLight3D
+var sky_material: ShaderMaterial
+var water_material: ShaderMaterial
+var cloud_tint: StandardMaterial3D
+var glows: Array=[]
+var lamps: Array=[]
+var blend: Tween
+var audio
+var muted=false
+var path_points: Array=[]
+var grass_blades=0
+var pet_wings: Array=[]
+var crab_claws: Array=[]
+var crab_legs: Array=[]
+var stride=0.0
+var airborne=false
 var landmarks={"home":Vector3(-18,0,-6),"friend":Vector3(-6,0,-12),"crop":Vector3(6,0,-6),"encounter":Vector3(18,0,-6),"camp":Vector3(0,0,6),"dock":Vector3(18,0,6)}
 const WALK=4.2
 const RUN=7.4
@@ -48,38 +66,40 @@ func ground_height(x: float,z: float) -> float:
 	var hill=2.8*exp(-((x+12)*(x+12)+(z+17)*(z+17))/75.0)
 	return .5+hill+.18*sin(x*.18)*cos(z*.2)-maxf(0,edge-.86)*15
 
-## Shared toon material: flat banded light, no highlights, optional ink outline and glow.
-func material(color: Color,outline: bool=true,glow: float=0.0) -> StandardMaterial3D:
-	var key=[color,outline,glow]
+## Shared toon material: flat banded light, no highlights, optional ink outline.
+## `glow` is the emission strength by day (x) and at night (y); it follows the look blend.
+func material(color: Color,outline: bool=true,glow: Vector2=Vector2.ZERO,emit=null) -> StandardMaterial3D:
+	var key=[color,outline,glow,emit]
 	if materials.has(key): return materials[key]
 	var m=StandardMaterial3D.new()
 	m.albedo_color=color
 	m.roughness=1.0
 	m.diffuse_mode=BaseMaterial3D.DIFFUSE_TOON
 	m.specular_mode=BaseMaterial3D.SPECULAR_DISABLED
-	if glow>0:
+	if glow!=Vector2.ZERO:
 		m.emission_enabled=true
-		m.emission=color
-		m.emission_energy_multiplier=glow
+		m.emission=color if emit==null else emit
+		m.emission_energy_multiplier=lerpf(glow.x,glow.y,mix)
+		glows.append([m,glow])
 	if outline: m.next_pass=ink
 	materials[key]=m
 	return m
 
-func mesh_at(parent: Node3D, mesh: Mesh, at: Vector3, color: Color, collision=false, outline: bool=true, glow: float=0.0) -> MeshInstance3D:
+func mesh_at(parent: Node3D, mesh: Mesh, at: Vector3, color: Color, collision=false, outline: bool=true, glow: Vector2=Vector2.ZERO, emit=null) -> MeshInstance3D:
 	var instance=MeshInstance3D.new()
 	instance.mesh=mesh
-	instance.material_override=material(color,outline,glow)
+	instance.material_override=material(color,outline,glow,emit)
 	instance.position=at
 	parent.add_child(instance)
 	if collision: instance.create_trimesh_collision()
 	return instance
 
-func box(parent: Node3D,at: Vector3,dimensions: Vector3,color: Color,collision=false,glow: float=0.0):
+func box(parent: Node3D,at: Vector3,dimensions: Vector3,color: Color,collision=false,glow: Vector2=Vector2.ZERO,emit=null):
 	var mesh=BoxMesh.new()
 	mesh.size=dimensions
-	return mesh_at(parent,mesh,at,color,collision,true,glow)
+	return mesh_at(parent,mesh,at,color,collision,true,glow,emit)
 
-func sphere(parent: Node3D,at: Vector3,radius: float,color: Color,outline: bool=true,glow: float=0.0):
+func sphere(parent: Node3D,at: Vector3,radius: float,color: Color,outline: bool=true,glow: Vector2=Vector2.ZERO):
 	var mesh=SphereMesh.new()
 	mesh.radius=radius
 	mesh.height=radius*2
@@ -87,7 +107,7 @@ func sphere(parent: Node3D,at: Vector3,radius: float,color: Color,outline: bool=
 	mesh.rings=8
 	return mesh_at(parent,mesh,at,color,false,outline,glow)
 
-func cylinder(parent: Node3D,at: Vector3,radius: float,height: float,color: Color,collision=false,top=-1.0,outline: bool=true,glow: float=0.0):
+func cylinder(parent: Node3D,at: Vector3,radius: float,height: float,color: Color,collision=false,top=-1.0,outline: bool=true,glow: Vector2=Vector2.ZERO):
 	var mesh=CylinderMesh.new()
 	mesh.top_radius=radius if top<0 else top
 	mesh.bottom_radius=radius
@@ -102,52 +122,40 @@ func prism(parent: Node3D,at: Vector3,dimensions: Vector3,color: Color):
 
 func _ready():
 	night=UIStyle.mode=="night"
+	mix=1.0 if night else 0.0
 	# One outline pass shared by every toon material: ink navy by day, bone at night.
 	ink=StandardMaterial3D.new()
 	ink.shading_mode=BaseMaterial3D.SHADING_MODE_UNSHADED
-	ink.albedo_color=Color("a59d8b") if night else Color("1d2a4d")
 	ink.cull_mode=BaseMaterial3D.CULL_FRONT
 	ink.grow=true
-	ink.grow_amount=.025 if night else .045
 	var environment=WorldEnvironment.new()
-	var env=Environment.new()
-	var sky_material=ShaderMaterial.new()
+	env=Environment.new()
+	sky_material=ShaderMaterial.new()
 	sky_material.shader=preload("res://sky.gdshader")
-	sky_material.set_shader_parameter("top_color",Color("0d0b1e") if night else Color("2f9be6"))
-	sky_material.set_shader_parameter("horizon_color",Color("2c2552") if night else Color("b9ecff"))
-	sky_material.set_shader_parameter("disc_color",Color("f0e6c8") if night else Color("fff27a"))
-	sky_material.set_shader_parameter("disc_size",.035 if night else .05)
-	sky_material.set_shader_parameter("stars",1.0 if night else 0.0)
 	var sky=Sky.new()
 	sky.sky_material=sky_material
 	env.background_mode=Environment.BG_SKY
 	env.sky=sky
 	env.ambient_light_source=Environment.AMBIENT_SOURCE_COLOR
-	env.ambient_light_color=Color("4a4590") if night else Color("cdeeff")
-	env.ambient_light_energy=.7 if night else .42
 	env.tonemap_mode=Environment.TONE_MAPPER_LINEAR
 	env.fog_enabled=true
-	env.fog_light_color=Color("1c1838") if night else Color("c4eeff")
-	env.fog_density=.022 if night else .0035
-	env.fog_sky_affect=.25 if night else 0.0
-	env.glow_enabled=night
-	env.glow_intensity=.9
 	env.glow_bloom=.12
 	env.glow_hdr_threshold=.85
 	environment.environment=env
 	add_child(environment)
-	var sun=DirectionalLight3D.new()
-	sun.rotation_degrees=Vector3(-32,150,0) if night else Vector3(-48,-35,0)
-	sun.light_color=Color("a9b6ff") if night else Color("fff3d0")
-	sun.light_energy=.55 if night else .64
+	sun=DirectionalLight3D.new()
 	sun.shadow_enabled=true
 	sun.shadow_blur=.35
 	sun.directional_shadow_max_distance=70
 	add_child(sun)
+	audio=preload("res://world_audio.gd").new()
+	audio.muted=muted
+	add_child(audio)
 	build_terrain()
 	build_landmarks()
 	build_trees()
 	build_scenery()
+	build_grass()
 	build_player()
 	pivot=Node3D.new()
 	add_child(pivot)
@@ -163,7 +171,56 @@ func _ready():
 	arm.add_child(camera)
 	pivot.position=player.position+Vector3(0,1.5,0)
 	pivot.rotation=Vector3(pitch,yaw,0)
+	apply_look(mix)
 
+## Everything that differs between day (0) and night (1), blended by `t`.
+func apply_look(t: float):
+	mix=t
+	ink.albedo_color=Color("1d2a4d").lerp(Color("a59d8b"),t)
+	ink.grow_amount=lerpf(.045,.025,t)
+	var dusk=sin(PI*t)  # peaks halfway through a change: a short orange sunset
+	sky_material.set_shader_parameter("top_color",Color("2f9be6").lerp(Color("0d0b1e"),t))
+	sky_material.set_shader_parameter("horizon_color",Color("b9ecff").lerp(Color("2c2552"),t).lerp(Color("ff9a5a"),dusk*.6))
+	sky_material.set_shader_parameter("disc_color",Color("fff27a").lerp(Color("f0e6c8"),t))
+	sky_material.set_shader_parameter("disc_size",lerpf(.05,.035,t))
+	sky_material.set_shader_parameter("stars",smoothstep(.55,1.0,t))
+	env.ambient_light_color=Color("cdeeff").lerp(Color("4a4590"),t)
+	env.ambient_light_energy=lerpf(.42,.5,t)
+	env.fog_light_color=Color("c4eeff").lerp(Color("1c1838"),t).lerp(Color("ffb37a"),dusk*.4)
+	env.fog_density=lerpf(.0035,.02,t)
+	env.fog_sky_affect=lerpf(0.0,.25,t)
+	env.glow_enabled=t>.02
+	env.glow_intensity=.9*t
+	sun.rotation_degrees=Vector3(lerpf(-48,-32,t)+dusk*18,lerpf(-35,150,t),0)
+	sun.light_color=Color("fff3d0").lerp(Color("a9b6ff"),t).lerp(Color("ffb37a"),dusk*.5)
+	sun.light_energy=lerpf(.64,.4,t)
+	water_material.set_shader_parameter("deep",Color("1689d6").lerp(Color("141033"),t))
+	water_material.set_shader_parameter("shallow",Color("58d6ee").lerp(Color("2a2466"),t))
+	water_material.set_shader_parameter("foam",Color("ffffff").lerp(Color("b9b3e6"),t))
+	water_material.set_shader_parameter("glints",lerpf(.6,.35,t))
+	for entry in glows: entry[0].emission_energy_multiplier=lerpf(entry[1].x,entry[1].y,t)
+	for entry in lamps:
+		entry[0].light_energy=lerpf(entry[1],entry[2],t)
+		entry[0].visible=entry[0].light_energy>.02
+	if cloud_tint!=null: cloud_tint.albedo_color=Color("ffffff").lerp(Color("3a3466"),t).lerp(Color("ffc9a3"),dusk*.5)
+	if is_instance_valid(audio): audio.set_night_mix(t)
+
+## Change between day and night. The sun sweeps round, the sky passes through a short
+## sunset, and lights, fog, stars and crickets fade in or out.
+func set_night(value: bool,seconds: float=1.8):
+	night=value
+	var target=1.0 if value else 0.0
+	if blend!=null and blend.is_valid(): blend.kill()
+	if is_equal_approx(mix,target): return
+	if seconds<=0:
+		apply_look(target)
+		return
+	blend=create_tween()
+	blend.tween_method(apply_look,mix,target,seconds).set_trans(Tween.TRANS_SINE)
+
+func set_muted(value: bool):
+	muted=value
+	if is_instance_valid(audio): audio.set_muted(value)
 
 func build_terrain():
 	var surface=SurfaceTool.new()
@@ -188,12 +245,9 @@ func build_terrain():
 	surface.generate_normals()
 	var terrain=MeshInstance3D.new()
 	terrain.mesh=surface.commit()
-	var mat=StandardMaterial3D.new()
-	mat.vertex_color_use_as_albedo=true
-	mat.roughness=1
-	mat.diffuse_mode=BaseMaterial3D.DIFFUSE_TOON
-	mat.specular_mode=BaseMaterial3D.SPECULAR_DISABLED
-	terrain.material_override=mat
+	var ground=ShaderMaterial.new()
+	ground.shader=preload("res://terrain.gdshader")
+	terrain.material_override=ground
 	add_child(terrain)
 	terrain.create_trimesh_collision()
 	var water=PlaneMesh.new()
@@ -201,12 +255,8 @@ func build_terrain():
 	var sea=MeshInstance3D.new()
 	sea.mesh=water
 	sea.position=Vector3(0,-.5,0)
-	var water_material=ShaderMaterial.new()
+	water_material=ShaderMaterial.new()
 	water_material.shader=preload("res://water.gdshader")
-	water_material.set_shader_parameter("deep",Color("141033") if night else Color("1689d6"))
-	water_material.set_shader_parameter("shallow",Color("2a2466") if night else Color("58d6ee"))
-	water_material.set_shader_parameter("foam",Color("b9b3e6") if night else Color("ffffff"))
-	water_material.set_shader_parameter("glints",.35 if night else .6)
 	sea.material_override=water_material
 	add_child(sea)
 	# Paths follow terrain height and remain non-colliding ground markings.
@@ -215,6 +265,7 @@ func build_terrain():
 		for i in range(int(distance/.7)+1):
 			var at=pair[0].lerp(pair[1],float(i)/maxf(1,int(distance/.7)))
 			at.y=ground_height(at.x,at.z)+.02
+			path_points.append(at)
 			cylinder(self,at,1.0,.03,Color("f2d88a"),false,-1.0,false)
 
 func label3d(at: Vector3,text_value: String):
@@ -229,13 +280,14 @@ func label3d(at: Vector3,text_value: String):
 	label.position=at
 	add_child(label)
 
-func lamp(at: Vector3,color: Color,reach: float,energy: float):
+## A point light with a day strength and a night strength.
+func lamp(parent: Node3D,at: Vector3,color: Color,reach: float,day: float,dark: float):
 	var light=OmniLight3D.new()
 	light.position=at
 	light.light_color=color
 	light.omni_range=reach
-	light.light_energy=energy
-	add_child(light)
+	parent.add_child(light)
+	lamps.append([light,day,dark])
 
 func build_landmarks():
 	var warm=Color("ffc75a")
@@ -251,11 +303,11 @@ func build_landmarks():
 				box(self,at+Vector3(0,.9,.03),Vector3(.9,1.8,.12),Color("8a5a2b"))
 				sphere(self,at+Vector3(.28,.9,.12),.07,warm)
 				for side in [-1,1]:
-					box(self,at+Vector3(side*1.2,1.45,.05),Vector3(.65,.7,.12),warm if night else Color("8fdcf2"),false,2.4 if night else 0.0)
+					box(self,at+Vector3(side*1.2,1.45,.05),Vector3(.65,.7,.12),Color("8fdcf2"),false,Vector2(0,2.4),warm)
 					box(self,at+Vector3(side*1.2,1.05,.14),Vector3(.8,.14,.2),Color("ff6b57"))
 				for i in range(6): box(self,at+Vector3(-2.9+i*1.15,.35,1.7),Vector3(.14,.7,.14),Color("fff5dc"))
 				box(self,at+Vector3(0,.5,1.7),Vector3(6.2,.1,.08),Color("fff5dc"))
-				if night: lamp(at+Vector3(0,1.6,1.2),warm,7,1.6)
+				lamp(self,at+Vector3(0,1.6,1.2),warm,7,0,1.2)
 			"friend":
 				var npc=make_character("Rogue_Hooded" if job=="wizard" else "Mage",[])
 				add_child(npc)
@@ -266,36 +318,28 @@ func build_landmarks():
 			"crop":
 				for i in range(7):
 					var spot=at+Vector3(sin(i*2.4)*1.5,.3,cos(i*2.4)*1.5)
-					var crystal=cylinder(self,spot,.22,.9,Color("ffd23f"),false,0,true,1.8 if night else .25)
+					var crystal=cylinder(self,spot,.22,.9,Color("ffd23f"),false,0,true,Vector2(.25,1.8))
 					crystal.rotation.z=.2
-				if night: lamp(at+Vector3(0,1,0),Color("ffd23f"),6,1.2)
+				lamp(self,at+Vector3(0,1,0),Color("ffd23f"),6,0,.8)
 				if restored_garden:
 					for i in range(12): sphere(self,at+Vector3(sin(i)*2,.3,cos(i)*2),.18,Color("ff9ec7"))
 			"encounter":
-				var crab=Node3D.new()
-				add_child(crab)
-				crab.position=at
-				creature=crab
-				var shell=sphere(crab,Vector3(0,.6,0),.65,Color("ff9a3d"))
-				shell.scale=Vector3(1.2,.8,1)
-				for side in [-1,1]:
-					sphere(crab,Vector3(side*.9,.6,.3),.3,Color("ff7a3d"))
-					sphere(crab,Vector3(side*.25,.95,.5),.13,Color("ffffff"))
-					sphere(crab,Vector3(side*.25,.97,.6),.06,Color("1d2a4d"),false)
-					for leg in range(3): box(crab,Vector3(side*.65,.18,leg*.3-.3),Vector3(.7,.12,.12),Color("d9622b"))
+				creature=make_crab()
+				add_child(creature)
+				creature.position=at
 			"camp":
 				for i in range(8): sphere(self,at+Vector3(sin(i*TAU/8)*.8,.1,cos(i*TAU/8)*.8),.2,Color("9aa3b5"))
-				flame=cylinder(self,at+Vector3(0,.5,0),.36,1.0,Color("ff8a2b"),false,0,false,2.6)
-				cylinder(self,at+Vector3(0,.4,0),.2,.7,Color("ffe07a"),false,0,false,3.0)
+				flame=cylinder(self,at+Vector3(0,.5,0),.36,1.0,Color("ff8a2b"),false,0,false,Vector2(2.2,2.8))
+				cylinder(self,at+Vector3(0,.4,0),.2,.7,Color("ffe07a"),false,0,false,Vector2(2.6,3.2))
 				for i in range(3): box(self,at+Vector3(sin(i*2.1)*.35,.12,cos(i*2.1)*.35),Vector3(.9,.16,.16),Color("8a5a2b")).rotation.y=i*2.1
 				prism(self,at+Vector3(-3.6,.7,-2.2),Vector3(1.9,1.4,2.3),Color("ffd23f")).rotation.y=.5
-				lamp(at+Vector3(0,1,0),Color("ffb668"),10 if night else 5,2.6 if night else 1.0)
+				lamp(self,at+Vector3(0,1,0),Color("ffb668"),8,.8,1.7)
 			"dock":
 				for i in range(9): box(self,at+Vector3(0,.12,i*.6),Vector3(2,.2,.52),Color("c9975a"),true)
 				for i in [0,4,8]:
 					for side in [-1,1]: cylinder(self,at+Vector3(side*1.05,.1,i*.6),.12,1.6,Color("8a5a2b"))
-				cylinder(self,at+Vector3(1.05,1.25,4.8),.2,.34,warm,false,-1.0,true,3.0 if night else .4)
-				if night: lamp(at+Vector3(1.05,1.5,4.8),warm,7,1.5)
+				cylinder(self,at+Vector3(1.05,1.25,4.8),.2,.34,warm,false,-1.0,true,Vector2(.4,3.0))
+				lamp(self,at+Vector3(1.05,1.5,4.8),warm,7,0,1.2)
 	# Jumpable stepping stones create an optional exploration loop.
 	for i in range(5):
 		var at=Vector3(-7+i*1.5,0,4)
@@ -351,36 +395,69 @@ func build_scenery():
 			rock.rotation.y=random.randf()*TAU
 		else:
 			cylinder(self,at+Vector3(0,.16,0),.025,.32,Color("2fae5d"),false,-1.0,false)
-			sphere(self,at+Vector3(0,.36,0),.11,petals[i%petals.size()],false,.9 if night and i%4==0 else 0.0)
+			sphere(self,at+Vector3(0,.36,0),.11,petals[i%petals.size()],false,Vector2(0,.9) if i%4==0 else Vector2.ZERO)
+	cloud_tint=StandardMaterial3D.new()
+	cloud_tint.shading_mode=BaseMaterial3D.SHADING_MODE_UNSHADED
+	cloud_tint.disable_fog=true
 	for i in range(14):
 		var angle=random.randf()*TAU
 		var far=random.randf_range(70,150)
 		var cloud=Node3D.new()
 		cloud.position=Vector3(cos(angle)*far,random.randf_range(24,44),sin(angle)*far)
 		add_child(cloud)
-		var tint=Color("3a3466") if night else Color("ffffff")
 		for puff in range(4):
-			var ball=sphere(cloud,Vector3(puff*4.2-6.3,sin(puff*1.7)*1.1,cos(puff*2.3)*1.5),random.randf_range(3.2,5.2),tint,false)
+			var ball=sphere(cloud,Vector3(puff*4.2-6.3,sin(puff*1.7)*1.1,cos(puff*2.3)*1.5),random.randf_range(3.2,5.2),Color.WHITE,false)
 			ball.scale.y=.55
-			ball.material_override=cloud_material(tint)
+			ball.material_override=cloud_tint
 			ball.cast_shadow=GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 		clouds.append(cloud)
 
-func cloud_material(color: Color) -> StandardMaterial3D:
-	var key=["cloud",color]
-	if materials.has(key): return materials[key]
-	var m=StandardMaterial3D.new()
-	m.shading_mode=BaseMaterial3D.SHADING_MODE_UNSHADED
-	m.albedo_color=color
-	m.disable_fog=true
-	materials[key]=m
-	return m
+## Swaying grass tufts across the meadow, drawn as a single MultiMesh.
+func build_grass():
+	var blade=CylinderMesh.new()
+	blade.top_radius=0
+	blade.bottom_radius=.06
+	blade.height=.34
+	blade.radial_segments=3
+	blade.rings=1
+	var sway=ShaderMaterial.new()
+	sway.shader=preload("res://grass.gdshader")
+	blade.material=sway
+	var random=RandomNumberGenerator.new()
+	random.seed=7
+	var tones=[Color("3fb54f"),Color("57c95c"),Color("2f9f48")]
+	var blades=[]
+	for i in range(1100):
+		var at=Vector3(random.randf_range(-31,31),0,random.randf_range(-24,24))
+		if not free_spot(at,2.2): continue
+		var on_path=false
+		for point in path_points:
+			if absf(point.x-at.x)<1.3 and absf(point.z-at.z)<1.3: on_path=true; break
+		if on_path: continue
+		for k in range(3):
+			var spot=at+Vector3(random.randf_range(-.16,.16),0,random.randf_range(-.16,.16))
+			var tall=random.randf_range(.7,1.5)
+			spot.y=ground_height(spot.x,spot.z)+.17*tall
+			blades.append([Transform3D(Basis(Vector3.UP,random.randf()*TAU).scaled(Vector3(1,tall,1)),spot),tones[(i+k)%3]])
+	var field=MultiMesh.new()
+	field.transform_format=MultiMesh.TRANSFORM_3D
+	field.use_colors=true
+	field.mesh=blade
+	field.instance_count=blades.size()
+	for i in range(blades.size()):
+		field.set_instance_transform(i,blades[i][0])
+		field.set_instance_color(i,blades[i][1])
+	var holder=MultiMeshInstance3D.new()
+	holder.multimesh=field
+	holder.cast_shadow=GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	add_child(holder)
+	grass_blades=blades.size()
 
-func loop_and_play(animator: AnimationPlayer,animation: String,speed: float=1.0):
-	if animator==null or not animator.has_animation(animation): return
-	animator.get_animation(animation).loop_mode=Animation.LOOP_LINEAR
-	if animator.current_animation!=animation: animator.play(animation,.18)
-	animator.speed_scale=speed
+func loop_and_play(animator_node: AnimationPlayer,animation: String,speed: float=1.0):
+	if animator_node==null or not animator_node.has_animation(animation): return
+	animator_node.get_animation(animation).loop_mode=Animation.LOOP_LINEAR
+	if animator_node.current_animation!=animation: animator_node.play(animation,.18)
+	animator_node.speed_scale=speed
 
 ## An animated KayKit adventurer (CC0), toon shaded with the shared ink outline.
 ## Falls back to the old block figure if the model is missing.
@@ -429,6 +506,74 @@ func make_person(color: Color) -> Node3D:
 		arms.append(limb)
 	return person
 
+## The starter companion: a round friend with big eyes and one feature for its element.
+func make_companion() -> Node3D:
+	var pet=Node3D.new()
+	var tones={"fire":[Color("ff8a3d"),Color("ffd27a")],"water":[Color("4fb8ee"),Color("c9f1ff")],"earth":[Color("6fcf5a"),Color("d9f2a6")],"air":[Color("c9b6ff"),Color("ffffff")]}
+	var tone=tones.get(element,tones.fire)
+	var navy=Color("1d2a4d")
+	sphere(pet,Vector3(0,.34,0),.32,tone[0],true,Vector2(0,.45)).scale=Vector3(1,.92,1)
+	sphere(pet,Vector3(0,.28,.17),.2,tone[1],false).scale=Vector3(1,.9,.6)
+	for side in [-1,1]:
+		sphere(pet,Vector3(side*.12,.44,.26),.085,Color.WHITE,false)
+		sphere(pet,Vector3(side*.12,.44,.325),.046,navy,false)
+		sphere(pet,Vector3(side*.135,.47,.362),.016,Color.WHITE,false)
+		sphere(pet,Vector3(side*.21,.33,.24),.045,Color("ff9ec7"),false)
+		sphere(pet,Vector3(side*.14,.06,.05),.1,tone[0]).scale=Vector3(1,.6,1.3)
+	match element:
+		"water":
+			for side in [-1,1]:
+				var fin=sphere(pet,Vector3(side*.33,.36,0),.14,tone[0])
+				fin.scale=Vector3(.35,.9,1.1)
+				pet_wings.append(fin)
+			sphere(pet,Vector3(0,.66,-.04),.12,Color("2f8fff")).scale=Vector3(.3,1.1,1.4)
+			sphere(pet,Vector3(0,.3,-.36),.13,Color("2f8fff")).scale=Vector3(1.3,.3,1)
+		"earth":
+			sphere(pet,Vector3(0,.4,-.14),.27,Color("8a5a2b")).scale=Vector3(1,.85,.8)
+			cylinder(pet,Vector3(0,.72,0),.025,.2,Color("2fae5d"),false,-1.0,false)
+			for side in [-1,1]:
+				var leaf=sphere(pet,Vector3(side*.12,.84,0),.12,Color("46c463"))
+				leaf.scale=Vector3(1.2,.25,.7)
+				leaf.rotation.z=side*-.5
+				pet_wings.append(leaf)
+		"air":
+			for side in [-1,1]:
+				var wing=sphere(pet,Vector3(side*.36,.44,-.05),.17,Color.WHITE)
+				wing.scale=Vector3(1,.25,.7)
+				pet_wings.append(wing)
+			for i in range(3): sphere(pet,Vector3((i-1)*.14,.66,-.02),.1,Color.WHITE,false)
+		_:
+			for i in range(3): cylinder(pet,Vector3((i-1)*.1,.74+(.08 if i==1 else 0.0),-.02),.09,.3,Color("ff6b2b") if i==1 else Color("ffd23f"),false,0,false,Vector2(.6,2.2))
+			cylinder(pet,Vector3(0,.3,-.36),.07,.24,Color("ffd23f"),false,0,false,Vector2(.6,2.2)).rotation.x=-1.0
+	lamp(pet,Vector3(0,.5,0),tone[0],3.5,0,.7)
+	return pet
+
+## The Resin Crab: wide spotted shell, eye stalks, two snapping claws and six legs.
+func make_crab() -> Node3D:
+	var crab=Node3D.new()
+	var navy=Color("1d2a4d")
+	sphere(crab,Vector3(0,.62,0),.7,Color("ff8a3d")).scale=Vector3(1.25,.75,1)
+	sphere(crab,Vector3(0,.5,.3),.45,Color("ffd9a8"),false).scale=Vector3(1.2,.6,.7)
+	for i in range(5): sphere(crab,Vector3(sin(i*1.3)*.5,1.0-absf(sin(i*1.3))*.14,cos(i*1.9)*.3-.15),.09,Color("ffd27a"),false,Vector2(.2,1.4))
+	for side in [-1,1]:
+		cylinder(crab,Vector3(side*.25,1.1,.4),.045,.36,Color("ff8a3d"))
+		sphere(crab,Vector3(side*.25,1.32,.42),.13,Color.WHITE)
+		sphere(crab,Vector3(side*.25,1.33,.52),.065,navy,false)
+		box(crab,Vector3(side*.78,.55,.32),Vector3(.42,.14,.14),Color("d9622b"))
+		var claw=Node3D.new()
+		claw.position=Vector3(side*1.05,.6,.5)
+		crab.add_child(claw)
+		sphere(claw,Vector3.ZERO,.3,Color("ff6b2b")).scale=Vector3(1,.8,1.2)
+		for jaw in [-1,1]:
+			var pincer=cylinder(claw,Vector3(0,jaw*.12,.36),.11,.36,Color("ff6b2b"),false,0)
+			pincer.rotation.x=PI/2
+		crab_claws.append(claw)
+		for leg in range(3):
+			var limb=box(crab,Vector3(side*.88,.26,leg*.32-.42),Vector3(.6,.11,.11),Color("d9622b"))
+			limb.rotation.z=side*-.5
+			crab_legs.append(limb)
+	return crab
+
 func build_player():
 	legs.clear()
 	arms.clear()
@@ -452,21 +597,8 @@ func build_player():
 	player.position=spawn_position
 	player.position.y=maxf(player.position.y,ground_height(player.position.x,player.position.z)+.1)
 	last_safe=player.position
-	companion=Node3D.new()
+	companion=make_companion()
 	add_child(companion)
-	var colors={"fire":Color("ff9a3d"),"water":Color("58c6ee"),"earth":Color("7edc6a"),"air":Color("d9c2ff")}
-	sphere(companion,Vector3(0,.3,0),.3,colors[element],true,.6 if night else 0.0)
-	for side in [-1,1]:
-		cylinder(companion,Vector3(side*.16,.58,0),.1,.32,colors[element],false,0)
-		sphere(companion,Vector3(side*.1,.4,.25),.07,Color("ffffff"),false)
-		sphere(companion,Vector3(side*.1,.4,.3),.035,Color("1d2a4d"),false)
-	if night:
-		var glow=OmniLight3D.new()
-		glow.light_color=colors[element]
-		glow.omni_range=3.5
-		glow.light_energy=.8
-		glow.position=Vector3(0,.5,0)
-		companion.add_child(glow)
 	companion.position=player.position+Vector3(1,0,1)
 
 func _process(delta):
@@ -477,7 +609,14 @@ func _process(delta):
 	if is_instance_valid(flame): flame.scale=Vector3.ONE*(1.0+.08*sin(clock*11.0)+.05*sin(clock*17.0))
 	if is_instance_valid(creature):
 		creature.position.y=landmarks.encounter.y+.07*absf(sin(clock*2.2))
-		creature.rotation.y=.25*sin(clock*.8)
+		creature.rotation.y=-PI/2+.25*sin(clock*.8)
+		for i in range(crab_claws.size()): crab_claws[i].rotation.z=(1 if i==0 else -1)*(.15+.2*absf(sin(clock*2.6+i)))
+		for i in range(crab_legs.size()): crab_legs[i].rotation.y=.18*sin(clock*5.0+i*1.1)
+	if is_instance_valid(companion):
+		var hopping=player!=null and Vector2(player.velocity.x,player.velocity.z).length()>.5
+		var squash=.09*sin(clock*9.0) if hopping else .03*sin(clock*2.4)
+		companion.scale=Vector3(1.0-squash*.5,1.0+squash,1.0-squash*.5)
+		for i in range(pet_wings.size()): pet_wings[i].rotation.x=.5*sin(clock*(12.0 if hopping else 4.0)+i*PI)
 
 func input_event(event):
 	if event is InputEventKey:
@@ -485,7 +624,9 @@ func input_event(event):
 		elif not event.echo:
 			held[event.keycode]=true
 			if event.keycode==KEY_SPACE: jump_queued=true
-			if event.keycode==KEY_E and not current_landmark.is_empty(): interact_requested.emit(current_landmark)
+			if event.keycode==KEY_E and not current_landmark.is_empty():
+				audio.chime()
+				interact_requested.emit(current_landmark)
 	if event is InputEventMouseButton:
 		if event.button_index==MOUSE_BUTTON_RIGHT:
 			orbiting=event.pressed
@@ -517,9 +658,20 @@ func _physics_process(delta):
 	player.velocity.x=move_toward(player.velocity.x,movement.x*speed,24*delta)
 	player.velocity.z=move_toward(player.velocity.z,movement.z*speed,24*delta)
 	if not player.is_on_floor(): player.velocity.y-=GRAVITY*delta
-	elif jump_queued: player.velocity.y=JUMP
+	elif jump_queued:
+		player.velocity.y=JUMP
+		audio.jump()
 	jump_queued=false
 	player.move_and_slide()
+	var grounded=player.is_on_floor()
+	if airborne and grounded and clock>.8: audio.land()  # no thud for the drop-in at spawn
+	airborne=not grounded
+	if grounded and movement.length()>.01:
+		stride+=delta*speed
+		if stride>2.3:
+			stride=0.0
+			audio.footstep()
+	else: stride=1.6
 	if movement.length()>.01:
 		avatar.rotation.y=lerp_angle(avatar.rotation.y,atan2(movement.x,movement.z),minf(1,12*delta))
 		step+=delta*speed*2.3
@@ -541,7 +693,7 @@ func _physics_process(delta):
 	pivot.position=pivot.position.lerp(player.position+Vector3(0,1.45,0),1-exp(-12*delta))
 	pivot.rotation=Vector3(pitch,yaw,0)
 	var follow=player.position+Vector3(1.2,0,1.2)
-	follow.y=ground_height(follow.x,follow.z)+.14+.1*sin(clock*3.0)
+	follow.y=ground_height(follow.x,follow.z)+(.14*absf(sin(clock*9.0)) if movement.length()>.01 else 0.0)
 	companion.position=companion.position.lerp(follow,minf(1,delta*3))
 	companion.rotation.y=avatar.rotation.y
 	var nearby=""

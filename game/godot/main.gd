@@ -199,12 +199,16 @@ func render():
 		previous_battle_rect=duel_board.get_rect()
 	close_inspection()
 	cancel_card_drag()
+	# Staying on the island keeps the same world, so only the HUD is rebuilt and a change
+	# of look can blend instead of popping.
+	var keep_world=page=="map" and is_instance_valid(world3d) and is_instance_valid(world_host)
 	if is_instance_valid(world3d):
 		save_world_position(world3d.player.position)
 		world3d.stop_input()
-		world3d=null
-	if is_instance_valid(world_host): world_host.queue_free()
-	world_host=null
+		if not keep_world: world3d=null
+	if not keep_world:
+		if is_instance_valid(world_host): world_host.queue_free()
+		world_host=null
 	# On the island the page is a HUD floating over a full-window 3D view, so the empty
 	# parts of the page must let the mouse through to the world.
 	var over_world=page=="map"
@@ -228,6 +232,10 @@ func render():
 		if page in ["map","deck"]:
 			var nav=button_at(header,"Collection" if page=="map" else "Back to island",func(): page="deck" if page=="map" else "map"; swap_index=-1; render())
 			nav.size_flags_horizontal=Control.SIZE_SHRINK_END
+	if page=="map":
+		var sound=button_at(header,"Sound off" if battle_audio.muted else "Sound on",func(): battle_audio.toggle(); render())
+		sound.size_flags_horizontal=Control.SIZE_SHRINK_END
+		sound.tooltip_text="Toggle island and battle sounds for this session."
 	var help=button_at(header,"?" if not help_open else "Close",func(): help_open=not help_open; render())
 	help.size_flags_horizontal=Control.SIZE_SHRINK_END
 	help.tooltip_text="WASD: move | Shift: run | Space: jump\nRight-drag: camera | Wheel: zoom | E: interact\nDrag cards onto the battlefield. Drag attacks and damage spells onto enemies.\nHover cards for details. Click ? for the full guide."
@@ -307,31 +315,35 @@ func hud_outline(label: Label):
 
 func map_screen():
 	var p=model.profile
-	world_host=SubViewportContainer.new()
-	world_host.name="WorldView"
-	world_host.stretch=true
-	world_host.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	world_host.mouse_filter=Control.MOUSE_FILTER_STOP
-	add_child(world_host)
-	move_child(world_host,0)
-	var viewport=SubViewport.new()
-	viewport.own_world_3d=true
-	viewport.msaa_3d=Viewport.MSAA_4X
-	viewport.render_target_update_mode=SubViewport.UPDATE_ALWAYS
-	world_host.add_child(viewport)
-	world3d=World3DScene.new()
-	world3d.element=p.element
-	world3d.job=p.get("job","warrior")
-	world3d.restored_garden=p.won
-	if p.has("world_position"):
-		world3d.spawn_position=Vector3(p.world_position[0],p.world_position[1],p.world_position[2])
-	else: world3d.spawn_position=Vector3((p.x-6)*6,2,(p.y-4)*6)
-	viewport.add_child(world3d)
-	world_host.gui_input.connect(func(event):
-		if is_instance_valid(world3d) and not event is InputEventKey: world3d.input_event(event))
-	world3d.position_saved.connect(save_world_position)
-	world3d.interact_requested.connect(world_interact)
-	world3d.nearby_changed.connect(update_world_prompt)
+	if not is_instance_valid(world3d):
+		world_host=SubViewportContainer.new()
+		world_host.name="WorldView"
+		world_host.stretch=true
+		world_host.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+		world_host.mouse_filter=Control.MOUSE_FILTER_STOP
+		add_child(world_host)
+		move_child(world_host,0)
+		var viewport=SubViewport.new()
+		viewport.own_world_3d=true
+		viewport.msaa_3d=Viewport.MSAA_4X
+		viewport.render_target_update_mode=SubViewport.UPDATE_ALWAYS
+		world_host.add_child(viewport)
+		world3d=World3DScene.new()
+		world3d.element=p.element
+		world3d.job=p.get("job","warrior")
+		world3d.restored_garden=p.won
+		world3d.muted=battle_audio.muted
+		if p.has("world_position"):
+			world3d.spawn_position=Vector3(p.world_position[0],p.world_position[1],p.world_position[2])
+		else: world3d.spawn_position=Vector3((p.x-6)*6,2,(p.y-4)*6)
+		viewport.add_child(world3d)
+		world_host.gui_input.connect(func(event):
+			if is_instance_valid(world3d) and not event is InputEventKey: world3d.input_event(event))
+		world3d.position_saved.connect(save_world_position)
+		world3d.interact_requested.connect(world_interact)
+		world3d.nearby_changed.connect(update_world_prompt)
+	world3d.set_muted(battle_audio.muted)
+	world3d.set_night(UIStyle.mode=="night")
 	# HUD plates float over the world: place and health top left, the nearby action bottom centre.
 	var top=row_at(body)
 	var info=panel(top)
@@ -357,6 +369,7 @@ func map_screen():
 		if is_instance_valid(world3d): world_interact(world3d.current_landmark))
 	world_action.size_flags_horizontal=Control.SIZE_SHRINK_END
 	world_action.visible=false
+	update_world_prompt(world3d.current_landmark)
 
 func save_world_position(at: Vector3):
 	if model.profile.is_empty(): return
