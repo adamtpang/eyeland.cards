@@ -61,3 +61,5 @@ eafc/sbc/cache/
 eafc/sbc/bl2*.json
 eafc/sbc/dresden.json
 .claude/settings.json.bak-*
+.firecrawl/
+game/research/*-transcript.md
