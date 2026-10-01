@@ -92,14 +92,34 @@ func run():
 	game.battle_audio.toggle(); game.render(); await process_frame
 	check(world.audio.muted!=mute_before and world.audio.waves.volume_db<-60,"Sound button silences the island")
 	game.battle_audio.toggle(); game.render(); await process_frame
+	# the island clock: time passes, the HUD shows it, and sunset changes the look by itself
+	check(game.world_clock.text.begins_with("Day 09:"),"HUD shows the island time")
+	game.game_hour=17.9
+	game.clock_speed=1.0
+	await create_timer(.5).timeout
+	game.clock_speed=0.0
+	check(UIStyle.mode=="night" and game.world3d==world and world.night,"Sunset on the clock brings the night look")
+	check(world.mix>0.0 and world.mix<.5,"A clock sunset blends slowly")
+	check(game.world_clock.text.begins_with("Night 18:"),"HUD shows night time")
+	check(is_equal_approx(game.model.profile.time,game.game_hour),"The time of day is kept in the save")
+	# the tunes: built on request here, then both loops play and follow the look
+	world.audio.build_music()
+	await process_frame; await process_frame
+	check(world.audio.day_music!=null and world.audio.day_music.playing and world.audio.night_music.playing,"Day and night tunes are playing")
+	world.audio.day_music.stream.save_to_wav(folder.path_join("tune-day.wav"))
+	world.audio.night_music.stream.save_to_wav(folder.path_join("tune-night.wav"))
+	check(world.audio.day_music.stream.get_length()>15 and world.audio.night_music.stream.get_length()>25,"Tunes are full-length loops")
+	game.choose_look("day"); game.render()
+	await create_timer(2.2).timeout
+	check(world.audio.day_music.volume_db>-30 and world.audio.night_music.volume_db<-70,"By day only the day tune is heard")
 	game.page="deck"; game.render(); await create_timer(.2).timeout
 	check(not is_instance_valid(game.world_host),"World view is removed when leaving the island")
 	game.choose_look("day"); game.render(); await process_frame
-	for expected in ["night","classic","day"]:
-		var key=InputEventKey.new(); key.keycode=KEY_F5; key.pressed=true
+	for step in [[KEY_F5,"night"],[KEY_F5,"day"],[KEY_F6,"classic"],[KEY_F6,"day"]]:
+		var key=InputEventKey.new(); key.keycode=step[0]; key.pressed=true
 		Input.parse_input_event(key)
 		await process_frame; await process_frame
-		check(UIStyle.mode==expected,"F5 switches to %s" % expected)
+		check(UIStyle.mode==step[1],"%s switches to %s" % ["F5" if step[0]==KEY_F5 else "F6",step[1]])
 	game.queue_free(); await process_frame; await create_timer(.2).timeout
 	UIStyle.set_mode("day")
 	print("LOOKS: %d / %d passed" % [checks-failed,checks])

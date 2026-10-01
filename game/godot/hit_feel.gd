@@ -26,7 +26,7 @@ func set_variant(v: int):
 		tween.tween_property(label,"scale",Vector2.ONE,.16)
 
 func caption() -> String:
-	return "Attack feel: %s  (F1 to F4)   ·   Look: %s  (F5)" % [NAMES[variant],UIStyle.mode]
+	return "Attack feel: %s  (F1 to F4)   ·   Look: %s  (F5 time, F6 classic)" % [NAMES[variant],UIStyle.mode]
 
 func _process(_delta):
 	if not is_instance_valid(game): return

@@ -87,16 +87,43 @@ var battle_effect_tweens: Array=[]
 var battle_effect_owner
 var settled_battle
 
-## Day uses the Sunlit Cel look and night the Inked Relic look. Until the island has its own
-## clock, the computer's clock decides; F5 cycles day, night and the earlier classic look.
+## The island keeps its own clock. Day (06:00 to 18:00) uses the Sunlit Cel look and night
+## the Inked Relic look. A full day takes 12 real minutes on the island; the clock pauses in
+## battles and menus. F5 skips to the next sunset or sunrise; F6 toggles the classic look.
+var game_hour=9.0
+var clock_speed=0.0   # game hours per real second
+var classic_look=false
+var look_blend=1.8    # seconds the island takes to change look
+var world_clock: Label
+
+func is_daytime() -> bool:
+	return game_hour>=6.0 and game_hour<18.0
+
+func clock_text() -> String:
+	return "%s %02d:%02d" % ["Day" if is_daytime() else "Night",int(game_hour),int(fmod(game_hour,1.0)*6)*10]
+
+## With no argument the clock decides. Naming a look moves the clock to match it.
 func choose_look(next: String=""):
-	if next.is_empty():
-		var hour=Time.get_datetime_dict_from_system().hour
-		next="day" if OS.get_cmdline_args().has("--script") or (hour>=6 and hour<18) else "night"
-	UIStyle.set_mode(next)
+	if next=="classic": classic_look=true
+	elif not next.is_empty():
+		classic_look=false
+		if next=="night" and is_daytime(): game_hour=20.0
+		elif next=="day" and not is_daytime(): game_hour=9.0
+	UIStyle.set_mode("classic" if classic_look else ("day" if is_daytime() else "night"))
 	theme=UIStyle.theme()
 	# each look has a matching attack feel; F1 to F4 still override it
 	if not OS.get_cmdline_args().has("--script"): hit_feel.variant={"day":2,"night":3}.get(UIStyle.mode,0)
+
+func tick_clock(delta: float):
+	if page!="map" or model.profile.is_empty(): return
+	game_hour=fmod(game_hour+delta*clock_speed,24.0)
+	model.profile.time=game_hour
+	if is_instance_valid(world_clock): world_clock.text=clock_text()
+	if not classic_look and UIStyle.mode!=("day" if is_daytime() else "night"):
+		look_blend=12.0  # sunrise and sunset take their time
+		choose_look()
+		render()
+		look_blend=1.8
 
 func _ready():
 	choose_look()
@@ -119,6 +146,9 @@ func _ready():
 	body.add_theme_constant_override("separation",12)
 	margin.add_child(body)
 	if model.load_profile(): page = "map"
+	game_hour=float(model.profile.get("time",9.0))
+	clock_speed=0.0 if OS.get_cmdline_args().has("--script") else 24.0/720.0
+	choose_look()
 	if model.save_path!="user://home-v1.json": constructed.path=model.save_path+".deck.json"
 	constructed.load_or_create(model.profile.get("element","air"))
 	if page=="map" and OS.get_cmdline_user_args().has("--collection"): page="deck"
@@ -303,6 +333,8 @@ func start_screen():
 
 func begin():
 	model.new_profile(model.world.classes[job_index].id,model.world.elements[element_index].id)
+	game_hour=9.0
+	choose_look()
 	if not FileAccess.file_exists(constructed.path): constructed.preset(model.profile.element)
 	model.save()
 	page="map"
@@ -343,7 +375,7 @@ func map_screen():
 		world3d.interact_requested.connect(world_interact)
 		world3d.nearby_changed.connect(update_world_prompt)
 	world3d.set_muted(battle_audio.muted)
-	world3d.set_night(UIStyle.mode=="night")
+	world3d.set_night(UIStyle.mode=="night",look_blend)
 	# HUD plates float over the world: place and health top left, the nearby action bottom centre.
 	var top=row_at(body)
 	var info=panel(top)
@@ -351,6 +383,8 @@ func map_screen():
 	info.add_theme_constant_override("separation",0)
 	label_at(info,"Home Island",24).autowrap_mode=TextServer.AUTOWRAP_OFF
 	muted(info,"♥ %d / 30   ◆ %d resin" % [p.hp,p.resin],14).autowrap_mode=TextServer.AUTOWRAP_OFF
+	world_clock=muted(info,clock_text(),14)
+	world_clock.autowrap_mode=TextServer.AUTOWRAP_OFF
 	var gap=Control.new()
 	gap.size_flags_vertical=Control.SIZE_EXPAND_FILL
 	gap.mouse_filter=Control.MOUSE_FILTER_IGNORE
@@ -802,6 +836,7 @@ func choose_presented_card(index: int):
 	if player_choice_ready() and battle.choose_discover(0,index): after_action()
 
 func _process(delta: float):
+	tick_clock(delta)
 	var choice_ready=player_choice_ready()
 	if choice_ready and is_instance_valid(duel_board) and duel_board.get_node_or_null("DiscoverOption0")==null:
 		render()
@@ -880,8 +915,15 @@ func _input(event):
 		get_viewport().set_input_as_handled()
 		return
 	if event is InputEventKey and event.pressed and not event.echo and event.keycode==KEY_F5:
-		var looks=["day","night","classic"]
-		choose_look(looks[(looks.find(UIStyle.mode)+1)%looks.size()])
+		choose_look("night" if is_daytime() else "day")
+		if not is_daytime(): game_hour=18.0
+		else: game_hour=6.0
+		render()
+		get_viewport().set_input_as_handled()
+		return
+	if event is InputEventKey and event.pressed and not event.echo and event.keycode==KEY_F6:
+		classic_look=not classic_look
+		choose_look()
 		render()
 		get_viewport().set_input_as_handled()
 		return

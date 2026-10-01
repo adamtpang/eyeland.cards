@@ -16,10 +16,10 @@ One layout, three looks. Every colour, font, outline and shadow comes from the t
 | Menus: collection, deck, buttons, panels, tooltips | Applied through the shared theme |
 | Card art restyle (cel by day, engraved at night) | Applied with `card_style.gdshader` |
 | Overworld (3D island, sky, water, characters) | First pass applied (2026-10-01), see "The overworld" below |
-| Sound and music per look | Not started. Only the attack-hit cues exist |
-| In-game clock | Not built. The computer's clock picks the look (06:00 to 18:00 is day) |
+| Sound and music per look | Synthesized ambience and placeholder tunes on the island; battle has hit cues only |
+| In-game clock | Built (2026-10-01): 12-minute days on the island, shown in the HUD, saved |
 
-Checked by `tests/looks.gd` (33 automated checks plus screenshots in
+Checked by `tests/looks.gd` (42 automated checks plus screenshots in
 `game/evidence/looks-2026-10-01/`). No human has judged the look in motion yet.
 
 ## The two looks
@@ -74,8 +74,10 @@ Element accents (fire, water, earth, air) and rarity gems keep one set of colour
 
 ## Switching
 
-- Normal play picks day or night from the computer's clock until the island has its own.
-- **F5** cycles day, night and classic on any screen.
+- **The island has its own clock.** A full day takes 12 real minutes on the island and the
+  clock pauses in battles and menus. 06:00 to 18:00 is day. Sunrise and sunset blend over
+  12 seconds. The time is shown in the island HUD and kept in the save.
+- **F5** skips to the next sunset or sunrise on any screen. **F6** toggles the classic look.
 - Tests always start in day, with the original attack feel, so results do not depend on the
   time they run.
 
@@ -114,9 +116,19 @@ Second pass, 2026-10-01 (`terrain.gdshader`, `grass.gdshader`, `world_audio.gd`)
   sky passes through a short orange sunset, and lights, fog, stars and crickets fade.
   Re-rendering the HUD no longer rebuilds the world.
 
-Still open: no music, no creature models beyond code shapes, no NPC other than Mira, no
-in-game clock (the computer's clock or F5 picks the look), and no human has judged how it
-looks in motion or how it sounds.
+Third pass, 2026-10-01:
+
+- **Music:** two short loops written as note lists and synthesized in code
+  (`world_audio.gd`): a bright C major tune by day (100 bpm, bass, plucked arpeggio, bell
+  melody) and a slow A minor one at night (66 bpm, pads and a sparse bell line). They
+  crossfade with the look and obey the Sound button. Copies for listening are in
+  `game/evidence/looks-2026-10-01/tune-day.wav` and `tune-night.wav`. They are placeholders:
+  nobody has listened to them yet, and a composed track would be better.
+- **In-game clock**, described under "Switching".
+
+Still open: no creature models beyond code shapes (a CC0 pack, Quaternius Ultimate
+Monsters, was found but not downloaded), no NPC other than Mira, and no human has judged
+how any of this looks in motion or how it sounds.
 
 ## Fonts
 

@@ -1,6 +1,7 @@
 extends Node
 ## Island ambience, synthesized in code (no recordings): sea wash all day, birdsong by day,
-## crickets at night, and footsteps, jumps and landings for the hero.
+## crickets at night, footsteps, jumps and landings for the hero, and two short looping
+## tunes (a bright one by day, a slow one at night) that crossfade with the look.
 const RATE=22050
 var muted=false
 var night_mix=0.0
@@ -15,6 +16,10 @@ var next_chirp=2.0
 var last_cue=""
 var counts={}  # how many times each cue has been asked for
 var random=RandomNumberGenerator.new()
+const MUSIC_RATE=16000
+var day_music: AudioStreamPlayer
+var night_music: AudioStreamPlayer
+static var music_task=-1
 
 func pcm(seconds: float,sample: Callable,looped: bool=false) -> AudioStreamWAV:
 	var count=int(RATE*seconds)
@@ -42,7 +47,11 @@ static var bank: Dictionary={}  # synthesized once per run, reused each time the
 
 func _ready():
 	random.seed=5
-	if bank.is_empty(): synthesize()
+	if not bank.has("waves"): synthesize()
+	# The tunes take a few seconds to synthesize, so they are built once on a worker thread
+	# and start when ready. Automated runs build them on request instead.
+	if not bank.has("night_music") and music_task==-1 and not OS.get_cmdline_args().has("--script"):
+		music_task=WorkerThreadPool.add_task(build_music)
 	waves=looping(bank.waves,-17)
 	crickets=looping(bank.crickets,-80)
 	chirps=bank.chirps
@@ -91,8 +100,87 @@ func synthesize():
 	bank.land=pcm(.2,func(t: float,_i: int) -> float: return (sin(TAU*95*t)*.8+random.randf_range(-1,1)*.4)*exp(-t*24))
 	bank.chime=pcm(.5,func(t: float,_i: int) -> float: return (sin(TAU*880*t)+.6*sin(TAU*1320*t))*exp(-t*7)*.3)
 
+## One note added into a looping buffer; tails wrap round so the loop has no seam.
+static func note(buffer: PackedFloat32Array,start: float,seconds: float,midi: int,voice: String,gain: float):
+	var total=buffer.size()
+	var first=int(start*MUSIC_RATE)
+	var w=TAU*440.0*pow(2.0,(midi-69)/12.0)/MUSIC_RATE
+	var count=int((seconds+{"pluck":.5,"bass":.3,"bell":1.4,"pad":1.2}[voice])*MUSIC_RATE)
+	if voice=="pluck":
+		for i in range(count):
+			var t=float(i)/MUSIC_RATE
+			buffer[(first+i)%total]+=(sin(w*i)+.35*sin(2.0*w*i))*exp(-t*5.5)*gain
+	elif voice=="bass":
+		for i in range(count):
+			var t=float(i)/MUSIC_RATE
+			var hold=1.0 if t<seconds else exp(-(t-seconds)*12.0)
+			buffer[(first+i)%total]+=(sin(w*i)+.2*sin(2.0*w*i))*minf(1.0,t*60.0)*exp(-t*1.6)*hold*gain
+	elif voice=="bell":
+		for i in range(count):
+			var t=float(i)/MUSIC_RATE
+			buffer[(first+i)%total]+=(sin(w*i)*exp(-t*2.6)+.45*sin(3.01*w*i)*exp(-t*7.0))*gain
+	else:
+		for i in range(count):
+			var t=float(i)/MUSIC_RATE
+			var shape=minf(1.0,t/.5)*(1.0 if t<seconds else maxf(0.0,1.0-(t-seconds)/1.2))
+			buffer[(first+i)%total]+=(sin(w*i)+.5*sin(2.006*w*i)+.3*sin(.997*w*i))*shape*.5*gain
+
+## Notes are [beat, length in beats, MIDI pitch, voice, gain].
+static func song(bpm: float,beats: int,notes: Array) -> AudioStreamWAV:
+	var beat=60.0/bpm
+	var buffer=PackedFloat32Array()
+	buffer.resize(int(beats*beat*MUSIC_RATE))
+	for n in notes: note(buffer,n[0]*beat,n[1]*beat,n[2],n[3],n[4])
+	var peak=0.001
+	for value in buffer: peak=maxf(peak,absf(value))
+	var bytes=PackedByteArray()
+	bytes.resize(buffer.size()*2)
+	for i in range(buffer.size()): bytes.encode_s16(i*2,int(buffer[i]/peak*.8*32767))
+	var stream=AudioStreamWAV.new()
+	stream.format=AudioStreamWAV.FORMAT_16_BITS
+	stream.mix_rate=MUSIC_RATE
+	stream.data=bytes
+	stream.loop_mode=AudioStreamWAV.LOOP_FORWARD
+	stream.loop_end=buffer.size()
+	return stream
+
+static func build_music():
+	# Day: eight bars in C major at 100 bpm. Bass, a plucked arpeggio and a bell melody.
+	var day=[]
+	var chords=[[48,60,64,67],[45,57,60,64],[41,53,57,60],[43,55,59,62],[48,60,64,67],[45,57,60,64],[41,53,57,60],[43,55,59,62]]
+	for bar in range(8):
+		var chord=chords[bar]
+		day.append([bar*4,3.5,chord[0],"bass",.55])
+		for eighth in range(8): day.append([bar*4+eighth*.5,.5,chord[1+[0,1,2,1,0,1,2,1][eighth]],"pluck",.3])
+	var tune=[[0,1,76],[1,1,79],[2,2,81],[4,1,79],[5,1,76],[6,2,72],[8,1,77],[9,1,81],[10,2,84],[12,1,83],[13,1,81],[14,2,79],
+		[16,1,76],[17,1,79],[18,2,84],[20,1,81],[21,1,79],[22,2,76],[24,1,77],[25,1,76],[26,1,74],[27,1,72],[28,2,74],[30,2,79]]
+	for n in tune: day.append([n[0],n[1],n[2],"bell",.42])
+	var day_stream=song(100.0,32,day)
+	# Night: eight bars in A minor at 66 bpm. Slow pads, a low bass and a sparse bell line.
+	var dark=[]
+	var pads=[[45,57,60,64],[41,53,57,60],[48,55,60,64],[40,52,55,59],[45,57,60,64],[41,53,57,60],[38,50,53,57],[40,52,56,59]]
+	for bar in range(8):
+		var chord=pads[bar]
+		dark.append([bar*4,4,chord[0],"bass",.4])
+		for tone in chord.slice(1): dark.append([bar*4,3.6,tone,"pad",.3])
+	var line=[[0,2,76],[2,2,81],[4,3,84],[7,1,81],[8,2,79],[10,2,76],[12,4,71],[16,2,76],[18,2,81],[20,3,84],[23,1,86],[24,2,81],[26,2,77],[28,4,80]]
+	for n in line: dark.append([n[0],n[1],n[2],"bell",.34])
+	var night_stream=song(66.0,32,dark)
+	bank.day_music=day_stream
+	bank.night_music=night_stream
+
+func start_music():
+	day_music=looping(bank.day_music,-80)
+	night_music=looping(bank.night_music,-80)
+	day_music.play()
+	night_music.play()
+	apply_volume()
+
 func apply_volume():
 	if not is_instance_valid(waves): return
+	if is_instance_valid(day_music):
+		day_music.volume_db=-80.0 if muted or night_mix>.95 else lerpf(-23.0,-55.0,night_mix)
+		night_music.volume_db=-80.0 if muted or night_mix<.05 else lerpf(-55.0,-23.0,night_mix)
 	waves.volume_db=-80.0 if muted else -17.0
 	crickets.volume_db=-80.0 if muted or night_mix<.05 else lerpf(-40.0,-21.0,night_mix)
 
@@ -121,6 +209,7 @@ func land(): play(land_sound,-11,"land")
 func chime(): play(chime_sound,-14,"chime")
 
 func _process(delta):
+	if day_music==null and bank.has("night_music"): start_music()
 	next_chirp-=delta
 	if next_chirp<=0:
 		next_chirp=random.randf_range(2.5,7.0)
