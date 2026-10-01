@@ -52,6 +52,11 @@ var facing=Vector2.DOWN
 var world3d
 var world_prompt: Label
 var world_host: SubViewportContainer
+var feel_chosen=false     # the player picked an attack feel, so looks stop changing it
+var spoken=""            # the landmark whose dialogue box is open on the island
+var settings_back="map"  # the page Settings returns to
+var confirm_new=false
+const SETTINGS_PATH="user://settings.json"
 var battle_host: SubViewportContainer
 var battle_stage
 var stage_result_for
@@ -115,7 +120,40 @@ func choose_look(next: String=""):
 	UIStyle.set_mode("classic" if classic_look else ("day" if is_daytime() else "night"))
 	theme=UIStyle.theme()
 	# each look has a matching attack feel; F1 to F4 still override it
-	if not OS.get_cmdline_args().has("--script"): hit_feel.variant={"day":2,"night":3}.get(UIStyle.mode,0)
+	if not automated() and not feel_chosen: hit_feel.variant={"day":2,"night":3}.get(UIStyle.mode,0)
+
+func automated() -> bool:
+	return OS.get_cmdline_args().has("--script")
+
+func is_fullscreen() -> bool:
+	return get_window().mode in [Window.MODE_FULLSCREEN,Window.MODE_EXCLUSIVE_FULLSCREEN]
+
+func set_fullscreen(on: bool):
+	get_window().mode=Window.MODE_FULLSCREEN if on else Window.MODE_WINDOWED
+	save_settings()
+
+func save_settings():
+	if automated(): return
+	var file=FileAccess.open(SETTINGS_PATH,FileAccess.WRITE)
+	if file==null: return
+	file.store_string(JSON.stringify({"fullscreen":is_fullscreen(),"muted":battle_audio.muted,"classic":classic_look,"feel":hit_feel.variant,"feel_chosen":feel_chosen}))
+
+func load_settings():
+	if automated() or not FileAccess.file_exists(SETTINGS_PATH): return
+	var saved=JSON.parse_string(FileAccess.get_file_as_string(SETTINGS_PATH))
+	if not saved is Dictionary: return
+	if saved.get("fullscreen",false): get_window().mode=Window.MODE_FULLSCREEN
+	if saved.get("muted",false) and not battle_audio.muted: battle_audio.toggle()
+	classic_look=saved.get("classic",false)
+	feel_chosen=saved.get("feel_chosen",false)
+	if feel_chosen: hit_feel.variant=int(saved.get("feel",0))
+
+func open_settings():
+	if page=="settings": return
+	settings_back=page
+	confirm_new=false
+	page="settings"
+	render()
 
 func tick_clock(delta: float):
 	if page!="map" or model.profile.is_empty(): return
@@ -155,6 +193,8 @@ func _ready():
 	if model.save_path!="user://home-v1.json": constructed.path=model.save_path+".deck.json"
 	constructed.load_or_create(model.profile.get("element","air"))
 	if page=="map" and OS.get_cmdline_user_args().has("--collection"): page="deck"
+	load_settings()
+	choose_look()
 	render()
 	get_window().min_size=Vector2i(1024,720)
 
@@ -271,10 +311,13 @@ func render():
 		if page in ["map","deck"]:
 			var nav=button_at(header,"Collection" if page=="map" else "Back to island",func(): page="deck" if page=="map" else "map"; swap_index=-1; render())
 			nav.size_flags_horizontal=Control.SIZE_SHRINK_END
-	if page=="map":
-		var sound=button_at(header,"Sound off" if battle_audio.muted else "Sound on",func(): battle_audio.toggle(); render())
-		sound.size_flags_horizontal=Control.SIZE_SHRINK_END
-		sound.tooltip_text="Toggle island and battle sounds for this session."
+	if page=="settings":
+		var done=button_at(header,"Back",func(): page=settings_back; render())
+		done.size_flags_horizontal=Control.SIZE_SHRINK_END
+	elif page!="battle" and page!="result":
+		var gear=button_at(header,"Settings",open_settings)
+		gear.size_flags_horizontal=Control.SIZE_SHRINK_END
+		gear.tooltip_text="Sound, fullscreen, look, attack feel and class. F11 toggles fullscreen."
 	var help=button_at(header,"?" if not help_open else "Close",func(): help_open=not help_open; render())
 	help.size_flags_horizontal=Control.SIZE_SHRINK_END
 	help.tooltip_text="WASD: move | Shift: run | Space: jump\nRight-drag: camera | Wheel: zoom | E: interact\nDrag cards onto the battlefield. Drag attacks and damage spells onto enemies.\nHover cards for details. Click ? for the full guide."
@@ -286,6 +329,9 @@ func render():
 		start_screen()
 		return
 	var p=model.profile
+	if page == "settings":
+		settings_screen()
+		return
 	if page == "map": map_screen()
 	elif page == "deck": deck_screen()
 	elif page == "battle": battle_screen()
@@ -338,7 +384,59 @@ func start_screen():
 		c.custom_minimum_size=Vector2(136,202)
 		c.active_hint=false
 	primary(choices,"Begin at home",begin)
+	if not model.profile.is_empty(): button_at(choices,"Keep my current adventure",func(): page="map"; render())
 	if model.save_blocked: label_at(body,model.error,16)
+
+func choice_row(parent: Node,title: String,options: Array,current: int,pick: Callable):
+	eyebrow(parent,title)
+	var line=row_at(parent)
+	for i in range(options.size()):
+		var b=button_at(line,options[i],pick.bind(i))
+		b.custom_minimum_size=Vector2(150,44)
+		if i==current: UIStyle.primary(b)
+	return line
+
+func settings_screen():
+	var split=row_at(body)
+	var left=panel(split)
+	label_at(left,"Settings",32)
+	choice_row(left,"DISPLAY  (F11)",["Windowed","Fullscreen"],1 if is_fullscreen() else 0,func(i): set_fullscreen(i==1); render())
+	choice_row(left,"SOUND",["On","Off"],1 if battle_audio.muted else 0,func(i):
+		if (i==1)!=battle_audio.muted: battle_audio.toggle()
+		save_settings(); render())
+	choice_row(left,"LOOK",["Day and night","Classic painted"],1 if classic_look else 0,func(i):
+		classic_look=i==1; choose_look(); save_settings(); render())
+	choice_row(left,"ATTACK FEEL",["Original","Snap","Heavy","Slash"],hit_feel.variant,func(i):
+		feel_chosen=true; hit_feel.variant=i; save_settings(); render())
+	var right=panel(split,UIStyle.P.panel2)
+	if model.profile.is_empty():
+		label_at(right,"No adventure yet",26)
+		muted(right,"Choose your class and companion on the first screen.")
+		return
+	label_at(right,"Your class",26)
+	var names=[]
+	var current=0
+	for i in range(model.world.classes.size()):
+		names.append(model.world.classes[i].name)
+		if model.world.classes[i].id==model.profile.get("job",""): current=i
+	var jobs=choice_row(right,"CLASS",names,current,func(i):
+		model.profile.job=model.world.classes[i].id; model.save(); render())
+	for i in range(jobs.get_child_count()):
+		var b: Button=jobs.get_child(i)
+		b.icon=UIStyle.hero_art(model.world.classes[i].id)
+		b.expand_icon=true
+		b.add_theme_constant_override("icon_max_width",40)
+		b.custom_minimum_size.y=60
+	var job=model.world.classes[current]
+	muted(right,job.power+": "+job.description).autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
+	eyebrow(right,"ADVENTURE")
+	if not confirm_new:
+		button_at(right,"Start a new adventure",func(): confirm_new=true; render())
+	else:
+		muted(right,"This replaces your island progress with a fresh start. Your 30-card deck is kept.").autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
+		var line=row_at(right)
+		primary(line,"Yes, choose class and companion",func(): confirm_new=false; page="start"; render())
+		button_at(line,"Cancel",func(): confirm_new=false; render())
 
 func begin():
 	model.new_profile(model.world.classes[job_index].id,model.world.elements[element_index].id)
@@ -398,6 +496,18 @@ func map_screen():
 	gap.size_flags_vertical=Control.SIZE_EXPAND_FILL
 	gap.mouse_filter=Control.MOUSE_FILTER_IGNORE
 	body.add_child(gap)
+	if not spoken.is_empty():
+		var speech_row=row_at(body)
+		speech_row.alignment=BoxContainer.ALIGNMENT_CENTER
+		var speech=panel(speech_row)
+		speech.get_parent().name="Dialogue"
+		speech.get_parent().size_flags_horizontal=Control.SIZE_SHRINK_CENTER
+		speech.get_parent().custom_minimum_size.x=640
+		var speaker={"home":"Your family","friend":"Mira","crop":"Resin garden","camp":"Campfire","dock":"Lookout"}.get(spoken,"")
+		eyebrow(speech,speaker.to_upper())
+		var line=label_at(speech,note,18)
+		line.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
+		muted(speech,"E to close",11)
 	var hud=row_at(body)
 	hud.alignment=BoxContainer.ALIGNMENT_CENTER
 	var prompt=row_at(panel(hud))
@@ -427,6 +537,11 @@ func near_location(id: String) -> bool:
 
 func update_world_prompt(id: String):
 	if not is_instance_valid(world_prompt): return
+	if not spoken.is_empty() and id!=spoken:
+		# walking away closes the dialogue box
+		spoken=""
+		render.call_deferred()
+		return
 	world_action.visible=not id.is_empty()
 	if is_instance_valid(world_plate): world_plate.visible=not id.is_empty()
 	var names={"home":"Home","friend":"Mira","crop":"Garden","encounter":"Resin Crab","camp":"Campfire","dock":"Lookout"}
@@ -448,6 +563,8 @@ func world_interact(id: String):
 			if mark.id==id: note=mark.dialogue
 		if id=="home": model.profile.met_home=true; model.save()
 		if id=="crop" and model.profile.won: note="The garden is flowering again. Your family has already replanted the beds you protected."
+	# pressing E again closes the box
+	spoken="" if spoken==id else id
 	render()
 
 func travel_to(x: int,y: int):
@@ -960,6 +1077,11 @@ func save_bug_snapshot() -> String:
 	return path
 
 func _input(event):
+	if event is InputEventKey and event.pressed and not event.echo and event.keycode==KEY_F11:
+		set_fullscreen(not is_fullscreen())
+		if page=="settings": render()
+		get_viewport().set_input_as_handled()
+		return
 	if event is InputEventKey and event.pressed and not event.echo and event.keycode==KEY_F8:
 		save_bug_snapshot()
 		get_viewport().set_input_as_handled()
@@ -979,6 +1101,8 @@ func _input(event):
 		return
 	if page=="battle" and event is InputEventKey and event.pressed and not event.echo and event.keycode in [KEY_F1,KEY_F2,KEY_F3,KEY_F4]:
 		hit_feel.set_variant(event.keycode-KEY_F1)
+		feel_chosen=true
+		save_settings()
 		get_viewport().set_input_as_handled()
 		return
 	if is_instance_valid(inspection):

@@ -88,6 +88,18 @@ func run():
 	await create_timer(.9).timeout
 	shot(folder,"island-day-camp.png")
 	check(game.world_plate.visible and game.world_action.text.begins_with("Rest"),"Nearby action plate appears")
+	# E opens a visible dialogue box, E again closes it, and walking away closes it too
+	for press in [true,false,true]:
+		var talk=InputEventKey.new(); talk.keycode=KEY_E; talk.pressed=true
+		root.push_input(talk)
+		await process_frame; await process_frame
+		check((game.body.find_child("Dialogue",true,false)!=null)==press,"E %s the dialogue box" % ("opens" if press else "closes"))
+	shot(folder,"island-dialogue.png")
+	world.player.position=Vector3(0,1,14)
+	await create_timer(.4).timeout
+	check(game.spoken.is_empty() and game.body.find_child("Dialogue",true,false)==null,"Walking away closes the dialogue box")
+	world.player.position=Vector3(0,1,4.5)
+	await create_timer(.4).timeout
 	# day to night blends on the same island instead of rebuilding it
 	game.choose_look("night"); game.render()
 	await create_timer(.7).timeout
@@ -118,6 +130,15 @@ func run():
 		check(world.pet_animator!=null and world.pet_animator.is_playing(),"%s companion model animates" % kind)
 		shot(folder,"companion-%s.png" % kind)
 	check(is_zero_approx(world.mix),"Night blends back to day")
+	# settings: reachable from the island, changes class, returns to the island
+	game.open_settings(); await process_frame
+	check(game.page=="settings" and not is_instance_valid(game.world_host),"Settings opens from the island")
+	shot(folder,"settings.png")
+	game.model.profile.job="wizard"; game.page=game.settings_back; game.render()
+	await create_timer(1.0).timeout
+	world=game.world3d
+	check(game.page=="map" and world.job=="wizard","Changing class in Settings changes the island hero")
+	check(ProjectSettings.get_setting("display/window/size/viewport_width")*9==ProjectSettings.get_setting("display/window/size/viewport_height")*16,"The game window is 16:9 landscape")
 	var mute_before=game.battle_audio.muted
 	game.battle_audio.toggle(); game.render(); await process_frame
 	check(world.audio.muted!=mute_before and world.audio.waves.volume_db<-60,"Sound button silences the island")
