@@ -6,6 +6,8 @@ var last_battle
 var log_cursor=0
 var result_played=false
 var last_cue=""
+var hit_streams={}
+const HIT_DB={"hit_snap":-7.0,"hit_heavy":-3.0,"hit_slash":-8.0}
 
 func _ready():
 	for kind in ["play","attack","secret","victory","defeat","draw"]: streams[kind]=make_cue(kind)
@@ -29,12 +31,49 @@ func make_cue(kind: String) -> AudioStreamWAV:
 	stream.data=bytes
 	return stream
 
+## Synthesized impact cues for the attack-feel variations (see hit_feel.gd).
+func make_hit(kind: String) -> AudioStreamWAV:
+	var rate=22050
+	var seconds={"hit_snap":.14,"hit_heavy":.5,"hit_slash":.36}[kind]
+	var samples=int(rate*seconds)
+	var bytes=PackedByteArray(); bytes.resize(samples*2)
+	var rng=RandomNumberGenerator.new(); rng.seed=7
+	var low=0.0
+	var phase=0.0
+	for i in range(samples):
+		var t=float(i)/rate
+		var noise=rng.randf_range(-1,1)
+		var wave=0.0
+		if kind=="hit_snap":
+			# sharp click plus a short falling thud
+			phase+=TAU*lerpf(240.0,95.0,minf(1.0,t/.09))/rate
+			wave=sin(phase)*exp(-t*26)*.9+noise*exp(-t*130)*.7
+		elif kind=="hit_heavy":
+			# deep falling boom with a crunch on the front and a long tail
+			phase+=TAU*lerpf(110.0,36.0,minf(1.0,t/.3))/rate
+			low=lerpf(low,noise,.12)
+			wave=sin(phase)*exp(-t*7)+.35*sin(phase*2)*exp(-t*14)+low*exp(-t*22)*1.4
+		else:
+			# airy swish that rises, then a bright ring on the hit at .16s
+			low=lerpf(low,noise,.45)
+			if t<.16: wave=(noise-low)*sin(PI*t/.16)*.5
+			else: wave=(sin(TAU*1320*t)+.6*sin(TAU*1980*t)+.3*sin(TAU*2640*t))*exp(-(t-.16)*16)*.45
+		bytes.encode_s16(i*2,int(clampf(wave*.6,-1,1)*32767))
+	var stream=AudioStreamWAV.new()
+	stream.format=AudioStreamWAV.FORMAT_16_BITS
+	stream.mix_rate=rate
+	stream.data=bytes
+	return stream
+
 func play_cue(kind: String):
 	last_cue=kind
-	if muted or not streams.has(kind): return
+	if muted: return
+	if HIT_DB.has(kind) and not hit_streams.has(kind): hit_streams[kind]=make_hit(kind)
+	var stream=streams.get(kind,hit_streams.get(kind))
+	if stream==null: return
 	var player=AudioStreamPlayer.new()
-	player.stream=streams[kind]
-	player.volume_db=-12
+	player.stream=stream
+	player.volume_db=HIT_DB.get(kind,-12.0)
 	add_child(player)
 	player.finished.connect(player.queue_free)
 	player.play()
@@ -75,4 +114,5 @@ func _exit_tree():
 		player.stop()
 		player.stream=null
 	streams.clear()
+	hit_streams.clear()
 	last_battle=null

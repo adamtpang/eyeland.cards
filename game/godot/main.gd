@@ -64,6 +64,7 @@ var duel_board
 var battle_audio=preload("res://battle_audio.gd").new()
 var secret_reveal=preload("res://secret_reveal.gd").new()
 var creature_feedback=preload("res://creature_feedback.gd").new()
+var hit_feel=preload("res://hit_feel.gd").new()
 var combat_feedback_battle
 var combat_feedback_cursor=0
 var spell_feedback_battle
@@ -87,6 +88,8 @@ func _ready():
 	add_child(battle_audio)
 	add_child(secret_reveal)
 	add_child(creature_feedback)
+	hit_feel.game=self
+	add_child(hit_feel)
 	theme = UIStyle.theme()
 	scroll = ScrollContainer.new()
 	scroll.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
@@ -813,6 +816,10 @@ func _input(event):
 		save_bug_snapshot()
 		get_viewport().set_input_as_handled()
 		return
+	if page=="battle" and event is InputEventKey and event.pressed and not event.echo and event.keycode in [KEY_F1,KEY_F2,KEY_F3,KEY_F4]:
+		hit_feel.set_variant(event.keycode-KEY_F1)
+		get_viewport().set_input_as_handled()
+		return
 	if is_instance_valid(inspection):
 		if event is InputEventKey and event.pressed and event.keycode==KEY_ESCAPE:
 			close_inspection()
@@ -882,7 +889,7 @@ func show_ordered_effects():
 		if event.kind not in ["combat","spell_hit","heal","buff"]: continue
 		if event.kind=="combat": present_combat(event,delay)
 		else: present_effect(event.kind,event,delay)
-		delay+=.22
+		delay+=hit_feel.SPACING[hit_feel.variant] if event.kind=="combat" else .22
 	effect_schedule_until=now+delay
 	effect_timeline_cursor=battle.timeline.size()
 	secret_reveal.cursor=battle.revealed_secrets.size()
@@ -1022,8 +1029,18 @@ func show_opponent_attacks():
 		combat_feedback_cursor+=1
 		present_combat(event)
 
+func effect_face(owner: int,uid: int):
+	if not is_instance_valid(duel_board): return null
+	var face=target_widgets.get(uid) if owner==1 else duel_board.friendly_faces.get(uid)
+	if is_instance_valid(face): return face
+	for ghost in creature_feedback.get_children():
+		if ghost.get_meta("uid",-2)==uid: return ghost
+	return null
+
 func present_combat(event: Dictionary,delay: float=0.0):
-	schedule_sound("attack",delay+.14)
+	var feel=hit_feel.variant
+	var hit=hit_feel.IMPACT[feel]
+	schedule_sound(hit_feel.CUES[feel],delay+hit-hit_feel.CUE_LEAD[feel])
 	if not is_instance_valid(duel_board): return
 	var source=target_widgets.get(event.uid) if event.owner==1 else duel_board.friendly_faces.get(event.uid)
 	var target=duel_board.friendly_faces.get(event.target) if event.owner==1 else target_widgets.get(event.target)
@@ -1031,6 +1048,12 @@ func present_combat(event: Dictionary,delay: float=0.0):
 	var point=target.get_global_rect().get_center() if is_instance_valid(target) else duel_board.get_global_rect().get_center()
 	var source_anchor=effect_point.bind(event.owner,event.uid,from)
 	var target_anchor=effect_point.bind(1-event.owner,event.target,point)
+	if feel!=0:
+		var art=source.portrait if event.uid==-1 and is_instance_valid(source) else (UIStyle.hero_art(battle.job.id) if event.uid==-1 else UIStyle.art(event.card))
+		if event.get("retaliation",0)>0: hit_feel.number("−%d" % event.retaliation,from,delay+hit,source_anchor)
+		hit_feel.strike(art,from,point,delay,source_anchor,target_anchor,effect_face.bind(event.owner,event.uid),effect_face.bind(1-event.owner,event.target),event.uid!=-1)
+		if event.damage>0: hit_feel.number("−%d" % event.damage,point,delay+hit,target_anchor)
+		return
 	if event.get("retaliation",0)>0:
 		float_feedback("−%d" % event.retaliation,from,Color("ffe0a0"),delay+.14,source_anchor)
 	attack_lunge(event.card if event.uid!=-1 else "",from,point,source.portrait if event.uid==-1 and is_instance_valid(source) else null,delay,source_anchor,target_anchor)

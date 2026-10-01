@@ -53,3 +53,6 @@ Warrior, Ranger and Wizard now have distinct face portraits and matching illustr
 ## Drag/drop and quieter screens
 
 Drag a card onto the highlighted battlefield. The insertion slot previews creature placement, including drops over existing creatures. Drag damage cards or ready creatures onto highlighted enemies. Release outside a valid area or press Escape to cancel without spending mana. Clicking still works. Explanations now live in hover details or the ? guide; health, mana, rewards, actions and card rules stay visible. The recent action log is on the small history control at the left of the board.
+
+## Attack feel variations (2026-10-01, for Adam's pick)
+In any battle, press **F1 to F4** to switch how an attack lands: F1 Original, F2 A Snap (fast jab, light shake), F3 B Heavy (wind-up, slam, freeze frame, big shake, shockwave), F4 C Slash (curved sweep with afterimages, cut line and sparks). Each has its own synthesized hit sound and damage number. The current choice shows at the bottom left. Rules and outcomes are identical; only presentation and its timing change. Code: `hit_feel.gd`; checks: `tests/hit_feel.gd` (50, automated, not a judgment of feel). The default stays Original until Adam picks.

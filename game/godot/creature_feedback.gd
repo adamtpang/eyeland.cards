@@ -139,7 +139,7 @@ func queue_stat_updates(game,events: Array):
 				shown_stats[uid]=initial.get("state",{}).duplicate(true)
 				shown_stats[uid].merge({"atk":initial.attack,"hp":initial.health,"divine_shield":initial.get("divine_shield",false)},true)
 			if not stat_steps.has(uid): stat_steps[uid]=[]
-			var at=game.effect_event_times.get(event.sequence,0.0)+(.14 if event.kind=="combat" else 0.0)
+			var at=game.effect_event_times.get(event.sequence,0.0)+(game.hit_feel.IMPACT[game.hit_feel.variant] if event.kind=="combat" else 0.0)
 			stat_steps[uid].append({"at":at,"state":update.state.duplicate(true)})
 	_process(0)
 
