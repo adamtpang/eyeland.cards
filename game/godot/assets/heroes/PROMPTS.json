@@ -1,0 +1,30 @@
+{
+  "date": "2026-09-20",
+  "method": "built-in image_gen",
+  "assets": [
+    {
+      "file": "warrior.png",
+      "prompt": "Create one square finished game illustration for eyeland.cards, a charming coastal fantasy card RPG. Painterly fantasy trading-card art, rich hand-painted textures, warm brass highlights, deep marine teal shadows, expressive stylized shapes, polished readable illustration at small icon size. A warm, determined young adult human warrior adventurer, medium brown skin, short dark hair, expressive clearly visible face, teal traveling clothes and weathered brass shoulder armor. Head-and-shoulders portrait, face centered and large, no helmet. Soft atmospheric background, strong contrast separating subject. Keep all important detail within the central 75% for oval/circular UI cropping. Full-bleed square illustration only, no text, no letters, no numbers, no border, no UI, no watermark. Original character/design, not a recognizable existing franchise character."
+    },
+    {
+      "file": "ranger.png",
+      "prompt": "Create one square finished game illustration for eyeland.cards, a charming coastal fantasy card RPG. Painterly fantasy trading-card art, rich hand-painted textures, warm brass highlights, deep marine teal shadows, expressive stylized shapes, polished readable illustration at small icon size. A warm, alert young adult human ranger adventurer, tan skin, auburn hair, expressive clearly visible face, moss green hood pushed back and leather traveling clothes, bow visible behind shoulder. Head-and-shoulders portrait, face centered and large. Soft atmospheric background, strong contrast separating subject. Keep all important detail within the central 75% for oval/circular UI cropping. Full-bleed square illustration only, no text, no letters, no numbers, no border, no UI, no watermark. Original character/design, not a recognizable existing franchise character."
+    },
+    {
+      "file": "wizard.png",
+      "prompt": "Create one square finished game illustration for eyeland.cards, a charming coastal fantasy card RPG. Painterly fantasy trading-card art, rich hand-painted textures, warm brass highlights, deep marine teal shadows, expressive stylized shapes, polished readable illustration at small icon size. A warm, curious young adult human wizard adventurer, dark brown skin, curly dark hair, expressive clearly visible face, indigo and teal traveling robes, small glowing rune near shoulder. Head-and-shoulders portrait, face centered and large, no face-obscuring hat. Soft atmospheric background, strong contrast separating subject. Keep all important detail within the central 75% for oval/circular UI cropping. Full-bleed square illustration only, no text, no letters, no numbers, no border, no UI, no watermark. Original character/design, not a recognizable existing franchise character."
+    },
+    {
+      "file": "brace.png",
+      "prompt": "Create one square finished game illustration for eyeland.cards, a charming coastal fantasy card RPG. Painterly fantasy trading-card art, rich hand-painted textures, warm brass highlights, deep marine teal shadows, expressive stylized shapes, polished readable illustration at small icon size. A single sturdy round brass-and-teal shield seen front-on absorbing a bright golden impact, protective magical glow. Large clear central shield silhouette fills image. This is the Warrior hero power Brace, which grants armor. Soft atmospheric background, strong contrast separating subject. Keep all important detail within the central 75% for oval/circular UI cropping. Full-bleed square illustration only, no text, no letters, no numbers, no border, no UI, no watermark. Original character/design, not a recognizable existing franchise character."
+    },
+    {
+      "file": "true-shot.png",
+      "prompt": "Create one square finished game illustration for eyeland.cards, a charming coastal fantasy card RPG. Painterly fantasy trading-card art, rich hand-painted textures, warm brass highlights, deep marine teal shadows, expressive stylized shapes, polished readable illustration at small icon size. A single drawn wooden longbow with one luminous green-gold arrow aimed diagonally upward across the picture, dynamic emerald motion trails and a clear arrowhead. Large readable central silhouette. This is the Ranger hero power True Shot. Soft atmospheric background, strong contrast separating subject. Keep all important detail within the central 75% for oval/circular UI cropping. Full-bleed square illustration only, no text, no letters, no numbers, no border, no UI, no watermark. Original character/design, not a recognizable existing franchise character."
+    },
+    {
+      "file": "spark.png",
+      "prompt": "Create one square finished game illustration for eyeland.cards, a charming coastal fantasy card RPG. Painterly fantasy trading-card art, rich hand-painted textures, warm brass highlights, deep marine teal shadows, expressive stylized shapes, polished readable illustration at small icon size. A single open gloved spellcaster hand releasing one bright blue-white magical spark, violet and cyan curling magical trails. Large readable central lightning spark. This is the Wizard hero power Spark. Soft atmospheric background, strong contrast separating subject. Keep all important detail within the central 75% for oval/circular UI cropping. Full-bleed square illustration only, no text, no letters, no numbers, no border, no UI, no watermark. Original character/design, not a recognizable existing franchise character."
+    }
+  ]
+}

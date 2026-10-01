@@ -1,0 +1,23 @@
+{
+  "classes": [
+    {"id":"warrior","name":"Warrior","power":"Brace","description":"2 mana: Gain 2 Armor.","effect":"armor","amount":2},
+    {"id":"ranger","name":"Ranger","power":"True Shot","description":"2 mana: Deal 2 damage to the enemy hero.","effect":"damage","amount":2},
+    {"id":"wizard","name":"Wizard","power":"Spark","description":"2 mana: Deal 1 damage to an enemy.","effect":"target","amount":1}
+  ],
+  "elements": [
+    {"id":"fire","name":"Fire","starter":"home-emberling","color":"ed9566"},
+    {"id":"water","name":"Water","starter":"home-tideling","color":"72c8d9"},
+    {"id":"earth","name":"Earth","starter":"home-mossling","color":"acd181"},
+    {"id":"air","name":"Air","starter":"home-cloudling","color":"c5b5ef"}
+  ],
+  "terrain":["#############","###.......###","##.........##","#...........#","#...........#","##.........##","###.......###","#############"],
+  "landmarks":[
+    {"id":"home","name":"Family home","x":3,"y":3,"symbol":"HOME","dialogue":"Your family tends the luminous resin garden. A small creature has been eating the crop. Take your companion east and bring it back safely in a card."},
+    {"id":"friend","name":"Old friend","x":5,"y":2,"symbol":"FRIEND","dialogue":"Your companion is a Legendary, but it is only beginning to grow. Let your Finch and Guard help it. Cards are companions, not just prizes."},
+    {"id":"crop","name":"Resin garden","x":7,"y":3,"symbol":"GARDEN","dialogue":"Luminous resin keeps our lamps burning. Beyond the shore, whole fleets trade for a single harvest. The Crab clearing is just east."},
+    {"id":"encounter","name":"Crab clearing","x":9,"y":3,"symbol":"CRAB","dialogue":"A Resin Crab guards the garden path. First victory: its creature card and 2 luminous resin. Rematches are practice."},
+    {"id":"camp","name":"Campfire","x":6,"y":5,"symbol":"CAMP","dialogue":"The fire is warm. Rest to restore your health, then prepare your deck for another adventure."},
+    {"id":"dock","name":"Lookout dock","x":9,"y":5,"symbol":"DOCK","dialogue":"Black sails gather on the horizon. Your friend whispers about monarchs whose power shapes entire islands. One day, home will need more than a brave little companion. More islands are still to come."}
+  ],
+  "encounter":{"id":"crop-crab","name":"Resin Crab","health":12,"deck":["home-resin-crab","home-resin-crab","home-breeze-finch","home-spark","home-shore-guard"],"reward":"home-resin-crab","resin":2}
+}

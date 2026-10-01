@@ -1,0 +1,7 @@
+FAIL: actual CharacterBody3D grounded on terrain
+FAIL: camera-relative walking moves body
+FAIL: sprint is faster than walking
+FAIL: space launches physical jump
+FAIL: gravity lands on terrain
+FAIL: E talks to family in 3D
+FAIL: retreat returns to 3D camp

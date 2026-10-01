@@ -1,0 +1,157 @@
+[
+  {
+    "test": "ai",
+    "passed": true,
+    "output": "Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org\r\n\r\nAI DECISIONS: 19 / 19 passed\r\n"
+  },
+  {
+    "test": "attack_keywords",
+    "passed": true,
+    "output": "Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org\r\n\r\nATTACK KEYWORDS: 14 / 14 passed\r\nWARNING: 2 ObjectDB instances were leaked at exit (run with `--verbose` for details).\r\n   at: cleanup (core/object/object.cpp:2536)\r\n"
+  },
+  {
+    "test": "auras",
+    "passed": true,
+    "output": "Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org\r\n\r\nAURAS: 15 passed; 0 failed\r\n"
+  },
+  {
+    "test": "check",
+    "passed": true,
+    "output": "Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org\r\n\r\nGodot checks: 328 passed / 328; tutorial AI wins 300 / 300\r\n"
+  },
+  {
+    "test": "collection",
+    "passed": true,
+    "output": "Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org\r\n\r\nFOUNDATIONS COLLECTION: 466/466 passed\r\n"
+  },
+  {
+    "test": "combo",
+    "passed": true,
+    "output": "Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org\r\n\r\nCOMBO: 8 / 8 passed\r\n"
+  },
+  {
+    "test": "constructed",
+    "passed": true,
+    "output": "Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org\r\n\r\nCONSTRUCTED: 25 / 25 passed\r\n"
+  },
+  {
+    "test": "counterspell",
+    "passed": true,
+    "output": "Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org\r\n\r\nCOUNTERSPELL: 6 / 6 passed\r\n"
+  },
+  {
+    "test": "death_batch",
+    "passed": true,
+    "output": "Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org\r\n\r\nDEATH BATCH: 5 / 5 passed\r\n"
+  },
+  {
+    "test": "death_choice",
+    "passed": true,
+    "output": "Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org\r\n\r\nDEATH CHOICE: 5 / 5 passed\r\n"
+  },
+  {
+    "test": "deathrattle",
+    "passed": true,
+    "output": "Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org\r\n\r\nDEATHRATTLE: 8 / 8 passed\r\n"
+  },
+  {
+    "test": "discover",
+    "passed": true,
+    "output": "Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org\r\n\r\nDISCOVER: 7 / 7 passed\r\n"
+  },
+  {
+    "test": "draws",
+    "passed": true,
+    "output": "Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org\r\n\r\nDRAWS: 7 passed; 0 failed\r\n"
+  },
+  {
+    "test": "event_timeline",
+    "passed": true,
+    "output": "Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org\r\n\r\nEVENT TIMELINE: 10 / 10 passed\r\n"
+  },
+  {
+    "test": "freeze",
+    "passed": true,
+    "output": "Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org\r\n\r\nFREEZE: 12 passed; 0 failed\r\n"
+  },
+  {
+    "test": "hero_freeze",
+    "passed": true,
+    "output": "Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org\r\n\r\nHERO FREEZE: 7 / 7 passed\r\n"
+  },
+  {
+    "test": "lifesteal",
+    "passed": true,
+    "output": "Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org\r\n\r\nLIFESTEAL: 8 passed; 0 failed\r\n"
+  },
+  {
+    "test": "overload",
+    "passed": true,
+    "output": "Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org\r\n\r\nOVERLOAD: 9 / 9 passed\r\n"
+  },
+  {
+    "test": "placement_ai",
+    "passed": true,
+    "output": "Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org\r\n\r\nPLACEMENT AI: 4 / 4 passed\r\n"
+  },
+  {
+    "test": "poisonous",
+    "passed": true,
+    "output": "Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org\r\n\r\nPOISONOUS: 4 / 4 passed\r\n"
+  },
+  {
+    "test": "secret_choice",
+    "passed": true,
+    "output": "Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org\r\n\r\nSECRET CHOICE: 12 / 12 passed\r\n"
+  },
+  {
+    "test": "secret_interrupt",
+    "passed": true,
+    "output": "Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org\r\n\r\nSECRET INTERRUPTION: 8 / 8 passed\r\n"
+  },
+  {
+    "test": "secrets",
+    "passed": true,
+    "output": "Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org\r\n\r\nSECRETS: 8 / 8 passed\r\n"
+  },
+  {
+    "test": "shield",
+    "passed": true,
+    "output": "Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org\r\n\r\nDIVINE SHIELD: 7 / 7 passed\r\n"
+  },
+  {
+    "test": "silence",
+    "passed": true,
+    "output": "Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org\r\n\r\nSILENCE: 8 passed; 0 failed\r\n"
+  },
+  {
+    "test": "spell_damage",
+    "passed": true,
+    "output": "Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org\r\n\r\nSPELL DAMAGE: 6 / 6 passed\r\n"
+  },
+  {
+    "test": "stealth",
+    "passed": true,
+    "output": "Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org\r\n\r\nSTEALTH: 6 / 6 passed\r\n"
+  },
+  {
+    "test": "weapon_deathrattle",
+    "passed": true,
+    "output": "Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org\r\n\r\nWEAPON DEATHRATTLE: 6 / 6 passed\r\n"
+  },
+  {
+    "test": "weapon_keywords",
+    "passed": true,
+    "output": "Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org\r\n\r\nWEAPON KEYWORDS: 6 / 6 passed\r\n"
+  },
+  {
+    "test": "weapons",
+    "passed": true,
+    "output": "Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org\r\n\r\nWEAPONS: 13 / 13 passed\r\n"
+  },
+  {
+    "test": "windfury",
+    "passed": true,
+    "output": "Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org\r\n\r\nWINDFURY: 5 / 5 passed\r\n"
+  }
+]

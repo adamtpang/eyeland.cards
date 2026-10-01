@@ -1,0 +1,27 @@
+[
+  {
+    "output": "Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org\r\nOpenGL API 3.3.0 NVIDIA 596.36 - Compatibility - Using Device: NVIDIA - NVIDIA GeForce RTX 3070 Laptop GPU\r\n\r\nAURA SILENCE UI: 8 / 8 passed\r\n",
+    "passed": true,
+    "test": "aura_silence_ui"
+  },
+  {
+    "output": "Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org\r\nOpenGL API 3.3.0 NVIDIA 596.36 - Compatibility - Using Device: NVIDIA - NVIDIA GeForce RTX 3070 Laptop GPU\r\n\r\nDRAW JOURNEY: 9 / 9 passed\r\n",
+    "passed": true,
+    "test": "draw_journey"
+  },
+  {
+    "output": "Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org\r\nOpenGL API 3.3.0 NVIDIA 596.36 - Compatibility - Using Device: NVIDIA - NVIDIA GeForce RTX 3070 Laptop GPU\r\n\r\nOPPONENT FEEDBACK UI: 6 / 6 passed\r\n",
+    "passed": true,
+    "test": "opponent_feedback_ui"
+  },
+  {
+    "output": "Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org\r\nOpenGL API 3.3.0 NVIDIA 596.36 - Compatibility - Using Device: NVIDIA - NVIDIA GeForce RTX 3070 Laptop GPU\r\n\r\nSPELL FEEDBACK UI: 10 / 10 passed\r\n",
+    "passed": true,
+    "test": "spell_feedback_ui"
+  },
+  {
+    "output": "Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org\r\nOpenGL API 3.3.0 NVIDIA 596.36 - Compatibility - Using Device: NVIDIA - NVIDIA GeForce RTX 3070 Laptop GPU\r\n\r\nWEAPON UI: 13 / 13 passed\r\n",
+    "passed": true,
+    "test": "weapon_ui"
+  }
+]

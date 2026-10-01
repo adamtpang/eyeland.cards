@@ -1,0 +1,94 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+[   0% ] [90m[1mfirst_scan_filesystem[22m | Started Project initialization (5 steps)[39m[0m
+[   0% ] [90m[1mfirst_scan_filesystem[22m | Scanning file structure...[39m[0m
+[  16% ] [90m[1mfirst_scan_filesystem[22m | Loading global class names...[39m[0m
+[  33% ] [90m[1mfirst_scan_filesystem[22m | Verifying GDExtensions...[39m[0m
+[  50% ] [90m[1mfirst_scan_filesystem[22m | Creating autoload scripts...[39m[0m
+[  66% ] [90m[1mfirst_scan_filesystem[22m | Initializing plugins...[39m[0m
+[  83% ] [90m[1mfirst_scan_filesystem[22m | Starting file scan...[39m[0m
+[92m[ DONE ][39m [1mfirst_scan_filesystem[22m
+[0m
+[   0% ] [90m[1msavepack[22m | Started Packing (102 steps)[39m[0m
+[   1% ] [90m[1msavepack[22m | Storing File: res://.godot/imported/air-atlas.png-74ed76c1fd6051b0f26e20397485a8af.ctex[39m[0m
+[   1% ] [90m[1msavepack[22m | Storing File: res://assets/cards/air-atlas.png.import[39m[0m
+[   3% ] [90m[1msavepack[22m | Storing File: res://.godot/imported/earth-atlas.png-70d143f3ce79bfe071b1b8bdd8a205bb.ctex[39m[0m
+[   3% ] [90m[1msavepack[22m | Storing File: res://assets/cards/earth-atlas.png.import[39m[0m
+[   6% ] [90m[1msavepack[22m | Storing File: res://.godot/imported/fire-atlas.png-4789687c7a36cfa399e70ff33795e550.ctex[39m[0m
+[   6% ] [90m[1msavepack[22m | Storing File: res://assets/cards/fire-atlas.png.import[39m[0m
+[   8% ] [90m[1msavepack[22m | Storing File: res://assets/cards/manifest.json[39m[0m
+[  11% ] [90m[1msavepack[22m | Storing File: res://.godot/imported/water-atlas.png-809119abfca527d1b0771687f2c46b1f.ctex[39m[0m
+[  11% ] [90m[1msavepack[22m | Storing File: res://assets/cards/water-atlas.png.import[39m[0m
+[  14% ] [90m[1msavepack[22m | Storing File: res://.godot/imported/CormorantGaramond.ttf-ef187c01d4e95759c1f8e784f7be8ef3.fontdata[39m[0m
+[  14% ] [90m[1msavepack[22m | Storing File: res://assets/fonts/CormorantGaramond.ttf.import[39m[0m
+[  16% ] [90m[1msavepack[22m | Storing File: res://.godot/imported/Poppins-Regular.ttf-a093894cd182728c233b2878c4f821f4.fontdata[39m[0m
+[  16% ] [90m[1msavepack[22m | Storing File: res://assets/fonts/Poppins-Regular.ttf.import[39m[0m
+[  19% ] [90m[1msavepack[22m | Storing File: res://.godot/imported/brace.png-8d6b3ff4b591957cf1f718f8c87dcac9.ctex[39m[0m
+[  19% ] [90m[1msavepack[22m | Storing File: res://assets/heroes/brace.png.import[39m[0m
+[  22% ] [90m[1msavepack[22m | Storing File: res://assets/heroes/PROMPTS.json[39m[0m
+[  24% ] [90m[1msavepack[22m | Storing File: res://.godot/imported/ranger.png-c302961907995e3b9cddf3a83f07209b.ctex[39m[0m
+[  24% ] [90m[1msavepack[22m | Storing File: res://assets/heroes/ranger.png.import[39m[0m
+[  27% ] [90m[1msavepack[22m | Storing File: res://.godot/imported/spark.png-f3f5baa1017f195ca1c51e3767a668f4.ctex[39m[0m
+[  27% ] [90m[1msavepack[22m | Storing File: res://assets/heroes/spark.png.import[39m[0m
+[  29% ] [90m[1msavepack[22m | Storing File: res://.godot/imported/true-shot.png-30ef96cf482fd6501e3d1edc836b045b.ctex[39m[0m
+[  29% ] [90m[1msavepack[22m | Storing File: res://assets/heroes/true-shot.png.import[39m[0m
+[  32% ] [90m[1msavepack[22m | Storing File: res://.godot/imported/warrior.png-4015a0acdb0ebb6392f7fabd2331b06c.ctex[39m[0m
+[  32% ] [90m[1msavepack[22m | Storing File: res://assets/heroes/warrior.png.import[39m[0m
+[  34% ] [90m[1msavepack[22m | Storing File: res://.godot/imported/wizard.png-18a8b93b04ac62c2afd1d2818e238cca.ctex[39m[0m
+[  34% ] [90m[1msavepack[22m | Storing File: res://assets/heroes/wizard.png.import[39m[0m
+[  36% ] [90m[1msavepack[22m | Storing File: res://.godot/imported/battle-board.png-8846234ef407b41f0f8f4659eb6690f2.ctex[39m[0m
+[  36% ] [90m[1msavepack[22m | Storing File: res://assets/battle-board.png.import[39m[0m
+[  39% ] [90m[1msavepack[22m | Storing File: res://.godot/imported/coin.svg-4f408cc0c27738ba7d156f441f501d5e.ctex[39m[0m
+[  39% ] [90m[1msavepack[22m | Storing File: res://assets/coin.svg.import[39m[0m
+[  42% ] [90m[1msavepack[22m | Storing File: res://.godot/imported/creatures.png-2508980959bc28485d01ab15377a4317.ctex[39m[0m
+[  42% ] [90m[1msavepack[22m | Storing File: res://assets/creatures.png.import[39m[0m
+[  44% ] [90m[1msavepack[22m | Storing File: res://.godot/imported/island.png-38713d33f29ee9bc9ef1af11151caabe.ctex[39m[0m
+[  44% ] [90m[1msavepack[22m | Storing File: res://assets/island.png.import[39m[0m
+[  47% ] [90m[1msavepack[22m | Storing File: res://data/cards.json[39m[0m
+[  50% ] [90m[1msavepack[22m | Storing File: res://data/world.json[39m[0m
+[  52% ] [90m[1msavepack[22m | Storing File: res://world_3d.gdc[39m[0m
+[  55% ] [90m[1msavepack[22m | Storing File: res://skin.gdc[39m[0m
+[  57% ] [90m[1msavepack[22m | Storing File: res://secret_reveal.gdc[39m[0m
+[  60% ] [90m[1msavepack[22m | Storing File: res://portrait.gdc[39m[0m
+[  63% ] [90m[1msavepack[22m | Storing File: res://model.gdc[39m[0m
+[  65% ] [90m[1msavepack[22m | Storing File: res://.godot/exported/133200997/export-3070c538c03ee49b7677ff960a3f5195-main.scn[39m[0m
+[  67% ] [90m[1msavepack[22m | Storing File: res://main.gdc[39m[0m
+[  70% ] [90m[1msavepack[22m | Storing File: res://island_view.gdc[39m[0m
+[  72% ] [90m[1msavepack[22m | Storing File: res://hero_art_button.gdc[39m[0m
+[  75% ] [90m[1msavepack[22m | Storing File: res://duel_target.gdc[39m[0m
+[  77% ] [90m[1msavepack[22m | Storing File: res://duel_board.gdc[39m[0m
+[  80% ] [90m[1msavepack[22m | Storing File: res://creature_feedback.gdc[39m[0m
+[  83% ] [90m[1msavepack[22m | Storing File: res://constructed.gdc[39m[0m
+[  85% ] [90m[1msavepack[22m | Storing File: res://collection.gdc[39m[0m
+[  88% ] [90m[1msavepack[22m | Storing File: res://card_unavailable.gdshader[39m[0m
+[  91% ] [90m[1msavepack[22m | Storing File: res://card_face.gdc[39m[0m
+[  93% ] [90m[1msavepack[22m | Storing File: res://battle_audio.gdc[39m[0m
+[  96% ] [90m[1msavepack[22m | Storing File: res://battle.gdc[39m[0m
+[  96% ] [90m[1msavepack[22m | Storing File: res://world_3d.gd.remap[39m[0m
+[  96% ] [90m[1msavepack[22m | Storing File: res://skin.gd.remap[39m[0m
+[  96% ] [90m[1msavepack[22m | Storing File: res://secret_reveal.gd.remap[39m[0m
+[  96% ] [90m[1msavepack[22m | Storing File: res://portrait.gd.remap[39m[0m
+[  96% ] [90m[1msavepack[22m | Storing File: res://model.gd.remap[39m[0m
+[  96% ] [90m[1msavepack[22m | Storing File: res://main.tscn.remap[39m[0m
+[  96% ] [90m[1msavepack[22m | Storing File: res://main.gd.remap[39m[0m
+[  96% ] [90m[1msavepack[22m | Storing File: res://island_view.gd.remap[39m[0m
+[  96% ] [90m[1msavepack[22m | Storing File: res://hero_art_button.gd.remap[39m[0m
+[  96% ] [90m[1msavepack[22m | Storing File: res://duel_target.gd.remap[39m[0m
+[  96% ] [90m[1msavepack[22m | Storing File: res://duel_board.gd.remap[39m[0m
+[  96% ] [90m[1msavepack[22m | Storing File: res://creature_feedback.gd.remap[39m[0m
+[  96% ] [90m[1msavepack[22m | Storing File: res://constructed.gd.remap[39m[0m
+[  96% ] [90m[1msavepack[22m | Storing File: res://collection.gd.remap[39m[0m
+[  96% ] [90m[1msavepack[22m | Storing File: res://card_face.gd.remap[39m[0m
+[  96% ] [90m[1msavepack[22m | Storing File: res://battle_audio.gd.remap[39m[0m
+[  96% ] [90m[1msavepack[22m | Storing File: res://battle.gd.remap[39m[0m
+[  96% ] [90m[1msavepack[22m | Storing File: res://.godot/global_script_class_cache.cfg[39m[0m
+[  96% ] [90m[1msavepack[22m | Storing File: res://.godot/uid_cache.bin[39m[0m
+[  96% ] [90m[1msavepack[22m | Storing File: res://project.binary[39m[0m
+[92m[ DONE ][39m [1msavepack[22m
+[0m
+
+FullName                                                               Length
+--------                                                               ------
+C:\Users\adamp\Aether\eyeland.cards\game\builds\windows\Eyeland.exe 139498096
+C:\Users\adamp\Aether\eyeland.cards\game\builds\Eyeland-Windows.zip  69450036
+

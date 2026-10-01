@@ -1,0 +1,67 @@
+[
+  {
+    "output": "Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org\r\nOpenGL API 3.3.0 NVIDIA 596.36 - Compatibility - Using Device: NVIDIA - NVIDIA GeForce RTX 3070 Laptop GPU\r\n\r\nERROR: Playing Silence spell removes source auras from rendered recipient\r\n   at: push_error (core/variant/variant_utility.cpp:1023)\r\n   GDScript backtrace (most recent call first):\r\n       [0] check (res://tests/aura_silence_ui.gd:6)\r\n       [1] run (res://tests/aura_silence_ui.gd:35)\r\nAURA SILENCE UI: 7 / 8 passed\r\n",
+    "test": "aura_silence_ui",
+    "passed": false
+  },
+  {
+    "output": "Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org\r\nOpenGL API 3.3.0 NVIDIA 596.36 - Compatibility - Using Device: NVIDIA - NVIDIA GeForce RTX 3070 Laptop GPU\r\n\r\nCHOICE UI: 6 / 6 passed\r\n",
+    "test": "choice_ui",
+    "passed": true
+  },
+  {
+    "output": "Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org\r\nOpenGL API 3.3.0 NVIDIA 596.36 - Compatibility - Using Device: NVIDIA - NVIDIA GeForce RTX 3070 Laptop GPU\r\n\r\nDISCOVER UI: 5 / 5 passed\r\n",
+    "test": "discover_ui",
+    "passed": true
+  },
+  {
+    "output": "Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org\r\nOpenGL API 3.3.0 NVIDIA 596.36 - Compatibility - Using Device: NVIDIA - NVIDIA GeForce RTX 3070 Laptop GPU\r\n\r\nFAIL: Practice spell reaches draw result\r\nFAIL: Practice label says draw\r\nFAIL: Island result labels draw\r\nDRAW JOURNEY: 6 / 9 passed\r\n",
+    "test": "draw_journey",
+    "passed": false
+  },
+  {
+    "output": "Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org\r\nOpenGL API 3.3.0 NVIDIA 596.36 - Compatibility - Using Device: NVIDIA - NVIDIA GeForce RTX 3070 Laptop GPU\r\n\r\nBattle structure checks: 15 / 15 passed\r\n",
+    "test": "duel_structure",
+    "passed": true
+  },
+  {
+    "output": "Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org\r\nOpenGL API 3.3.0 NVIDIA 596.36 - Compatibility - Using Device: NVIDIA - NVIDIA GeForce RTX 3070 Laptop GPU\r\n\r\nFULL HAND UI: 40 / 40 passed\r\n",
+    "test": "full_hand_ui",
+    "passed": true
+  },
+  {
+    "output": "Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org\r\nOpenGL API 3.3.0 NVIDIA 596.36 - Compatibility - Using Device: NVIDIA - NVIDIA GeForce RTX 3070 Laptop GPU\r\n\r\nHISTORY UI: 6 / 6 passed\r\n",
+    "test": "history_ui",
+    "passed": true
+  },
+  {
+    "output": "Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org\r\nOpenGL API 3.3.0 NVIDIA 596.36 - Compatibility - Using Device: NVIDIA - NVIDIA GeForce RTX 3070 Laptop GPU\r\n\r\nMANA COMBO UI: 7 / 7 passed\r\n",
+    "test": "mana_combo_ui",
+    "passed": true
+  },
+  {
+    "output": "Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org\r\nOpenGL API 3.3.0 NVIDIA 596.36 - Compatibility - Using Device: NVIDIA - NVIDIA GeForce RTX 3070 Laptop GPU\r\n\r\nERROR: Attack feedback clears\r\n   at: push_error (core/variant/variant_utility.cpp:1023)\r\n   GDScript backtrace (most recent call first):\r\n       [0] check (res://tests/opponent_feedback_ui.gd:6)\r\n       [1] run (res://tests/opponent_feedback_ui.gd:26)\r\nERROR: Weapon damage appears correctly\r\n   at: push_error (core/variant/variant_utility.cpp:1023)\r\n   GDScript backtrace (most recent call first):\r\n       [0] check (res://tests/opponent_feedback_ui.gd:6)\r\n       [1] run (res://tests/opponent_feedback_ui.gd:32)\r\nOPPONENT FEEDBACK UI: 4 / 6 passed\r\n",
+    "test": "opponent_feedback_ui",
+    "passed": false
+  },
+  {
+    "output": "Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org\r\nOpenGL API 3.3.0 NVIDIA 596.36 - Compatibility - Using Device: NVIDIA - NVIDIA GeForce RTX 3070 Laptop GPU\r\n\r\nOPPONENT PACING UI: 4 / 4 passed\r\n",
+    "test": "opponent_pacing_ui",
+    "passed": true
+  },
+  {
+    "output": "Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org\r\nOpenGL API 3.3.0 NVIDIA 596.36 - Compatibility - Using Device: NVIDIA - NVIDIA GeForce RTX 3070 Laptop GPU\r\n\r\nRETALIATION UI: 8 / 8 passed\r\n",
+    "test": "retaliation_ui",
+    "passed": true
+  },
+  {
+    "output": "Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org\r\nOpenGL API 3.3.0 NVIDIA 596.36 - Compatibility - Using Device: NVIDIA - NVIDIA GeForce RTX 3070 Laptop GPU\r\n\r\nERROR: Spell bolts clean up\r\n   at: push_error (core/variant/variant_utility.cpp:1023)\r\n   GDScript backtrace (most recent call first):\r\n       [0] check (res://tests/spell_feedback_ui.gd:6)\r\n       [1] run (res://tests/spell_feedback_ui.gd:34)\r\nSPELL FEEDBACK UI: 9 / 10 passed\r\n",
+    "test": "spell_feedback_ui",
+    "passed": false
+  },
+  {
+    "output": "Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org\r\nOpenGL API 3.3.0 NVIDIA 596.36 - Compatibility - Using Device: NVIDIA - NVIDIA GeForce RTX 3070 Laptop GPU\r\n\r\nERROR: Overkill displays weapon's actual three damage once\r\n   at: push_error (core/variant/variant_utility.cpp:1023)\r\n   GDScript backtrace (most recent call first):\r\n       [0] check (res://tests/friendly_targets.gd:6)\r\n       [1] run (res://tests/weapon_ui.gd:45)\r\nWEAPON UI: 12 / 13 passed\r\n",
+    "test": "weapon_ui",
+    "passed": false
+  }
+]

@@ -1,0 +1,1892 @@
+{
+  "sets": [
+    {
+      "id": "foundations",
+      "name": "Foundations",
+      "cards": [
+        {
+          "id": "home-emberling",
+          "name": "Emberling",
+          "element": "fire",
+          "rarity": "legendary",
+          "cost": 3,
+          "attack": 3,
+          "health": 4,
+          "text": "Battlecry: Gain 2 Armor.",
+          "onPlay": [
+            {
+              "effect": "gainArmor",
+              "amount": 2
+            }
+          ],
+          "type": "minion",
+          "set": "foundations",
+          "artStatus": "dedicated original illustration; assets/cards/manifest.json"
+        },
+        {
+          "id": "home-tideling",
+          "name": "Tideling",
+          "element": "water",
+          "rarity": "legendary",
+          "cost": 3,
+          "attack": 3,
+          "health": 4,
+          "text": "Battlecry: Gain 2 Armor.",
+          "onPlay": [
+            {
+              "effect": "gainArmor",
+              "amount": 2
+            }
+          ],
+          "type": "minion",
+          "set": "foundations",
+          "artStatus": "dedicated original illustration; assets/cards/manifest.json"
+        },
+        {
+          "id": "home-mossling",
+          "name": "Mossling",
+          "element": "earth",
+          "rarity": "legendary",
+          "cost": 3,
+          "attack": 3,
+          "health": 4,
+          "text": "Battlecry: Gain 2 Armor.",
+          "onPlay": [
+            {
+              "effect": "gainArmor",
+              "amount": 2
+            }
+          ],
+          "type": "minion",
+          "set": "foundations",
+          "artStatus": "dedicated original illustration; assets/cards/manifest.json"
+        },
+        {
+          "id": "home-cloudling",
+          "name": "Cloudling",
+          "element": "air",
+          "rarity": "legendary",
+          "cost": 3,
+          "attack": 3,
+          "health": 4,
+          "text": "Battlecry: Gain 2 Armor.",
+          "onPlay": [
+            {
+              "effect": "gainArmor",
+              "amount": 2
+            }
+          ],
+          "type": "minion",
+          "set": "foundations",
+          "artStatus": "dedicated original illustration; assets/cards/manifest.json"
+        },
+        {
+          "id": "home-shore-guard",
+          "name": "Shore Guard",
+          "element": "earth",
+          "cost": 2,
+          "attack": 1,
+          "health": 4,
+          "taunt": true,
+          "text": "Taunt.",
+          "type": "minion",
+          "rarity": "common",
+          "set": "foundations",
+          "artStatus": "dedicated original illustration; assets/cards/manifest.json"
+        },
+        {
+          "id": "home-breeze-finch",
+          "name": "Breeze Finch",
+          "element": "air",
+          "cost": 1,
+          "attack": 2,
+          "health": 2,
+          "text": "A small friend with a brave heart.",
+          "type": "minion",
+          "rarity": "common",
+          "set": "foundations",
+          "artStatus": "dedicated original illustration; assets/cards/manifest.json"
+        },
+        {
+          "id": "home-spark",
+          "name": "Pocket Spark",
+          "element": "fire",
+          "type": "spell",
+          "cost": 1,
+          "targeting": "optionalCreature",
+          "text": "Deal 2 damage.",
+          "onPlay": [
+            {
+              "effect": "damage",
+              "amount": 2
+            }
+          ],
+          "rarity": "common",
+          "set": "foundations",
+          "artStatus": "dedicated original illustration; assets/cards/manifest.json"
+        },
+        {
+          "id": "home-mending-tide",
+          "name": "Mending Tide",
+          "element": "water",
+          "type": "spell",
+          "cost": 1,
+          "text": "Restore 4 Health to your hero.",
+          "onPlay": [
+            {
+              "effect": "healCaster",
+              "amount": 4
+            }
+          ],
+          "rarity": "common",
+          "set": "foundations",
+          "artStatus": "dedicated original illustration; assets/cards/manifest.json"
+        },
+        {
+          "id": "home-resin-crab",
+          "name": "Resin Crab",
+          "element": "earth",
+          "cost": 1,
+          "attack": 1,
+          "health": 2,
+          "text": "A garden visitor, safely held in a card.",
+          "type": "minion",
+          "rarity": "common",
+          "set": "foundations",
+          "artStatus": "dedicated original illustration; assets/cards/manifest.json"
+        },
+        {
+          "id": "fire-cinder-moth",
+          "name": "Cinder Moth",
+          "element": "fire",
+          "type": "minion",
+          "rarity": "common",
+          "cost": 1,
+          "set": "foundations",
+          "attack": 2,
+          "health": 1,
+          "stealth": true,
+          "text": "Stealth.",
+          "art": "home-emberling",
+          "artStatus": "dedicated original illustration; assets/cards/manifest.json"
+        },
+        {
+          "id": "fire-coalback-pup",
+          "name": "Coalback Pup",
+          "element": "fire",
+          "type": "minion",
+          "rarity": "common",
+          "cost": 2,
+          "set": "foundations",
+          "attack": 2,
+          "health": 2,
+          "deathrattle": [
+            {
+              "effect": "summon",
+              "card": "home-breeze-finch",
+              "amount": 1
+            }
+          ],
+          "text": "Deathrattle: Summon a Breeze Finch.",
+          "art": "home-emberling",
+          "artStatus": "dedicated original illustration; assets/cards/manifest.json"
+        },
+        {
+          "id": "fire-kiln-keeper",
+          "name": "Kiln Keeper",
+          "element": "fire",
+          "type": "minion",
+          "rarity": "common",
+          "cost": 2,
+          "set": "foundations",
+          "attack": 1,
+          "health": 3,
+          "onPlay": [
+            {
+              "effect": "gainArmor",
+              "amount": 2
+            }
+          ],
+          "text": "Battlecry: Gain 2 Armor.",
+          "art": "home-emberling",
+          "artStatus": "dedicated original illustration; assets/cards/manifest.json"
+        },
+        {
+          "id": "fire-ash-courier",
+          "name": "Ash Courier",
+          "element": "fire",
+          "type": "minion",
+          "rarity": "rare",
+          "cost": 3,
+          "set": "foundations",
+          "attack": 2,
+          "health": 3,
+          "onPlay": [
+            {
+              "effect": "draw",
+              "amount": 1
+            }
+          ],
+          "text": "Battlecry: Draw 1 card.",
+          "art": "home-emberling",
+          "artStatus": "dedicated original illustration; assets/cards/manifest.json"
+        },
+        {
+          "id": "fire-flare-fox",
+          "name": "Flare Fox",
+          "element": "fire",
+          "type": "minion",
+          "rarity": "common",
+          "cost": 3,
+          "set": "foundations",
+          "attack": 4,
+          "health": 2,
+          "targeting": "optionalCreature",
+          "onPlay": [
+            {
+              "effect": "damage",
+              "amount": 1
+            }
+          ],
+          "text": "Battlecry: Deal 1 damage.",
+          "art": "home-emberling",
+          "artStatus": "dedicated original illustration; assets/cards/manifest.json"
+        },
+        {
+          "id": "fire-hearth-turtle",
+          "name": "Hearth Turtle",
+          "element": "fire",
+          "type": "minion",
+          "rarity": "common",
+          "cost": 3,
+          "set": "foundations",
+          "attack": 2,
+          "health": 4,
+          "taunt": true,
+          "text": "Taunt.",
+          "art": "home-emberling",
+          "artStatus": "dedicated original illustration; assets/cards/manifest.json"
+        },
+        {
+          "id": "fire-ember-ram",
+          "name": "Ember Ram",
+          "element": "fire",
+          "type": "minion",
+          "rarity": "common",
+          "cost": 4,
+          "set": "foundations",
+          "attack": 4,
+          "health": 3,
+          "rush": true,
+          "text": "Rush.",
+          "art": "home-emberling",
+          "artStatus": "dedicated original illustration; assets/cards/manifest.json"
+        },
+        {
+          "id": "fire-furnace-beetle",
+          "name": "Furnace Beetle",
+          "element": "fire",
+          "type": "minion",
+          "rarity": "rare",
+          "cost": 4,
+          "set": "foundations",
+          "attack": 3,
+          "health": 5,
+          "onPlay": [
+            {
+              "effect": "gainArmor",
+              "amount": 3
+            }
+          ],
+          "text": "Battlecry: Gain 3 Armor.",
+          "art": "home-emberling",
+          "artStatus": "dedicated original illustration; assets/cards/manifest.json"
+        },
+        {
+          "id": "fire-cinder-captain",
+          "name": "Cinder Captain",
+          "element": "fire",
+          "type": "minion",
+          "rarity": "rare",
+          "cost": 5,
+          "set": "foundations",
+          "attack": 4,
+          "health": 4,
+          "auraAttack": 1,
+          "text": "Your other minions have +1 Attack.",
+          "art": "home-emberling",
+          "artStatus": "dedicated original illustration; assets/cards/manifest.json"
+        },
+        {
+          "id": "fire-lava-salamander",
+          "name": "Lava Salamander",
+          "element": "fire",
+          "type": "minion",
+          "rarity": "rare",
+          "cost": 5,
+          "set": "foundations",
+          "attack": 5,
+          "health": 4,
+          "onPlay": [
+            {
+              "effect": "damageEnemies",
+              "amount": 1
+            }
+          ],
+          "text": "Battlecry: Deal 1 damage to all enemy minions.",
+          "art": "home-emberling",
+          "artStatus": "dedicated original illustration; assets/cards/manifest.json"
+        },
+        {
+          "id": "fire-pyre-roc",
+          "name": "Pyre Roc",
+          "element": "fire",
+          "type": "minion",
+          "rarity": "epic",
+          "cost": 6,
+          "set": "foundations",
+          "attack": 6,
+          "health": 5,
+          "targeting": "optionalCreature",
+          "onPlay": [
+            {
+              "effect": "damage",
+              "amount": 2
+            }
+          ],
+          "text": "Battlecry: Deal 2 damage.",
+          "art": "home-emberling",
+          "artStatus": "dedicated original illustration; assets/cards/manifest.json"
+        },
+        {
+          "id": "fire-volcano-drake",
+          "name": "Volcano Drake",
+          "element": "fire",
+          "type": "minion",
+          "rarity": "epic",
+          "cost": 7,
+          "set": "foundations",
+          "attack": 6,
+          "health": 7,
+          "onPlay": [
+            {
+              "effect": "damageEnemies",
+              "amount": 2
+            }
+          ],
+          "text": "Battlecry: Deal 2 damage to all enemy minions.",
+          "art": "home-emberling",
+          "artStatus": "dedicated original illustration; assets/cards/manifest.json"
+        },
+        {
+          "id": "fire-ashen-colossus",
+          "name": "Ashen Colossus",
+          "element": "fire",
+          "type": "minion",
+          "rarity": "epic",
+          "cost": 8,
+          "set": "foundations",
+          "attack": 8,
+          "health": 8,
+          "onPlay": [
+            {
+              "effect": "damageBoard",
+              "amount": 2
+            }
+          ],
+          "text": "Battlecry: Deal 2 damage to ALL minions.",
+          "art": "home-emberling",
+          "artStatus": "dedicated original illustration; assets/cards/manifest.json"
+        },
+        {
+          "id": "fire-solara-first-flame",
+          "name": "Solara, First Flame",
+          "element": "fire",
+          "type": "minion",
+          "rarity": "legendary",
+          "cost": 10,
+          "set": "foundations",
+          "attack": 8,
+          "health": 8,
+          "onPlay": [
+            {
+              "effect": "damageEnemies",
+              "amount": 4
+            }
+          ],
+          "text": "Battlecry: Deal 4 damage to all enemy minions.",
+          "art": "home-emberling",
+          "artStatus": "dedicated original illustration; assets/cards/manifest.json"
+        },
+        {
+          "id": "fire-kindle",
+          "name": "Kindle",
+          "element": "fire",
+          "type": "spell",
+          "rarity": "common",
+          "cost": 0,
+          "set": "foundations",
+          "onPlay": [
+            {
+              "effect": "gainArmor",
+              "amount": 1
+            }
+          ],
+          "text": "Gain 1 Armor.",
+          "art": "home-spark",
+          "artStatus": "dedicated original illustration; assets/cards/manifest.json"
+        },
+        {
+          "id": "fire-flame-lance",
+          "name": "Flame Lance",
+          "element": "fire",
+          "type": "spell",
+          "rarity": "common",
+          "cost": 2,
+          "set": "foundations",
+          "targeting": "optionalCreature",
+          "combo": [
+            {
+              "effect": "damage",
+              "amount": 5
+            }
+          ],
+          "onPlay": [
+            {
+              "effect": "damage",
+              "amount": 3
+            }
+          ],
+          "text": "Deal 3 damage. Combo: Deal 5 damage instead.",
+          "art": "home-spark",
+          "artStatus": "dedicated original illustration; assets/cards/manifest.json"
+        },
+        {
+          "id": "fire-stoke-the-hearth",
+          "name": "Stoke the Hearth",
+          "element": "fire",
+          "type": "spell",
+          "rarity": "common",
+          "cost": 2,
+          "set": "foundations",
+          "onPlay": [
+            {
+              "effect": "gainArmor",
+              "amount": 3
+            },
+            {
+              "effect": "draw",
+              "amount": 1
+            }
+          ],
+          "text": "Gain 3 Armor. Draw 1 card.",
+          "art": "home-spark",
+          "artStatus": "dedicated original illustration; assets/cards/manifest.json"
+        },
+        {
+          "id": "fire-ember-chorus",
+          "name": "Ember Chorus",
+          "element": "fire",
+          "type": "spell",
+          "rarity": "rare",
+          "cost": 3,
+          "set": "foundations",
+          "onPlay": [
+            {
+              "effect": "buffElement",
+              "attack": 2,
+              "health": 0
+            }
+          ],
+          "text": "Give your Fire minions +2/+0.",
+          "art": "home-spark",
+          "artStatus": "dedicated original illustration; assets/cards/manifest.json"
+        },
+        {
+          "id": "fire-brushfire",
+          "name": "Brushfire",
+          "element": "fire",
+          "type": "spell",
+          "rarity": "common",
+          "cost": 3,
+          "set": "foundations",
+          "onPlay": [
+            {
+              "effect": "damageEnemies",
+              "amount": 2
+            }
+          ],
+          "text": "Deal 2 damage to all enemy minions.",
+          "art": "home-spark",
+          "artStatus": "dedicated original illustration; assets/cards/manifest.json"
+        },
+        {
+          "id": "fire-fuel-the-fire",
+          "name": "Fuel the Fire",
+          "element": "fire",
+          "type": "spell",
+          "rarity": "rare",
+          "cost": 3,
+          "set": "foundations",
+          "onPlay": [
+            {
+              "effect": "draw",
+              "amount": 2
+            }
+          ],
+          "text": "Draw 2 cards.",
+          "art": "home-spark",
+          "artStatus": "dedicated original illustration; assets/cards/manifest.json"
+        },
+        {
+          "id": "fire-scorching-wave",
+          "name": "Scorching Wave",
+          "element": "fire",
+          "type": "spell",
+          "rarity": "rare",
+          "cost": 5,
+          "set": "foundations",
+          "onPlay": [
+            {
+              "effect": "damageEnemies",
+              "amount": 3
+            }
+          ],
+          "text": "Deal 3 damage to all enemy minions.",
+          "art": "home-spark",
+          "artStatus": "dedicated original illustration; assets/cards/manifest.json"
+        },
+        {
+          "id": "fire-meteor-fall",
+          "name": "Meteor Fall",
+          "element": "fire",
+          "type": "spell",
+          "rarity": "epic",
+          "cost": 6,
+          "set": "foundations",
+          "targeting": "optionalCreature",
+          "onPlay": [
+            {
+              "effect": "damage",
+              "amount": 8
+            }
+          ],
+          "text": "Deal 8 damage.",
+          "art": "home-spark",
+          "artStatus": "dedicated original illustration; assets/cards/manifest.json"
+        },
+        {
+          "id": "fire-worldfire",
+          "name": "Worldfire",
+          "element": "fire",
+          "type": "spell",
+          "rarity": "epic",
+          "cost": 8,
+          "set": "foundations",
+          "onPlay": [
+            {
+              "effect": "damageAll",
+              "amount": 7
+            }
+          ],
+          "text": "Deal 7 damage to ALL characters.",
+          "art": "home-spark",
+          "artStatus": "dedicated original illustration; assets/cards/manifest.json"
+        },
+        {
+          "id": "water-dewdrop-newt",
+          "name": "Dewdrop Newt",
+          "element": "water",
+          "type": "minion",
+          "rarity": "common",
+          "cost": 2,
+          "set": "foundations",
+          "attack": 1,
+          "health": 2,
+          "poisonous": true,
+          "text": "Poisonous.",
+          "art": "home-tideling",
+          "artStatus": "dedicated original illustration; assets/cards/manifest.json"
+        },
+        {
+          "id": "water-reef-otter",
+          "name": "Reef Otter",
+          "element": "water",
+          "type": "minion",
+          "rarity": "common",
+          "cost": 2,
+          "set": "foundations",
+          "attack": 2,
+          "health": 3,
+          "lifesteal": true,
+          "text": "Lifesteal.",
+          "art": "home-tideling",
+          "artStatus": "dedicated original illustration; assets/cards/manifest.json"
+        },
+        {
+          "id": "water-pearl-keeper",
+          "name": "Pearl Keeper",
+          "element": "water",
+          "type": "minion",
+          "rarity": "common",
+          "cost": 2,
+          "set": "foundations",
+          "attack": 1,
+          "health": 3,
+          "onPlay": [
+            {
+              "effect": "healCaster",
+              "amount": 2
+            }
+          ],
+          "text": "Battlecry: Restore 2 Health to your hero.",
+          "art": "home-tideling",
+          "artStatus": "dedicated original illustration; assets/cards/manifest.json"
+        },
+        {
+          "id": "water-brook-guide",
+          "name": "Brook Guide",
+          "element": "water",
+          "type": "minion",
+          "rarity": "rare",
+          "cost": 3,
+          "set": "foundations",
+          "attack": 2,
+          "health": 3,
+          "onPlay": [
+            {
+              "effect": "draw",
+              "amount": 1
+            }
+          ],
+          "text": "Battlecry: Draw 1 card.",
+          "art": "home-tideling",
+          "artStatus": "dedicated original illustration; assets/cards/manifest.json"
+        },
+        {
+          "id": "water-coral-defender",
+          "name": "Coral Defender",
+          "element": "water",
+          "type": "minion",
+          "rarity": "common",
+          "cost": 3,
+          "set": "foundations",
+          "attack": 2,
+          "health": 4,
+          "taunt": true,
+          "text": "Taunt.",
+          "art": "home-tideling",
+          "artStatus": "dedicated original illustration; assets/cards/manifest.json"
+        },
+        {
+          "id": "water-mist-heron",
+          "name": "Mist Heron",
+          "element": "water",
+          "type": "minion",
+          "rarity": "common",
+          "cost": 3,
+          "set": "foundations",
+          "attack": 3,
+          "health": 3,
+          "onPlay": [
+            {
+              "effect": "healCaster",
+              "amount": 2
+            }
+          ],
+          "text": "Battlecry: Restore 2 Health to your hero.",
+          "art": "home-tideling",
+          "artStatus": "dedicated original illustration; assets/cards/manifest.json"
+        },
+        {
+          "id": "water-tidepool-mystic",
+          "name": "Tidepool Mystic",
+          "element": "water",
+          "type": "minion",
+          "rarity": "rare",
+          "cost": 4,
+          "set": "foundations",
+          "attack": 3,
+          "health": 5,
+          "onPlay": [
+            {
+              "effect": "healBoard",
+              "amount": 2
+            }
+          ],
+          "text": "Battlecry: Restore 2 Health to your minions.",
+          "art": "home-tideling",
+          "artStatus": "dedicated original illustration; assets/cards/manifest.json"
+        },
+        {
+          "id": "water-shellback-tortoise",
+          "name": "Shellback Tortoise",
+          "element": "water",
+          "type": "minion",
+          "rarity": "common",
+          "cost": 4,
+          "set": "foundations",
+          "attack": 2,
+          "health": 4,
+          "taunt": true,
+          "divineShield": true,
+          "text": "Taunt. Divine Shield.",
+          "art": "home-tideling",
+          "artStatus": "dedicated original illustration; assets/cards/manifest.json"
+        },
+        {
+          "id": "water-river-stag",
+          "name": "River Stag",
+          "element": "water",
+          "type": "minion",
+          "rarity": "rare",
+          "cost": 5,
+          "set": "foundations",
+          "attack": 4,
+          "health": 6,
+          "onPlay": [
+            {
+              "effect": "healCaster",
+              "amount": 4
+            }
+          ],
+          "text": "Battlecry: Restore 4 Health to your hero.",
+          "art": "home-tideling",
+          "artStatus": "dedicated original illustration; assets/cards/manifest.json"
+        },
+        {
+          "id": "water-reef-conductor",
+          "name": "Reef Conductor",
+          "element": "water",
+          "type": "minion",
+          "rarity": "rare",
+          "cost": 5,
+          "set": "foundations",
+          "attack": 4,
+          "health": 4,
+          "auraHealth": 1,
+          "text": "Your other minions have +1 Health.",
+          "art": "home-tideling",
+          "artStatus": "dedicated original illustration; assets/cards/manifest.json"
+        },
+        {
+          "id": "water-glacier-whale",
+          "name": "Glacier Whale",
+          "element": "water",
+          "type": "minion",
+          "rarity": "epic",
+          "cost": 6,
+          "set": "foundations",
+          "attack": 5,
+          "health": 7,
+          "taunt": true,
+          "text": "Taunt.",
+          "art": "home-tideling",
+          "artStatus": "dedicated original illustration; assets/cards/manifest.json"
+        },
+        {
+          "id": "water-pearl-leviathan",
+          "name": "Pearl Leviathan",
+          "element": "water",
+          "type": "minion",
+          "rarity": "epic",
+          "cost": 7,
+          "set": "foundations",
+          "attack": 6,
+          "health": 7,
+          "onPlay": [
+            {
+              "effect": "healCaster",
+              "amount": 6
+            }
+          ],
+          "text": "Battlecry: Restore 6 Health to your hero.",
+          "art": "home-tideling",
+          "artStatus": "dedicated original illustration; assets/cards/manifest.json"
+        },
+        {
+          "id": "water-moonwell-serpent",
+          "name": "Moonwell Serpent",
+          "element": "water",
+          "type": "minion",
+          "rarity": "epic",
+          "cost": 8,
+          "set": "foundations",
+          "attack": 6,
+          "health": 8,
+          "onPlay": [
+            {
+              "effect": "draw",
+              "amount": 2
+            }
+          ],
+          "text": "Battlecry: Draw 2 cards.",
+          "art": "home-tideling",
+          "artStatus": "dedicated original illustration; assets/cards/manifest.json"
+        },
+        {
+          "id": "water-nerissa-deep-song",
+          "name": "Nerissa, Deep Song",
+          "element": "water",
+          "type": "minion",
+          "rarity": "legendary",
+          "cost": 10,
+          "set": "foundations",
+          "attack": 7,
+          "health": 10,
+          "onPlay": [
+            {
+              "effect": "healCaster",
+              "amount": 8
+            },
+            {
+              "effect": "healBoard",
+              "amount": 8
+            }
+          ],
+          "text": "Battlecry: Restore 8 Health to your hero. Restore 8 Health to your minions.",
+          "art": "home-tideling",
+          "artStatus": "dedicated original illustration; assets/cards/manifest.json"
+        },
+        {
+          "id": "water-sea-glass",
+          "name": "Sea Glass",
+          "element": "water",
+          "type": "spell",
+          "rarity": "common",
+          "cost": 3,
+          "set": "foundations",
+          "onPlay": [
+            {
+              "effect": "silenceEnemies"
+            }
+          ],
+          "text": "Silence all enemy minions.",
+          "art": "home-mending-tide",
+          "artStatus": "dedicated original illustration; assets/cards/manifest.json"
+        },
+        {
+          "id": "water-undertow",
+          "name": "Undertow",
+          "element": "water",
+          "type": "spell",
+          "rarity": "common",
+          "cost": 2,
+          "set": "foundations",
+          "targeting": "optionalCreature",
+          "onPlay": [
+            {
+              "effect": "damage",
+              "amount": 3
+            },
+            {
+              "effect": "freezeTarget"
+            }
+          ],
+          "text": "Deal 3 damage. Freeze the target.",
+          "art": "home-mending-tide",
+          "artStatus": "dedicated original illustration; assets/cards/manifest.json"
+        },
+        {
+          "id": "water-clearwater",
+          "name": "Clearwater",
+          "element": "water",
+          "type": "spell",
+          "rarity": "common",
+          "cost": 2,
+          "set": "foundations",
+          "onPlay": [
+            {
+              "effect": "draw",
+              "amount": 1
+            },
+            {
+              "effect": "healCaster",
+              "amount": 2
+            }
+          ],
+          "text": "Draw 1 card. Restore 2 Health to your hero.",
+          "art": "home-mending-tide",
+          "artStatus": "dedicated original illustration; assets/cards/manifest.json"
+        },
+        {
+          "id": "water-restoring-rain",
+          "name": "Restoring Rain",
+          "element": "water",
+          "type": "spell",
+          "rarity": "rare",
+          "cost": 3,
+          "set": "foundations",
+          "onPlay": [
+            {
+              "effect": "healBoard",
+              "amount": 4
+            },
+            {
+              "effect": "healCaster",
+              "amount": 4
+            }
+          ],
+          "text": "Restore 4 Health to your minions. Restore 4 Health to your hero.",
+          "art": "home-mending-tide",
+          "artStatus": "dedicated original illustration; assets/cards/manifest.json"
+        },
+        {
+          "id": "water-deep-current",
+          "name": "Deep Current",
+          "element": "water",
+          "type": "spell",
+          "rarity": "rare",
+          "cost": 3,
+          "set": "foundations",
+          "onPlay": [
+            {
+              "effect": "draw",
+              "amount": 2
+            }
+          ],
+          "text": "Draw 2 cards.",
+          "art": "home-mending-tide",
+          "artStatus": "dedicated original illustration; assets/cards/manifest.json"
+        },
+        {
+          "id": "water-coral-bloom",
+          "name": "Coral Bloom",
+          "element": "water",
+          "type": "spell",
+          "rarity": "rare",
+          "cost": 4,
+          "set": "foundations",
+          "onPlay": [
+            {
+              "effect": "buffElement",
+              "attack": 1,
+              "health": 2
+            }
+          ],
+          "text": "Give your Water minions +1/+2.",
+          "art": "home-mending-tide",
+          "artStatus": "dedicated original illustration; assets/cards/manifest.json"
+        },
+        {
+          "id": "water-crashing-surf",
+          "name": "Crashing Surf",
+          "element": "water",
+          "type": "spell",
+          "rarity": "common",
+          "cost": 5,
+          "set": "foundations",
+          "onPlay": [
+            {
+              "effect": "damageEnemies",
+              "amount": 3
+            },
+            {
+              "effect": "freezeEnemies"
+            }
+          ],
+          "text": "Deal 3 damage to all enemy minions. Freeze all enemy minions.",
+          "art": "home-mending-tide",
+          "artStatus": "dedicated original illustration; assets/cards/manifest.json"
+        },
+        {
+          "id": "water-tidal-renewal",
+          "name": "Tidal Renewal",
+          "element": "water",
+          "type": "spell",
+          "rarity": "epic",
+          "cost": 6,
+          "set": "foundations",
+          "onPlay": [
+            {
+              "effect": "healCaster",
+              "amount": 8
+            },
+            {
+              "effect": "draw",
+              "amount": 2
+            }
+          ],
+          "text": "Restore 8 Health to your hero. Draw 2 cards.",
+          "art": "home-mending-tide",
+          "artStatus": "dedicated original illustration; assets/cards/manifest.json"
+        },
+        {
+          "id": "water-call-the-reef",
+          "name": "Call the Reef",
+          "element": "water",
+          "type": "spell",
+          "rarity": "epic",
+          "cost": 7,
+          "set": "foundations",
+          "onPlay": [
+            {
+              "effect": "summon",
+              "amount": 2,
+              "card": "home-shore-guard"
+            },
+            {
+              "effect": "healCaster",
+              "amount": 4
+            }
+          ],
+          "text": "Summon 2 Shore Guards. Restore 4 Health to your hero.",
+          "art": "home-mending-tide",
+          "artStatus": "dedicated original illustration; assets/cards/manifest.json"
+        },
+        {
+          "id": "earth-mossback-cub",
+          "name": "Mossback Cub",
+          "element": "earth",
+          "type": "minion",
+          "rarity": "common",
+          "cost": 2,
+          "set": "foundations",
+          "attack": 2,
+          "health": 3,
+          "text": "",
+          "art": "home-mossling",
+          "artStatus": "dedicated original illustration; assets/cards/manifest.json"
+        },
+        {
+          "id": "earth-pebble-sentry",
+          "name": "Pebble Sentry",
+          "element": "earth",
+          "type": "minion",
+          "rarity": "common",
+          "cost": 2,
+          "set": "foundations",
+          "attack": 1,
+          "health": 4,
+          "taunt": true,
+          "text": "Taunt.",
+          "art": "home-mossling",
+          "artStatus": "dedicated original illustration; assets/cards/manifest.json"
+        },
+        {
+          "id": "earth-resin-tender",
+          "name": "Resin Tender",
+          "element": "earth",
+          "type": "minion",
+          "rarity": "rare",
+          "cost": 3,
+          "set": "foundations",
+          "attack": 2,
+          "health": 4,
+          "onPlay": [
+            {
+              "effect": "gainArmor",
+              "amount": 3
+            }
+          ],
+          "text": "Battlecry: Gain 3 Armor.",
+          "art": "home-mossling",
+          "artStatus": "dedicated original illustration; assets/cards/manifest.json"
+        },
+        {
+          "id": "earth-root-digger",
+          "name": "Root Digger",
+          "element": "earth",
+          "type": "minion",
+          "rarity": "rare",
+          "cost": 3,
+          "set": "foundations",
+          "attack": 2,
+          "health": 2,
+          "onPlay": [
+            {
+              "effect": "ramp",
+              "amount": 1
+            }
+          ],
+          "text": "Battlecry: Gain 1 empty Mana Crystal.",
+          "art": "home-mossling",
+          "artStatus": "dedicated original illustration; assets/cards/manifest.json"
+        },
+        {
+          "id": "earth-granite-badger",
+          "name": "Granite Badger",
+          "element": "earth",
+          "type": "minion",
+          "rarity": "common",
+          "cost": 4,
+          "set": "foundations",
+          "attack": 3,
+          "health": 6,
+          "taunt": true,
+          "text": "Taunt.",
+          "art": "home-mossling",
+          "artStatus": "dedicated original illustration; assets/cards/manifest.json"
+        },
+        {
+          "id": "earth-grove-keeper",
+          "name": "Grove Keeper",
+          "element": "earth",
+          "type": "minion",
+          "rarity": "common",
+          "cost": 4,
+          "set": "foundations",
+          "attack": 3,
+          "health": 4,
+          "onPlay": [
+            {
+              "effect": "healCaster",
+              "amount": 3
+            }
+          ],
+          "text": "Battlecry: Restore 3 Health to your hero.",
+          "art": "home-mossling",
+          "artStatus": "dedicated original illustration; assets/cards/manifest.json"
+        },
+        {
+          "id": "earth-stonehorn-elk",
+          "name": "Stonehorn Elk",
+          "element": "earth",
+          "type": "minion",
+          "rarity": "common",
+          "cost": 5,
+          "set": "foundations",
+          "attack": 5,
+          "health": 6,
+          "text": "",
+          "art": "home-mossling",
+          "artStatus": "dedicated original illustration; assets/cards/manifest.json"
+        },
+        {
+          "id": "earth-rootbound-elder",
+          "name": "Rootbound Elder",
+          "element": "earth",
+          "type": "minion",
+          "rarity": "rare",
+          "cost": 5,
+          "set": "foundations",
+          "attack": 3,
+          "health": 6,
+          "onPlay": [
+            {
+              "effect": "buffElement",
+              "attack": 1,
+              "health": 1
+            }
+          ],
+          "text": "Battlecry: Give your Earth minions +1/+1.",
+          "art": "home-mossling",
+          "artStatus": "dedicated original illustration; assets/cards/manifest.json"
+        },
+        {
+          "id": "earth-resin-golem",
+          "name": "Resin Golem",
+          "element": "earth",
+          "type": "minion",
+          "rarity": "rare",
+          "cost": 6,
+          "set": "foundations",
+          "attack": 4,
+          "health": 8,
+          "taunt": true,
+          "onPlay": [
+            {
+              "effect": "gainArmor",
+              "amount": 3
+            }
+          ],
+          "text": "Taunt. Battlecry: Gain 3 Armor.",
+          "art": "home-mossling",
+          "artStatus": "dedicated original illustration; assets/cards/manifest.json"
+        },
+        {
+          "id": "earth-mountain-mammoth",
+          "name": "Mountain Mammoth",
+          "element": "earth",
+          "type": "minion",
+          "rarity": "epic",
+          "cost": 7,
+          "set": "foundations",
+          "attack": 7,
+          "health": 8,
+          "text": "",
+          "art": "home-mossling",
+          "artStatus": "dedicated original illustration; assets/cards/manifest.json"
+        },
+        {
+          "id": "earth-ancient-grove",
+          "name": "Ancient Grove",
+          "element": "earth",
+          "type": "minion",
+          "rarity": "epic",
+          "cost": 8,
+          "set": "foundations",
+          "attack": 6,
+          "health": 10,
+          "taunt": true,
+          "onPlay": [
+            {
+              "effect": "healCaster",
+              "amount": 4
+            }
+          ],
+          "text": "Taunt. Battlecry: Restore 4 Health to your hero.",
+          "art": "home-mossling",
+          "artStatus": "dedicated original illustration; assets/cards/manifest.json"
+        },
+        {
+          "id": "earth-orun-living-mountain",
+          "name": "Orun, Living Mountain",
+          "element": "earth",
+          "type": "minion",
+          "rarity": "legendary",
+          "cost": 10,
+          "set": "foundations",
+          "attack": 9,
+          "health": 12,
+          "taunt": true,
+          "text": "Taunt.",
+          "art": "home-mossling",
+          "artStatus": "dedicated original illustration; assets/cards/manifest.json"
+        },
+        {
+          "id": "earth-pebble-ward",
+          "name": "Pebble Ward",
+          "element": "earth",
+          "type": "spell",
+          "rarity": "common",
+          "cost": 2,
+          "set": "foundations",
+          "secret": {
+            "trigger": "heroAttacked",
+            "effects": [
+              {
+                "effect": "gainArmor",
+                "amount": 8
+              }
+            ]
+          },
+          "text": "Secret: When your hero is attacked, gain 8 Armor.",
+          "art": "home-shore-guard",
+          "artStatus": "dedicated original illustration; assets/cards/manifest.json"
+        },
+        {
+          "id": "earth-resin-salve",
+          "name": "Resin Salve",
+          "element": "earth",
+          "type": "spell",
+          "rarity": "common",
+          "cost": 1,
+          "set": "foundations",
+          "onPlay": [
+            {
+              "effect": "healCaster",
+              "amount": 3
+            }
+          ],
+          "text": "Restore 3 Health to your hero.",
+          "art": "home-shore-guard",
+          "artStatus": "dedicated original illustration; assets/cards/manifest.json"
+        },
+        {
+          "id": "earth-stone-skin",
+          "name": "Stone Skin",
+          "element": "earth",
+          "type": "spell",
+          "rarity": "common",
+          "cost": 2,
+          "set": "foundations",
+          "onPlay": [
+            {
+              "effect": "gainArmor",
+              "amount": 5
+            }
+          ],
+          "text": "Gain 5 Armor.",
+          "art": "home-shore-guard",
+          "artStatus": "dedicated original illustration; assets/cards/manifest.json"
+        },
+        {
+          "id": "earth-deep-roots",
+          "name": "Deep Roots",
+          "element": "earth",
+          "type": "spell",
+          "rarity": "rare",
+          "cost": 2,
+          "set": "foundations",
+          "choices": [
+            {
+              "name": "Grow",
+              "text": "Gain an empty Mana Crystal.",
+              "effects": [
+                {
+                  "effect": "ramp",
+                  "amount": 1
+                }
+              ]
+            },
+            {
+              "name": "Shelter",
+              "text": "Gain 6 Armor.",
+              "effects": [
+                {
+                  "effect": "gainArmor",
+                  "amount": 6
+                }
+              ]
+            }
+          ],
+          "text": "Choose One: Gain an empty Mana Crystal; or gain 6 Armor.",
+          "art": "home-shore-guard",
+          "artStatus": "dedicated original illustration; assets/cards/manifest.json"
+        },
+        {
+          "id": "earth-earthen-spear",
+          "name": "Earthen Spear",
+          "element": "earth",
+          "type": "weapon",
+          "rarity": "common",
+          "cost": 3,
+          "set": "foundations",
+          "attack": 3,
+          "durability": 2,
+          "deathrattle": [
+            {
+              "effect": "gainArmor",
+              "amount": 2
+            }
+          ],
+          "onPlay": [
+            {
+              "effect": "equipWeapon",
+              "attack": 3,
+              "durability": 2
+            }
+          ],
+          "text": "Equip a 3/2 Earthen Spear. Deathrattle: Gain 2 Armor.",
+          "art": "home-shore-guard",
+          "artStatus": "dedicated original illustration; assets/cards/manifest.json"
+        },
+        {
+          "id": "earth-wild-growthsong",
+          "name": "Wild Growthsong",
+          "element": "earth",
+          "type": "spell",
+          "rarity": "rare",
+          "cost": 3,
+          "set": "foundations",
+          "onPlay": [
+            {
+              "effect": "buffElement",
+              "attack": 1,
+              "health": 2
+            }
+          ],
+          "text": "Give your Earth minions +1/+2.",
+          "art": "home-shore-guard",
+          "artStatus": "dedicated original illustration; assets/cards/manifest.json"
+        },
+        {
+          "id": "earth-reclaim",
+          "name": "Reclaim",
+          "element": "earth",
+          "type": "spell",
+          "rarity": "rare",
+          "cost": 4,
+          "set": "foundations",
+          "onPlay": [
+            {
+              "effect": "gainArmor",
+              "amount": 4
+            },
+            {
+              "effect": "draw",
+              "amount": 2
+            }
+          ],
+          "text": "Gain 4 Armor. Draw 2 cards.",
+          "art": "home-shore-guard",
+          "artStatus": "dedicated original illustration; assets/cards/manifest.json"
+        },
+        {
+          "id": "earth-crab-colony",
+          "name": "Crab Colony",
+          "element": "earth",
+          "type": "spell",
+          "rarity": "common",
+          "cost": 4,
+          "set": "foundations",
+          "onPlay": [
+            {
+              "effect": "summon",
+              "amount": 3,
+              "card": "home-resin-crab"
+            }
+          ],
+          "text": "Summon 3 Resin Crabs.",
+          "art": "home-shore-guard",
+          "artStatus": "dedicated original illustration; assets/cards/manifest.json"
+        },
+        {
+          "id": "earth-earthquake",
+          "name": "Earthquake",
+          "element": "earth",
+          "type": "spell",
+          "rarity": "epic",
+          "cost": 6,
+          "set": "foundations",
+          "onPlay": [
+            {
+              "effect": "damageBoard",
+              "amount": 5
+            }
+          ],
+          "text": "Deal 5 damage to ALL minions.",
+          "art": "home-shore-guard",
+          "artStatus": "dedicated original illustration; assets/cards/manifest.json"
+        },
+        {
+          "id": "earth-mountain-s-gift",
+          "name": "Mountain's Gift",
+          "element": "earth",
+          "type": "spell",
+          "rarity": "epic",
+          "cost": 8,
+          "set": "foundations",
+          "onPlay": [
+            {
+              "effect": "gainArmor",
+              "amount": 8
+            },
+            {
+              "effect": "summon",
+              "amount": 2,
+              "card": "home-shore-guard"
+            }
+          ],
+          "text": "Gain 8 Armor. Summon 2 Shore Guards.",
+          "art": "home-shore-guard",
+          "artStatus": "dedicated original illustration; assets/cards/manifest.json"
+        },
+        {
+          "id": "air-wispwing",
+          "name": "Wispwing",
+          "element": "air",
+          "type": "minion",
+          "rarity": "common",
+          "cost": 1,
+          "set": "foundations",
+          "attack": 1,
+          "health": 2,
+          "text": "",
+          "art": "home-cloudling",
+          "artStatus": "dedicated original illustration; assets/cards/manifest.json"
+        },
+        {
+          "id": "air-cloud-hare",
+          "name": "Cloud Hare",
+          "element": "air",
+          "type": "minion",
+          "rarity": "common",
+          "cost": 2,
+          "set": "foundations",
+          "attack": 3,
+          "health": 2,
+          "text": "",
+          "art": "home-cloudling",
+          "artStatus": "dedicated original illustration; assets/cards/manifest.json"
+        },
+        {
+          "id": "air-gale-messenger",
+          "name": "Gale Messenger",
+          "element": "air",
+          "type": "minion",
+          "rarity": "rare",
+          "cost": 2,
+          "set": "foundations",
+          "attack": 1,
+          "health": 2,
+          "onPlay": [
+            {
+              "effect": "draw",
+              "amount": 1
+            }
+          ],
+          "text": "Battlecry: Draw 1 card.",
+          "art": "home-cloudling",
+          "artStatus": "dedicated original illustration; assets/cards/manifest.json"
+        },
+        {
+          "id": "air-skyfin-ray",
+          "name": "Skyfin Ray",
+          "element": "air",
+          "type": "minion",
+          "rarity": "common",
+          "cost": 3,
+          "set": "foundations",
+          "attack": 2,
+          "health": 2,
+          "charge": true,
+          "text": "Charge.",
+          "art": "home-cloudling",
+          "artStatus": "dedicated original illustration; assets/cards/manifest.json"
+        },
+        {
+          "id": "air-wind-archivist",
+          "name": "Wind Archivist",
+          "element": "air",
+          "type": "minion",
+          "rarity": "rare",
+          "cost": 3,
+          "set": "foundations",
+          "attack": 2,
+          "health": 3,
+          "spellDamage": 1,
+          "text": "Spell Damage +1.",
+          "art": "home-cloudling",
+          "artStatus": "dedicated original illustration; assets/cards/manifest.json"
+        },
+        {
+          "id": "air-storm-kite",
+          "name": "Storm Kite",
+          "element": "air",
+          "type": "minion",
+          "rarity": "common",
+          "cost": 4,
+          "set": "foundations",
+          "attack": 4,
+          "health": 3,
+          "targeting": "optionalCreature",
+          "onPlay": [
+            {
+              "effect": "damage",
+              "amount": 1
+            }
+          ],
+          "text": "Battlecry: Deal 1 damage.",
+          "art": "home-cloudling",
+          "artStatus": "dedicated original illustration; assets/cards/manifest.json"
+        },
+        {
+          "id": "air-cloud-shepherd",
+          "name": "Cloud Shepherd",
+          "element": "air",
+          "type": "minion",
+          "rarity": "rare",
+          "cost": 4,
+          "set": "foundations",
+          "attack": 2,
+          "health": 4,
+          "onPlay": [
+            {
+              "effect": "summon",
+              "amount": 1,
+              "card": "home-breeze-finch"
+            }
+          ],
+          "text": "Battlecry: Summon 1 Breeze Finch.",
+          "art": "home-cloudling",
+          "artStatus": "dedicated original illustration; assets/cards/manifest.json"
+        },
+        {
+          "id": "air-zephyr-dancer",
+          "name": "Zephyr Dancer",
+          "element": "air",
+          "type": "minion",
+          "rarity": "common",
+          "cost": 4,
+          "set": "foundations",
+          "attack": 3,
+          "health": 4,
+          "windfury": true,
+          "text": "Windfury.",
+          "art": "home-cloudling",
+          "artStatus": "dedicated original illustration; assets/cards/manifest.json"
+        },
+        {
+          "id": "air-flock-captain",
+          "name": "Flock Captain",
+          "element": "air",
+          "type": "minion",
+          "rarity": "rare",
+          "cost": 5,
+          "set": "foundations",
+          "attack": 3,
+          "health": 5,
+          "auraAttack": 2,
+          "auraAdjacent": true,
+          "text": "Adjacent minions have +2 Attack.",
+          "art": "home-cloudling",
+          "artStatus": "dedicated original illustration; assets/cards/manifest.json"
+        },
+        {
+          "id": "air-thunder-roc",
+          "name": "Thunder Roc",
+          "element": "air",
+          "type": "minion",
+          "rarity": "epic",
+          "cost": 6,
+          "set": "foundations",
+          "attack": 6,
+          "health": 5,
+          "targeting": "optionalCreature",
+          "onPlay": [
+            {
+              "effect": "damage",
+              "amount": 2
+            }
+          ],
+          "text": "Battlecry: Deal 2 damage.",
+          "art": "home-cloudling",
+          "artStatus": "dedicated original illustration; assets/cards/manifest.json"
+        },
+        {
+          "id": "air-sky-librarian",
+          "name": "Sky Librarian",
+          "element": "air",
+          "type": "minion",
+          "rarity": "epic",
+          "cost": 7,
+          "set": "foundations",
+          "attack": 5,
+          "health": 7,
+          "onPlay": [
+            {
+              "effect": "draw",
+              "amount": 2
+            }
+          ],
+          "text": "Battlecry: Draw 2 cards.",
+          "art": "home-cloudling",
+          "artStatus": "dedicated original illustration; assets/cards/manifest.json"
+        },
+        {
+          "id": "air-nimbus-guardian",
+          "name": "Nimbus Guardian",
+          "element": "air",
+          "type": "minion",
+          "rarity": "epic",
+          "cost": 8,
+          "set": "foundations",
+          "attack": 7,
+          "health": 9,
+          "taunt": true,
+          "text": "Taunt.",
+          "art": "home-cloudling",
+          "artStatus": "dedicated original illustration; assets/cards/manifest.json"
+        },
+        {
+          "id": "air-aella-open-sky",
+          "name": "Aella, Open Sky",
+          "element": "air",
+          "type": "minion",
+          "rarity": "legendary",
+          "cost": 10,
+          "set": "foundations",
+          "attack": 7,
+          "health": 7,
+          "onPlay": [
+            {
+              "effect": "summon",
+              "amount": 2,
+              "card": "home-breeze-finch"
+            },
+            {
+              "effect": "buffAll",
+              "attack": 1,
+              "health": 1
+            }
+          ],
+          "text": "Battlecry: Summon 2 Breeze Finchs. Give your minions +1/+1.",
+          "art": "home-cloudling",
+          "artStatus": "dedicated original illustration; assets/cards/manifest.json"
+        },
+        {
+          "id": "air-tailwind",
+          "name": "Tailwind",
+          "element": "air",
+          "type": "spell",
+          "rarity": "common",
+          "cost": 0,
+          "set": "foundations",
+          "onPlay": [
+            {
+              "effect": "buffAll",
+              "attack": 1,
+              "health": 0
+            }
+          ],
+          "text": "Give your minions +1/+0.",
+          "art": "home-breeze-finch",
+          "artStatus": "dedicated original illustration; assets/cards/manifest.json"
+        },
+        {
+          "id": "air-feather-ward",
+          "name": "Feather Ward",
+          "element": "air",
+          "type": "spell",
+          "rarity": "common",
+          "cost": 1,
+          "set": "foundations",
+          "targeting": "optionalCreature",
+          "targetSide": "friendly",
+          "onPlay": [
+            {
+              "effect": "buffTarget",
+              "attack": 1,
+              "health": 2
+            }
+          ],
+          "text": "Give a friendly minion +1/+2.",
+          "art": "home-breeze-finch",
+          "artStatus": "dedicated original illustration; assets/cards/manifest.json"
+        },
+        {
+          "id": "air-gust-bolt",
+          "name": "Gust Bolt",
+          "element": "air",
+          "type": "spell",
+          "rarity": "common",
+          "cost": 1,
+          "set": "foundations",
+          "targeting": "optionalCreature",
+          "overload": 1,
+          "onPlay": [
+            {
+              "effect": "damage",
+              "amount": 3
+            }
+          ],
+          "text": "Deal 3 damage. Overload: (1).",
+          "art": "home-breeze-finch",
+          "artStatus": "dedicated original illustration; assets/cards/manifest.json"
+        },
+        {
+          "id": "air-fresh-breeze",
+          "name": "Fresh Breeze",
+          "element": "air",
+          "type": "spell",
+          "rarity": "rare",
+          "cost": 3,
+          "set": "foundations",
+          "secret": {
+            "trigger": "spellPlayed",
+            "effects": []
+          },
+          "text": "Secret: When your opponent casts a spell, counter it.",
+          "art": "home-breeze-finch",
+          "artStatus": "dedicated original illustration; assets/cards/manifest.json"
+        },
+        {
+          "id": "air-gather-the-flock",
+          "name": "Gather the Flock",
+          "element": "air",
+          "type": "spell",
+          "rarity": "common",
+          "cost": 3,
+          "set": "foundations",
+          "onPlay": [
+            {
+              "effect": "summon",
+              "amount": 2,
+              "card": "home-breeze-finch"
+            }
+          ],
+          "text": "Summon 2 Breeze Finchs.",
+          "art": "home-breeze-finch",
+          "artStatus": "dedicated original illustration; assets/cards/manifest.json"
+        },
+        {
+          "id": "air-rising-winds",
+          "name": "Rising Winds",
+          "element": "air",
+          "type": "spell",
+          "rarity": "rare",
+          "cost": 3,
+          "set": "foundations",
+          "onPlay": [
+            {
+              "effect": "buffElement",
+              "attack": 1,
+              "health": 1
+            }
+          ],
+          "text": "Give your Air minions +1/+1.",
+          "art": "home-breeze-finch",
+          "artStatus": "dedicated original illustration; assets/cards/manifest.json"
+        },
+        {
+          "id": "air-windfall",
+          "name": "Windfall",
+          "element": "air",
+          "type": "spell",
+          "rarity": "rare",
+          "cost": 2,
+          "set": "foundations",
+          "onPlay": [
+            {
+              "effect": "discover"
+            }
+          ],
+          "text": "Discover an Air minion.",
+          "art": "home-breeze-finch",
+          "artStatus": "dedicated original illustration; assets/cards/manifest.json"
+        },
+        {
+          "id": "air-thunderhead",
+          "name": "Thunderhead",
+          "element": "air",
+          "type": "spell",
+          "rarity": "common",
+          "cost": 5,
+          "set": "foundations",
+          "onPlay": [
+            {
+              "effect": "damageEnemies",
+              "amount": 3
+            }
+          ],
+          "text": "Deal 3 damage to all enemy minions.",
+          "art": "home-breeze-finch",
+          "artStatus": "dedicated original illustration; assets/cards/manifest.json"
+        },
+        {
+          "id": "air-skyward-chorus",
+          "name": "Skyward Chorus",
+          "element": "air",
+          "type": "spell",
+          "rarity": "epic",
+          "cost": 6,
+          "set": "foundations",
+          "onPlay": [
+            {
+              "effect": "buffAll",
+              "attack": 2,
+              "health": 2
+            }
+          ],
+          "text": "Give your minions +2/+2.",
+          "art": "home-breeze-finch",
+          "artStatus": "dedicated original illustration; assets/cards/manifest.json"
+        },
+        {
+          "id": "air-eye-of-the-storm",
+          "name": "Eye of the Storm",
+          "element": "air",
+          "type": "spell",
+          "rarity": "epic",
+          "cost": 8,
+          "set": "foundations",
+          "onPlay": [
+            {
+              "effect": "damageEnemies",
+              "amount": 3
+            },
+            {
+              "effect": "draw",
+              "amount": 2
+            }
+          ],
+          "text": "Deal 3 damage to all enemy minions. Draw 2 cards.",
+          "art": "home-breeze-finch",
+          "artStatus": "dedicated original illustration; assets/cards/manifest.json"
+        }
+      ]
+    }
+  ]
+}
