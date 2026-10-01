@@ -1,0 +1,37 @@
+{
+  "name": "eyeland-web",
+  "private": true,
+  "description": "eyeland.cards web client. Scaffolded from phaserjs/template-react-ts (MIT) at commit c7265972c856906cacf1f2892d8565d64a358d34.",
+  "version": "0.1.0",
+  "license": "MIT",
+  "scripts": {
+    "dev": "vite --config vite/config.dev.mjs",
+    "build": "vite build --config vite/config.prod.mjs",
+    "test": "tsx src/engine/selftest.ts && tsx src/starter/selftest.ts && tsx src/world/selftest.ts",
+    "typecheck": "tsc --noEmit -p tsconfig.json"
+  },
+  "dependencies": {
+    "phaser": "4.0.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "three": "^0.186.0"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.22.0",
+    "@types/node": "^26.5.1",
+    "@types/react": "^19.0.10",
+    "@types/react-dom": "^19.0.4",
+    "@types/three": "^0.186.0",
+    "@vitejs/plugin-react": "^4.3.4",
+    "eslint": "^9.22.0",
+    "eslint-plugin-react-hooks": "^5.2.0",
+    "eslint-plugin-react-refresh": "^0.4.19",
+    "globals": "^16.0.0",
+    "terser": "^5.28.1",
+    "tsx": "^4.23.13",
+    "typescript": "~5.7.2",
+    "typescript-eslint": "^8.26.1",
+    "vite": "^6.3.1"
+  }
+}
+

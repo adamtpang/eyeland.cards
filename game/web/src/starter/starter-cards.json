@@ -1,0 +1,13 @@
+{
+  "sets": [{ "id": "home-slice", "cards": [
+    { "id": "home-emberling", "name": "Emberling", "element": "fire", "rarity": "legendary", "cost": 3, "attack": 3, "health": 4, "text": "Battlecry: Gain 2 Armor.", "onPlay": [{ "effect": "gainArmor", "amount": 2 }] },
+    { "id": "home-tideling", "name": "Tideling", "element": "water", "rarity": "legendary", "cost": 3, "attack": 3, "health": 4, "text": "Battlecry: Gain 2 Armor.", "onPlay": [{ "effect": "gainArmor", "amount": 2 }] },
+    { "id": "home-mossling", "name": "Mossling", "element": "earth", "rarity": "legendary", "cost": 3, "attack": 3, "health": 4, "text": "Battlecry: Gain 2 Armor.", "onPlay": [{ "effect": "gainArmor", "amount": 2 }] },
+    { "id": "home-cloudling", "name": "Cloudling", "element": "air", "rarity": "legendary", "cost": 3, "attack": 3, "health": 4, "text": "Battlecry: Gain 2 Armor.", "onPlay": [{ "effect": "gainArmor", "amount": 2 }] },
+    { "id": "home-shore-guard", "name": "Shore Guard", "element": "earth", "cost": 2, "attack": 1, "health": 4, "taunt": true, "text": "Taunt." },
+    { "id": "home-breeze-finch", "name": "Breeze Finch", "element": "air", "cost": 1, "attack": 2, "health": 2, "text": "A small friend with a brave heart." },
+    { "id": "home-spark", "name": "Pocket Spark", "element": "fire", "type": "spell", "cost": 1, "targeting": "optionalCreature", "text": "Deal 2 damage.", "onPlay": [{ "effect": "damage", "amount": 2 }] },
+    { "id": "home-mending-tide", "name": "Mending Tide", "element": "water", "type": "spell", "cost": 1, "text": "Restore 4 Health to your hero.", "onPlay": [{ "effect": "healCaster", "amount": 4 }] },
+    { "id": "home-resin-crab", "name": "Resin Crab", "element": "earth", "cost": 1, "attack": 1, "health": 2, "text": "A garden visitor, safely held in a card." }
+  ] }]
+}

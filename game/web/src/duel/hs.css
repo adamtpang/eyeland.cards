@@ -1,0 +1,344 @@
+/* Hearthstone-style table, cards, minions and heroes. Colors are tokens so a theme pass stays cheap. */
+:root {
+    --felt: #3b2a1c;
+    --felt-2: #5a4128;
+    --board-inner: #7a5a36;
+    --parchment: #efe0bd;
+    --parchment-2: #d8c192;
+    --ink: #2b1d10;
+    --mana: #2f7ee0;
+    --attack: #e8b52c;
+    --health: #d8392b;
+    --buff: #58d36b;
+    --frame-fire: #b8532d;
+    --frame-water: #2f7fa8;
+    --frame-storm: #7b5bc4;
+    --glow-ready: #55ff7a;
+    --glow-target: #ff4d4d;
+    --glow-select: #ffd64d;
+}
+
+/* table */
+.duel .table {
+    background:
+        radial-gradient(ellipse at center, var(--board-inner) 0%, var(--felt-2) 55%, var(--felt) 100%);
+    border-right: 6px solid #2a1c10;
+}
+.duel .board {
+    min-height: 150px;
+    padding: 10px;
+    border-radius: 80px;
+    background: rgba(0, 0, 0, 0.12);
+    box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.35);
+}
+.duel .divider { background: rgba(0, 0, 0, 0.25); border: none; border-radius: 12px; }
+.hero-row { display: flex; align-items: center; justify-content: center; gap: 16px; flex-wrap: wrap; }
+
+/* gems shared by cards, minions and heroes */
+.gem {
+    position: absolute;
+    display: grid;
+    place-items: center;
+    width: 30px;
+    height: 30px;
+    font-weight: 900;
+    font-size: 17px;
+    color: #fff;
+    text-shadow: 0 0 3px #000, 1px 1px 0 #000, -1px -1px 0 #000;
+    border: 2px solid rgba(0, 0, 0, 0.55);
+    z-index: 3;
+}
+.gem.mana { top: -8px; left: -8px; background: radial-gradient(circle at 35% 30%, #8fc3ff, var(--mana) 60%, #123a78); border-radius: 50%; }
+.gem.attack { bottom: -8px; left: -8px; background: radial-gradient(circle at 35% 30%, #ffe89a, var(--attack) 60%, #7a5406); border-radius: 50%; }
+.gem.health { bottom: -8px; right: -8px; background: radial-gradient(circle at 35% 30%, #ff9a8f, var(--health) 60%, #6e140c); border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%; }
+.gem.up { color: var(--buff); }
+.gem.hurt { color: #ff6b6b; }
+
+/* art */
+.art { position: relative; overflow: hidden; display: grid; place-items: center; }
+.art img { width: 100%; height: 100%; object-fit: cover; }
+.art .glyph { font-size: 52px; filter: drop-shadow(0 3px 4px rgba(0, 0, 0, 0.5)); }
+.art.el-fire { background: radial-gradient(circle at 50% 35%, #ffd37a, #e0612e 55%, #5c1d0c); }
+.art.el-water { background: radial-gradient(circle at 50% 35%, #b6f1ff, #2f8fc0 55%, #0c2c4c); }
+.art.el-storm { background: radial-gradient(circle at 50% 35%, #e3d2ff, #7b5bc4 55%, #25164a); }
+
+/* full card */
+.hs-card {
+    position: relative;
+    flex: 0 0 auto;
+    width: 150px;
+    height: 212px;
+    padding: 0;
+    border-radius: 14px;
+    border: 5px solid var(--frame-fire);
+    background: linear-gradient(180deg, var(--parchment), var(--parchment-2));
+    color: var(--ink);
+    text-align: center;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+    transition: transform 0.12s ease, box-shadow 0.12s ease;
+}
+.hs-card.el-water { border-color: var(--frame-water); }
+.hs-card.el-storm { border-color: var(--frame-storm); }
+.hs-card.is-spell { border-radius: 6px 6px 40px 40px; }
+button.hs-card { cursor: pointer; font: inherit; }
+button.hs-card:hover { transform: translateY(-10px) scale(1.06); z-index: 5; }
+.hs-card.playable { box-shadow: 0 0 0 3px var(--glow-ready), 0 0 16px var(--glow-ready); }
+.hs-card.selected { box-shadow: 0 0 0 3px var(--glow-select), 0 0 20px var(--glow-select); transform: translateY(-14px); }
+.hs-card.in-deck { box-shadow: 0 0 0 3px var(--glow-ready); }
+
+.hs-card .art.oval {
+    position: absolute; top: 8px; left: 50%; transform: translateX(-50%);
+    width: 104px; height: 96px; border-radius: 50%;
+    border: 3px solid rgba(0, 0, 0, 0.45);
+}
+.hs-card .art.window {
+    position: absolute; top: 10px; left: 50%; transform: translateX(-50%);
+    width: 118px; height: 86px; border-radius: 10px;
+    border: 3px solid rgba(0, 0, 0, 0.45);
+}
+.hs-card .banner {
+    position: absolute; top: 96px; left: -6px; right: -6px;
+    padding: 3px 4px;
+    background: linear-gradient(180deg, #8a6a3c, #5b4020);
+    color: #fff; font-weight: 800; font-size: 12.5px; line-height: 1.15;
+    text-shadow: 1px 1px 0 #000;
+    border-radius: 4px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
+    z-index: 2;
+}
+.hs-card .rarity {
+    position: absolute; top: 118px; left: 50%; transform: translateX(-50%) rotate(45deg);
+    width: 10px; height: 10px; border: 1px solid #000; z-index: 2;
+}
+.r-common { background: #eee; }
+.r-rare { background: #3a7cff; }
+.r-epic { background: #a346e0; }
+.r-legendary { background: #ff9d1c; box-shadow: 0 0 6px #ff9d1c; }
+.hs-card.is-minion .rarity.r-legendary ~ .banner,
+.hs-card .rarity.r-legendary + .banner { border: 1px solid #ffcf66; }
+.hs-card .rules {
+    position: absolute; top: 132px; left: 8px; right: 8px; bottom: 22px;
+    display: grid; place-items: center;
+    font-size: 11px; line-height: 1.25;
+    overflow: hidden;
+}
+.hs-card .tribe {
+    position: absolute; bottom: 4px; left: 26px; right: 26px;
+    font-size: 9.5px; text-transform: capitalize; opacity: 0.7;
+}
+.hs-card .owned { position: absolute; top: calc(100% + 10px); left: 0; right: 0; font-size: 12px; color: var(--muted); }
+.hs-card .row { position: absolute; top: calc(100% + 30px); left: 0; right: 0; display: flex; gap: 6px; }
+.collection { gap: 22px 16px; padding-bottom: 60px; }
+.collection .hs-card { margin-bottom: 56px; }
+.collection .row button { flex: 1; }
+
+/* hand fans slightly */
+.duel .hand { gap: 0; padding: 12px 0 4px; }
+.duel .hand .hs-card { margin: 0 -8px; }
+
+/* minion on the board */
+.hs-minion {
+    position: relative;
+    width: 96px;
+    height: 118px;
+    padding: 0;
+    border: none;
+    background: none;
+    cursor: pointer;
+    transition: transform 0.12s ease;
+}
+.hs-minion .art.token {
+    width: 100%; height: 100%;
+    border-radius: 50% 50% 46% 46% / 55% 55% 45% 45%;
+    border: 4px solid #3b3b3b;
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.55);
+}
+.hs-minion .art .glyph { font-size: 44px; }
+.hs-minion.taunt .art.token {
+    border: 7px solid #9aa0a6;
+    border-radius: 45% 45% 50% 50% / 30% 30% 70% 70%;
+    box-shadow: 0 0 0 3px #4a4f55, 0 5px 10px rgba(0, 0, 0, 0.55);
+}
+.hs-minion.shield .art.token { box-shadow: 0 0 0 4px #ffe066, 0 0 22px 6px #ffd23c; }
+.hs-minion.frozen .art.token::after {
+    content: ''; position: absolute; inset: 0;
+    background: rgba(140, 210, 255, 0.55);
+}
+.hs-minion.stealth .art.token { opacity: 0.55; filter: grayscale(0.4) blur(0.5px); }
+.hs-minion.ready .art.token { box-shadow: 0 0 0 3px var(--glow-ready), 0 0 18px var(--glow-ready); }
+.hs-minion.target .art.token { box-shadow: 0 0 0 3px var(--glow-target), 0 0 20px var(--glow-target); }
+.hs-minion.selected { transform: translateY(-8px) scale(1.06); }
+.hs-minion.selected .art.token { box-shadow: 0 0 0 3px var(--glow-select), 0 0 22px var(--glow-select); }
+.hs-minion .gem { width: 28px; height: 28px; font-size: 16px; bottom: -4px; }
+.hs-minion .gem.attack { left: -4px; }
+.hs-minion .gem.health { right: -4px; }
+.hs-minion .badge { position: absolute; bottom: -2px; left: 50%; transform: translateX(-50%); font-size: 16px; z-index: 3; }
+.hs-minion .badge.left { left: 20%; }
+.hs-minion .badge.top { top: -6px; bottom: auto; }
+.hs-minion .preview {
+    display: none;
+    position: absolute; bottom: calc(100% + 12px); left: 50%; transform: translateX(-50%);
+    pointer-events: none; z-index: 20;
+}
+.hs-minion:hover .preview { display: block; }
+.side.foe .hs-minion .preview { bottom: auto; top: calc(100% + 12px); }
+
+/* hero */
+.hs-hero {
+    position: relative;
+    width: 108px;
+    height: 124px;
+    padding: 0;
+    border: none;
+    background: none;
+    cursor: pointer;
+}
+.hs-hero .portrait {
+    display: grid; place-items: center;
+    width: 108px; height: 108px;
+    font-size: 58px;
+    border-radius: 50% 50% 40% 40%;
+    background: radial-gradient(circle at 50% 35%, #d9c7a3, #7c5a33 70%, #3d2a15);
+    border: 5px solid #c8a24e;
+    box-shadow: 0 6px 14px rgba(0, 0, 0, 0.6);
+}
+.hs-hero-wrap { position: relative; }
+.hs-hero-wrap.target .portrait { box-shadow: 0 0 0 4px var(--glow-target), 0 0 24px var(--glow-target); }
+.hs-hero-wrap.ready .portrait { box-shadow: 0 0 0 4px var(--glow-ready), 0 0 20px var(--glow-ready); }
+.hs-hero-wrap.selected .portrait { box-shadow: 0 0 0 4px var(--glow-select), 0 0 22px var(--glow-select); }
+.hs-hero .gem.health { width: 36px; height: 36px; font-size: 20px; bottom: 10px; right: -6px; }
+.hs-hero .hero-label {
+    position: absolute; top: 100%; left: 50%; transform: translateX(-50%);
+    white-space: nowrap; font-weight: 700; font-size: 12px; color: var(--text);
+    display: flex; flex-direction: column; align-items: center;
+}
+.hs-hero .hero-label small { font-weight: 400; color: var(--muted); }
+.foe-row { margin-bottom: 18px; }
+
+/* mana crystals */
+.mana-bar { display: flex; align-items: center; gap: 3px; padding: 6px 10px; border-radius: 20px; background: rgba(0, 0, 0, 0.45); }
+.mana-bar b { color: #9fd0ff; margin-right: 4px; font-size: 14px; }
+.mana-bar .crystal { width: 12px; height: 12px; transform: rotate(45deg); border: 1px solid #0b2a55; }
+.mana-bar .crystal.full { background: radial-gradient(circle, #bfe0ff, var(--mana)); box-shadow: 0 0 6px var(--mana); }
+.mana-bar .crystal.spent { background: #1c3355; }
+.mana-bar .crystal.locked { background: transparent; border-color: rgba(255, 255, 255, 0.12); }
+
+@media (max-width: 700px) {
+    .hs-card { width: 120px; height: 172px; }
+    .hs-card .art.oval { width: 84px; height: 76px; }
+    .hs-card .art.window { width: 94px; height: 68px; }
+    .hs-card .banner { top: 78px; font-size: 11px; }
+    .hs-card .rarity { top: 98px; }
+    .hs-card .rules { top: 108px; font-size: 9.5px; }
+    .hs-minion { width: 74px; height: 92px; }
+    .art .glyph { font-size: 38px; }
+}
+
+/* hero power: round button like Hearthstone's */
+.duel .power {
+    position: relative; width: 84px; height: 84px; padding: 0 6px; border-radius: 50%;
+    display: grid; place-items: center; align-content: center; gap: 0;
+    background: radial-gradient(circle at 50% 35%, #cfa65a, #6f4c1c 70%, #2f1f0a);
+    border: 4px solid #c8a24e; color: #fff; font-size: 11px; font-weight: 800;
+    text-shadow: 1px 1px 0 #000; box-shadow: 0 5px 12px rgba(0, 0, 0, 0.55);
+}
+.duel .power:not(:disabled) { box-shadow: 0 0 0 3px var(--glow-ready), 0 0 14px var(--glow-ready); }
+.duel .power small { display: none; }
+.duel .power .cost { position: absolute; top: -6px; left: 50%; transform: translateX(-50%); }
+.duel .end { border-radius: 14px; padding: 12px 18px; }
+.duel .side.you { padding-bottom: 12px; }
+
+/* armor, durability and hero attack gems */
+.gem.armor { top: 44px; right: -8px; bottom: auto; background: radial-gradient(circle at 35% 30%, #e8eef5, #8a98a8 60%, #3b4652); border-radius: 6px 6px 14px 14px; }
+.gem.durability { bottom: -8px; right: -8px; background: radial-gradient(circle at 35% 30%, #e8eef5, #8a98a8 60%, #3b4652); border-radius: 6px; }
+.hs-hero .gem.attack { width: 34px; height: 34px; bottom: 10px; left: -6px; }
+.hs-card .art.round {
+    position: absolute; top: 8px; left: 50%; transform: translateX(-50%);
+    width: 96px; height: 96px; border-radius: 50%; border: 5px solid #8a98a8;
+}
+.hs-card.is-weapon { border-color: #6b6f75; background: linear-gradient(180deg, #d9d4c7, #a9a293); }
+
+/* secrets ring the hero portrait */
+.hs-hero .secrets { position: absolute; top: -10px; left: 50%; transform: translateX(-50%); display: flex; gap: 2px; z-index: 4; }
+.hs-hero .secret {
+    display: grid; place-items: center; width: 22px; height: 22px; border-radius: 50%;
+    background: radial-gradient(circle, #ffe38a, #c28a12); color: #3a2400; font-weight: 900; font-size: 13px;
+    border: 2px solid #5a3a00; box-shadow: 0 0 8px #ffcf4a;
+}
+
+/* weapon slot beside the hero */
+.weapon-slot { position: relative; width: 70px; height: 70px; }
+.weapon-slot.empty { visibility: hidden; }
+.weapon-slot .art.token { width: 100%; height: 100%; border-radius: 50%; border: 4px solid #8a98a8; }
+.weapon-slot .art .glyph { font-size: 34px; }
+.weapon-slot .gem { width: 26px; height: 26px; font-size: 15px; bottom: -6px; }
+
+/* overload */
+.mana-bar .crystal.overload { background: #7a1d1d; border-color: #ff6b6b; }
+.mana-bar .crystal.overload::after { content: '🔒'; font-size: 7px; display: block; transform: rotate(-45deg); }
+.mana-bar .owed { margin-left: 6px; color: #ff9a9a; font-size: 11px; font-style: normal; }
+
+/* opponent hand */
+.card-backs { display: flex; justify-content: center; margin-bottom: 6px; min-height: 44px; }
+.card-back {
+    width: 32px; height: 44px; margin: 0 -5px; border-radius: 5px;
+    background: repeating-linear-gradient(45deg, #3a2a6a, #3a2a6a 4px, #4d3a8a 4px, #4d3a8a 8px);
+    border: 2px solid #c8a24e; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+}
+
+/* floating damage and heal numbers */
+.floater {
+    position: absolute; top: 30%; left: 50%; transform: translateX(-50%);
+    font-size: 26px; font-weight: 900; pointer-events: none; z-index: 30;
+    text-shadow: 0 0 4px #000, 2px 2px 0 #000;
+    animation: float-up 1.15s ease-out forwards;
+}
+.floater.dmg { color: #ff4b3a; }
+.floater.heal { color: #6bff8a; }
+@keyframes float-up {
+    0% { opacity: 0; transform: translate(-50%, 10px) scale(0.6); }
+    15% { opacity: 1; transform: translate(-50%, 0) scale(1.25); }
+    100% { opacity: 0; transform: translate(-50%, -40px) scale(1); }
+}
+
+/* attack lunge */
+.lunge-up { animation: lunge-up 0.38s ease-in-out; }
+.lunge-down { animation: lunge-down 0.38s ease-in-out; }
+@keyframes lunge-up { 50% { transform: translateY(-46px) scale(1.08); } }
+@keyframes lunge-down { 50% { transform: translateY(46px) scale(1.08); } }
+
+/* emotes */
+.emote-box { position: relative; }
+.emote-toggle { width: 38px; height: 38px; border-radius: 50%; background: rgba(0, 0, 0, 0.45); border: 2px solid #c8a24e; font-size: 17px; }
+.emote-menu {
+    position: absolute; bottom: 46px; left: 50%; transform: translateX(-50%);
+    display: grid; grid-template-columns: 1fr 1fr; gap: 4px; width: 220px; z-index: 40;
+}
+.emote-menu button { padding: 6px; border-radius: 16px; background: #2c2540; border: 1px solid #c8a24e; color: var(--text); font-size: 12px; }
+.emote-bubble {
+    position: absolute; left: calc(100% + 8px); top: 18px; z-index: 35;
+    white-space: nowrap; padding: 8px 12px; border-radius: 14px;
+    background: #fffaf0; color: #2b1d10; font-weight: 700; font-size: 13px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+    animation: pop-in 0.18s ease-out;
+}
+@keyframes pop-in { from { transform: scale(0.6); opacity: 0; } }
+
+/* mulligan, Discover and Choose One pickers */
+.duel .table { position: relative; }
+.overlay {
+    position: absolute; inset: 0; z-index: 50;
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 18px;
+    background: rgba(10, 6, 20, 0.78); backdrop-filter: blur(2px);
+}
+.overlay h2 { margin: 0; color: var(--gold); }
+.picker { display: flex; gap: 22px; flex-wrap: wrap; justify-content: center; }
+.hs-card.replace { filter: grayscale(0.8) brightness(0.6); box-shadow: 0 0 0 3px var(--glow-target); }
+.hs-card.replace::after { content: '✖'; position: absolute; inset: 0; display: grid; place-items: center; font-size: 70px; color: var(--glow-target); }
+.choice {
+    display: flex; flex-direction: column; gap: 8px; width: 170px; min-height: 120px; padding: 16px;
+    border-radius: 14px; background: linear-gradient(180deg, var(--parchment), var(--parchment-2)); color: var(--ink);
+    border: 5px solid #5b8a3a; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.6);
+}
+.choice:hover { transform: translateY(-6px); }
+.hs-minion.silenced .art.token { filter: saturate(0.4); }

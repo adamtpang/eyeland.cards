@@ -1,0 +1,247 @@
+.ey-world {
+    position: fixed;
+    inset: 0;
+    background: #98cbd3;
+    font-family: Inter, system-ui, sans-serif;
+    color: #fff4d7;
+    overflow: hidden;
+}
+.ey-canvas {
+    position: absolute;
+    inset: 0;
+}
+.ey-canvas canvas {
+    display: block;
+    touch-action: none;
+}
+.ey-world button {
+    font: inherit;
+    cursor: pointer;
+    color: #fff4d7;
+    background: #183d3de6;
+    border: 1px solid #dfd1a654;
+    border-radius: 12px;
+    padding: 11px 18px;
+    box-shadow: 0 4px 20px #102d3220;
+}
+.ey-world button:hover {
+    background: #2e5752;
+}
+.ey-world button:disabled {
+    opacity: 0.45;
+    cursor: default;
+}
+.ey-top {
+    position: absolute;
+    top: 26px;
+    left: 34px;
+    right: 34px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    text-shadow: 0 2px 10px #193e43;
+}
+.ey-brand {
+    font-family: Georgia, serif;
+    font-size: 34px;
+    letter-spacing: -1.8px;
+}
+.ey-brand span {
+    font-size: 20px;
+    opacity: 0.7;
+}
+.ey-top small {
+    display: block;
+    letter-spacing: 3px;
+    font-size: 9px;
+    margin-top: 7px;
+}
+.ey-top nav {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+.ey-shards {
+    margin-right: 10px;
+}
+.ey-quest {
+    position: absolute;
+    top: 134px;
+    left: 34px;
+    max-width: 330px;
+    padding: 22px 26px;
+    border-left: 2px solid #ecce86;
+    background: linear-gradient(90deg, #173f43cc, #173f4300);
+    pointer-events: none;
+}
+.ey-quest small,
+.ey-collection small {
+    font-size: 10px;
+    letter-spacing: 2.8px;
+    color: #ebd49b;
+}
+.ey-quest h1 {
+    font:
+        28px Georgia,
+        serif;
+    margin: 13px 0;
+}
+.ey-quest p {
+    font-size: 13px;
+    line-height: 1.6;
+    color: #e4eee3;
+}
+.ey-quest > span {
+    font-size: 12px;
+    color: #f5db9e;
+}
+.ey-controls {
+    position: absolute;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 20px;
+    white-space: nowrap;
+    padding: 12px 20px;
+    border-radius: 30px;
+    background: #123c42bd;
+    font-size: 11px;
+    backdrop-filter: blur(10px);
+}
+.ey-controls kbd,
+.ey-encounter kbd {
+    font: inherit;
+    border: 1px solid #e8dfbc55;
+    border-radius: 4px;
+    padding: 3px 5px;
+    margin-right: 4px;
+}
+.ey-world .ey-encounter {
+    position: absolute;
+    bottom: 100px;
+    left: 50%;
+    transform: translateX(-50%);
+    min-width: 260px;
+    padding: 20px 30px;
+    background: #153e3eea;
+    border-color: #e2c689;
+}
+.ey-encounter small,
+.ey-encounter strong,
+.ey-encounter span {
+    display: block;
+}
+.ey-encounter small {
+    font-size: 9px;
+    letter-spacing: 2px;
+    color: #ecc887;
+}
+.ey-encounter strong {
+    font:
+        26px Georgia,
+        serif;
+    margin: 10px;
+}
+.ey-encounter span {
+    font-size: 12px;
+}
+.ey-world .ey-notice {
+    position: absolute;
+    top: 100px;
+    left: 50%;
+    transform: translateX(-50%);
+    max-width: 550px;
+    font-size: 13px;
+}
+.ey-collection,
+.ey-modal {
+    position: absolute;
+    inset: 100px 8% 80px;
+    overflow: auto;
+    padding: 30px;
+    background: #102f32f5;
+    border: 1px solid #d5bf8055;
+    border-radius: 20px;
+    box-shadow: 0 24px 90px #001d3677;
+    backdrop-filter: blur(18px);
+}
+.ey-collection-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+}
+.ey-collection h2 {
+    font:
+        32px Georgia,
+        serif;
+    margin: 8px 0;
+}
+.ey-collection p {
+    font-size: 13px;
+    color: #b8cfc6;
+    line-height: 1.7;
+}
+.ey-reward {
+    display: flex;
+    gap: 32px;
+    margin: 26px 0;
+    align-items: center;
+}
+.ey-reward > div:last-child {
+    max-width: 420px;
+}
+.ey-deck {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 6px;
+}
+.ey-deck > div {
+    padding: 9px;
+    background: #ffffff08;
+    border-radius: 6px;
+    font-size: 12px;
+}
+.ey-deck span {
+    color: #9fe3e7;
+    margin-right: 12px;
+}
+.ey-fine {
+    font-size: 11px !important;
+}
+@media (max-width: 700px) {
+    .ey-top {
+        left: 16px;
+        right: 16px;
+    }
+    .ey-quest {
+        left: 16px;
+        top: 115px;
+        max-width: 220px;
+        padding: 14px;
+    }
+    .ey-quest h1 {
+        font-size: 22px;
+    }
+    .ey-controls {
+        gap: 8px;
+        font-size: 9px;
+        width: 90%;
+        white-space: normal;
+        justify-content: center;
+    }
+    .ey-collection {
+        inset: 95px 12px 65px;
+        padding: 18px;
+    }
+    .ey-deck {
+        grid-template-columns: 1fr 1fr;
+    }
+    .ey-reward {
+        gap: 12px;
+    }
+    .ey-collection-head h2 {
+        font-size: 22px;
+    }
+}

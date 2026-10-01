@@ -1,0 +1,70 @@
+{
+  "_comment": "Web-only cards for the Hearthstone parity mechanics. Kept out of game/data/cards.json because the C# and Unity loaders do not know these effects yet.",
+  "sets": [
+    {
+      "name": "Parity",
+      "cards": [
+        { "id": "the-coin", "name": "The Coin", "type": "spell", "cost": 0, "element": "fire", "rarity": "common", "class": "neutral",
+          "collectible": false, "text": "Gain 1 mana this turn only.", "onPlay": [{ "effect": "gainMana", "amount": 1 }] },
+
+        { "id": "ftr-iron-blade", "name": "Iron Blade", "type": "weapon", "cost": 2, "attack": 3, "durability": 2, "element": "fire", "rarity": "common", "class": "fighter",
+          "text": "A plain, honest edge." },
+        { "id": "bar-rusted-cleaver", "name": "Rusted Cleaver", "type": "weapon", "cost": 2, "attack": 2, "durability": 2, "element": "fire", "rarity": "common", "class": "barbarian",
+          "text": "Battlecry: Deal 1 damage to all enemy creatures.", "onPlay": [{ "effect": "damageAllEnemyCreatures", "amount": 1 }] },
+        { "id": "rog-twin-daggers", "name": "Twin Daggers", "type": "weapon", "cost": 1, "attack": 1, "durability": 2, "element": "storm", "rarity": "common", "class": "rogue",
+          "text": "Quick hands." },
+        { "id": "rng-hunting-bow", "name": "Hunting Bow", "type": "weapon", "cost": 3, "attack": 2, "durability": 3, "element": "storm", "rarity": "rare", "class": "ranger",
+          "text": "Battlecry: Deal 2 damage to the enemy caster.", "onPlay": [{ "effect": "damageEnemyCaster", "amount": 2 }] },
+
+        { "id": "wiz-mirror-ward", "name": "Mirror Ward", "type": "spell", "cost": 3, "element": "water", "rarity": "rare", "class": "wizard",
+          "text": "Secret: When your opponent casts a spell, counter it.", "secret": { "trigger": "enemyCastsSpell", "counter": true } },
+        { "id": "rng-bramble-snare", "name": "Bramble Snare", "type": "spell", "cost": 2, "element": "storm", "rarity": "common", "class": "ranger",
+          "text": "Secret: When an enemy attacks, deal 3 damage to the attacker.", "secret": { "trigger": "enemyAttacks", "onTrigger": [{ "effect": "damage", "amount": 3 }] } },
+        { "id": "rog-ambush", "name": "Ambush", "type": "spell", "cost": 2, "element": "storm", "rarity": "common", "class": "rogue",
+          "text": "Secret: When your opponent plays a creature, deal 4 damage to it.", "secret": { "trigger": "enemyPlaysCreature", "onTrigger": [{ "effect": "damage", "amount": 4 }] } },
+        { "id": "pal-guarding-light", "name": "Guarding Light", "type": "spell", "cost": 1, "element": "fire", "rarity": "common", "class": "paladin",
+          "text": "Secret: When an enemy attacks, gain 6 Armor.", "secret": { "trigger": "enemyAttacks", "onTrigger": [{ "effect": "gainArmor", "amount": 6 }] } },
+
+        { "id": "wiz-rummage", "name": "Rummage", "type": "spell", "cost": 1, "element": "water", "rarity": "common", "class": "wizard",
+          "text": "Discover a spell.", "onPlay": [{ "effect": "discover", "pool": "spell" }] },
+        { "id": "curio-seeker", "name": "Curio Seeker", "type": "creature", "cost": 2, "attack": 2, "health": 2, "element": "water", "rarity": "rare", "class": "neutral",
+          "text": "Battlecry: Discover a creature.", "onPlay": [{ "effect": "discover", "pool": "creature" }] },
+
+        { "id": "drd-groves-gift", "name": "Grove's Gift", "type": "spell", "cost": 2, "element": "water", "rarity": "common", "class": "druid",
+          "text": "Choose One: Give a creature +2/+2; or Deal 3 damage.",
+          "chooseOne": [
+            { "name": "Bloom", "text": "Give a creature +2/+2.", "targeting": "requiredCreature", "onPlay": [{ "effect": "buffTarget", "attack": 2, "health": 2, "card": "Bloom" }] },
+            { "name": "Thorns", "text": "Deal 3 damage.", "targeting": "optionalCreature", "onPlay": [{ "effect": "damage", "amount": 3 }] }
+          ] },
+        { "id": "drd-fern-keeper", "name": "Fern Keeper", "type": "creature", "cost": 4, "attack": 3, "health": 4, "element": "water", "rarity": "rare", "class": "druid",
+          "text": "Choose One: +2/+2; or Draw 2 cards.",
+          "chooseOne": [
+            { "name": "Deep Roots", "text": "+2/+2.", "onPlay": [{ "effect": "buffSelf", "attack": 2, "health": 2, "card": "Deep Roots" }] },
+            { "name": "Old Lore", "text": "Draw 2 cards.", "onPlay": [{ "effect": "draw", "amount": 2 }] }
+          ] },
+
+        { "id": "rog-shadow-strike", "name": "Shadow Strike", "type": "spell", "cost": 1, "element": "storm", "rarity": "common", "class": "rogue",
+          "targeting": "requiredCreature",
+          "text": "Deal 2 damage to a creature. Combo: Deal 2 more.",
+          "onPlay": [{ "effect": "damage", "amount": 2 }, { "effect": "damage", "amount": 2, "condition": "combo" }] },
+        { "id": "rog-dusk-adept", "name": "Dusk Adept", "type": "creature", "cost": 3, "attack": 3, "health": 2, "element": "storm", "rarity": "rare", "class": "rogue",
+          "text": "Combo: Draw 2 cards.", "onPlay": [{ "effect": "draw", "amount": 2, "condition": "combo" }] },
+
+        { "id": "clr-hush", "name": "Hush", "type": "spell", "cost": 0, "element": "water", "rarity": "common", "class": "cleric",
+          "targeting": "requiredCreature", "text": "Silence a creature.", "onPlay": [{ "effect": "silenceTarget" }] },
+        { "id": "mute-sentinel", "name": "Mute Sentinel", "type": "creature", "cost": 3, "attack": 3, "health": 3, "element": "water", "rarity": "common", "class": "neutral",
+          "targeting": "optionalCreature", "text": "Battlecry: Silence a creature.", "onPlay": [{ "effect": "silenceTarget" }] },
+
+        { "id": "sor-storm-surge", "name": "Storm Surge", "type": "spell", "cost": 1, "element": "storm", "rarity": "common", "class": "sorcerer",
+          "targeting": "optionalCreature", "overload": 1, "text": "Deal 3 damage. Overload: (1)", "onPlay": [{ "effect": "damage", "amount": 3 }] },
+        { "id": "sor-thunder-idol", "name": "Thunder Idol", "type": "creature", "cost": 3, "attack": 4, "health": 5, "element": "storm", "rarity": "rare", "class": "sorcerer",
+          "overload": 2, "text": "Overload: (2)" },
+
+        { "id": "ftr-shield-up", "name": "Shield Up", "type": "spell", "cost": 1, "element": "fire", "rarity": "common", "class": "fighter",
+          "text": "Gain 5 Armor.", "onPlay": [{ "effect": "gainArmor", "amount": 5 }] },
+        { "id": "bar-savage-blow", "name": "Savage Blow", "type": "spell", "cost": 1, "element": "fire", "rarity": "common", "class": "barbarian",
+          "text": "Give your hero +3 Attack this turn.", "onPlay": [{ "effect": "heroAttack", "amount": 3 }] }
+      ]
+    }
+  ]
+}
