@@ -38,20 +38,38 @@ func run():
 	await create_timer(1.2).timeout
 	for look in ["day","night","classic"]:
 		game.choose_look(look); game.render()
-		await create_timer(.4).timeout
+		await create_timer(2.3).timeout
 		shot(folder,"battle-%s.png" % look)
+		check(game.stage_active()==(look!="classic"),"%s: battle is staged on the island (classic keeps its table)" % look)
+		if game.stage_active():
+			var stage=game.battle_stage
+			check(stage.get_node("StageCamera").current and stage.rival!=null and stage.night==(look=="night"),"%s: stage has its camera, an enemy and the right light" % look)
+			stage.stage_event("hero_attack")
+			await process_frame
+			check(stage.animator.current_animation!="Idle","%s: the hero swings when you attack" % look)
 		check(game.body.size.y<=game.size.y-24,"%s: battle fits the window" % look)
 		check(is_instance_valid(game.duel_board) and game.duel_board.hand_faces.size()>0,"%s: hand is drawn" % look)
 		var face=game.duel_board.hand_faces[0]
 		check(face.material!=null and is_equal_approx(face.material.get_shader_parameter("style"),float(UIStyle.P.art_style)),"%s: card art uses the look's art style" % look)
+	# attacks in the card battle reach the stage characters
+	game.choose_look("day"); game.render(); await create_timer(.3).timeout
+	var striker=b.sides[0].board[0]
+	striker.ready=true; striker.summoning_sick=false
+	b.attack(0,striker.uid,-1); game.after_action()
+	await create_timer(.6).timeout
+	check(game.battle_stage.last_stage_event=="enemy_hit","A hit on the enemy hero makes the stage enemy flinch")
+	shot(folder,"battle-day-attack.png")
 	# the island: a full-window 3D view behind the HUD
-	game.battle.outcome=1; game.after_action(); await create_timer(.2).timeout
+	game.battle.outcome=1; game.after_action(); await create_timer(1.2).timeout
+	check(game.page=="result" and game.stage_active() and game.battle_stage.last_stage_event=="lose","The result plays out on the stage")
+	shot(folder,"battle-day-result.png")
 	game.page="map"
 	game.choose_look("day"); game.render()
 	await create_timer(1.2).timeout
 	var world=game.world3d
 	shot(folder,"island-day.png")
 	check(is_instance_valid(world) and world.player.is_on_floor(),"Island loads and the hero stands on it")
+	check(not game.stage_active() and not is_instance_valid(game.battle_host),"The battle stage is removed after the battle")
 	check(game.world_host.get_index()==0 and game.world_host.size.is_equal_approx(game.size),"The world fills the window behind the HUD")
 	check(world.animator!=null and world.animator.current_animation=="Idle","Animated hero model is idling")
 	check(is_zero_approx(world.mix) and not world.night,"Island starts in daylight")

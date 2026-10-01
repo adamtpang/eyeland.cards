@@ -24,6 +24,7 @@ func caption(value: String,x: float,y: float,width=220,font_size=12):
 	label.mouse_filter=Control.MOUSE_FILTER_IGNORE
 	label.horizontal_alignment=HORIZONTAL_ALIGNMENT_CENTER
 	place(label,x,y,Vector2(width,24))
+	if game.stage_active(): game.hud_outline(label)
 	return label
 
 func hero(id: String, side: int, y: float):
@@ -320,6 +321,14 @@ func _draw():
 	var p=UIStyle.P
 	if p.board_art and board_art:
 		draw_texture_rect(board_art,Rect2(0,0,size.x,626),false)
+	elif game.stage_active():
+		# On the island stage the table disappears: two soft lanes hold the creatures and the
+		# 3D scene shows through everywhere else.
+		var day=UIStyle.mode=="day"
+		for lane_y in [140,247]:
+			var lane=UIStyle.box(Color(p.panel if day else p.ink,.2 if day else .42),Color(p.board_edge,.3 if day else .35),22 if day else 6,0)
+			lane.set_border_width_all(2 if day else 1)
+			draw_style_box(lane,Rect2(size.x*.14,lane_y,size.x*.69,104))
 	else:
 		var table=UIStyle.box(p.board,p.board_edge,p.board_r,0)
 		table.set_border_width_all(p.board_edge_w)

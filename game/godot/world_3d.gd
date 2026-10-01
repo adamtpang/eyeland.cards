@@ -53,6 +53,17 @@ var pet_wings: Array=[]
 var crab_claws: Array=[]
 var crab_legs: Array=[]
 var stride=0.0
+# Battle stage: the same island used as the live backdrop of a card battle. The hero and
+# companion face the enemy, nobody walks, and a fixed camera frames them from behind.
+var stage=false
+var stage_enemy="crab"   # "crab" for the island encounter, "keeper" for practice
+var stage_center=Vector3.ZERO
+var hero_home=Vector3.ZERO
+var rival: Node3D
+var rival_home=Vector3.ZERO
+var rival_animator: AnimationPlayer
+var creature_facing=-PI/2
+var last_stage_event=""
 var pet_animator: AnimationPlayer
 var pet_ink: StandardMaterial3D
 var pet_idle=""
@@ -128,6 +139,9 @@ func prism(parent: Node3D,at: Vector3,dimensions: Vector3,color: Color):
 func _ready():
 	night=UIStyle.mode=="night"
 	mix=1.0 if night else 0.0
+	if stage:
+		var spots=stage_spots()
+		stage_center=spots[0].lerp(spots[1],.5)
 	# One outline pass shared by every toon material: ink navy by day, bone at night.
 	ink=StandardMaterial3D.new()
 	ink.shading_mode=BaseMaterial3D.SHADING_MODE_UNSHADED
@@ -179,7 +193,105 @@ func _ready():
 	arm.add_child(camera)
 	pivot.position=player.position+Vector3(0,1.5,0)
 	pivot.rotation=Vector3(pitch,yaw,0)
+	if stage: setup_stage()
 	apply_look(mix)
+
+## Where the hero and the enemy stand during a battle. The hero is close to the camera at
+## the bottom left of the screen; the enemy stands on a rocky bluff further off, so it shows
+## at the top right, above the card lanes.
+const BLUFF=4.4
+func stage_spots() -> Array:
+	var hero=Vector3(11.5,0,-2.8)
+	var forward=Vector3(6.5,0,-3.2).normalized()
+	var right=forward.cross(Vector3.UP)
+	var enemy=hero+forward*5.9+right*6.7
+	hero.y=ground_height(hero.x,hero.z)
+	enemy.y=hero.y+BLUFF
+	return [hero,enemy,forward,right]
+
+func near_stage(at: Vector3,clear: float) -> bool:
+	return stage and Vector2(at.x-stage_center.x,at.z-stage_center.z).length()<clear
+
+func setup_stage():
+	var spots=stage_spots()
+	var forward: Vector3=spots[2]
+	var right: Vector3=spots[3]
+	var duel=spots[1]-spots[0]
+	hero_home=spots[0]
+	rival_home=spots[1]
+	player.position=spots[0]
+	avatar.rotation.y=atan2(duel.x,duel.z)
+	companion.position=spots[0]-right*1.3+forward*.8
+	companion.position.y=ground_height(companion.position.x,companion.position.z)
+	companion.rotation.y=avatar.rotation.y
+	creature_facing=atan2(-duel.x,-duel.z)
+	# the bluff: stacked rock with a grass cap
+	var base=ground_height(spots[1].x,spots[1].z)-.6
+	var rise=spots[1].y-base
+	var rock=Color("9aa0ad")
+	cylinder(self,Vector3(spots[1].x,base+rise*.25,spots[1].z),2.9,rise*.5,rock,false,2.4)
+	cylinder(self,Vector3(spots[1].x+.3,base+rise*.65,spots[1].z-.2),2.35,rise*.4,rock.lightened(.08),false,1.95)
+	cylinder(self,Vector3(spots[1].x,base+rise*.92,spots[1].z),1.95,rise*.16,rock.lightened(.14),false,1.8)
+	cylinder(self,Vector3(spots[1].x,spots[1].y-.08,spots[1].z),1.85,.2,Color("57c84d"),false)
+	if stage_enemy=="crab" and is_instance_valid(creature):
+		rival=creature
+		creature.position=spots[1]
+	else:
+		if is_instance_valid(creature): creature.visible=false
+		rival=make_character("Barbarian",["1H_Axe"])
+		add_child(rival)
+		rival.position=spots[1]
+		rival.rotation.y=creature_facing
+		rival_animator=rival.find_child("AnimationPlayer",true,false)
+		loop_and_play(rival_animator,"Idle")
+	var view=Camera3D.new()
+	view.name="StageCamera"
+	view.fov=44.0
+	view.far=420
+	add_child(view)
+	view.position=spots[0]-forward*6.4+right*2.85+Vector3(0,3.05,0)
+	view.look_at(view.position+forward*10.0+Vector3(0,-.875,0))
+	view.current=true
+
+func play_once(animator_node: AnimationPlayer,animation: String):
+	if animator_node==null or not animator_node.has_animation(animation): return
+	animator_node.get_animation(animation).loop_mode=Animation.LOOP_NONE
+	animator_node.speed_scale=1.0
+	animator_node.play(animation,.1)
+	animator_node.queue("Idle")
+
+## The characters react to what happens in the card battle.
+func stage_event(kind: String):
+	if not stage: return
+	last_stage_event=kind
+	var toward=(hero_home-rival_home).normalized()
+	match kind:
+		"hero_attack":
+			play_once(animator,{"warrior":"1H_Melee_Attack_Slice_Diagonal","ranger":"1H_Melee_Attack_Stab","wizard":"Spellcast_Shoot"}.get(job,"1H_Melee_Attack_Chop"))
+		"hero_hit":
+			play_once(animator,"Hit_A")
+		"enemy_attack":
+			if rival_animator!=null: play_once(rival_animator,"1H_Melee_Attack_Chop")
+			elif is_instance_valid(rival):
+				var lunge=create_tween()
+				lunge.tween_property(rival,"position",rival_home+toward*1.1,.12).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
+				lunge.tween_property(rival,"position",rival_home,.28).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+		"enemy_hit":
+			if rival_animator!=null: play_once(rival_animator,"Hit_A")
+			elif is_instance_valid(rival):
+				rival.scale=Vector3(1.25,.8,1.25)
+				create_tween().tween_property(rival,"scale",Vector3.ONE,.35).set_trans(Tween.TRANS_ELASTIC).set_ease(Tween.EASE_OUT)
+		"win":
+			loop_and_play(animator,"Cheer")
+			if rival_animator!=null:
+				rival_animator.clear_queue()
+				rival_animator.play("Death_A",.1)
+			elif is_instance_valid(rival): create_tween().tween_property(rival,"scale",Vector3(1.1,.25,1.1),.4)
+		"lose":
+			if animator!=null and animator.has_animation("Death_A"):
+				animator.clear_queue()
+				animator.play("Death_A",.1)
+			if rival_animator!=null: loop_and_play(rival_animator,"Cheer")
 
 ## Everything that differs between day (0) and night (1), blended by `t`.
 func apply_look(t: float):
@@ -374,7 +486,7 @@ func build_trees():
 		var occupied=false
 		for mark in landmarks.values():
 			if at.distance_to(Vector3(mark.x,0,mark.z))<4.5: occupied=true
-		if occupied or absf(at.z)<2: continue
+		if occupied or absf(at.z)<2 or near_stage(at,11.0): continue
 		at.y=ground_height(at.x,at.z)
 		cylinder(self,at+Vector3(0,1.2,0),.26,2.4,Color("9a6a3a"),true)
 		if i%3==0:
@@ -397,6 +509,7 @@ func build_scenery():
 		if not free_spot(at,2.5): continue
 		at.y=ground_height(at.x,at.z)
 		var kind=i%10
+		if kind<3 and near_stage(at,11.0): continue
 		if kind<2:
 			sphere(self,at+Vector3(0,.35,0),.6,Color("39b85e")).scale.y=.75
 			sphere(self,at+Vector3(.5,.25,.2),.42,Color("4fc96a"))
@@ -526,7 +639,7 @@ func make_person(color: Color) -> Node3D:
 func make_companion() -> Node3D:
 	var pet=Node3D.new()
 	# Animated Quaternius monsters (CC0) when present; the code-built friend is the fallback.
-	var models={"fire":["Dragon","Flying_Idle","Fast_Flying",.9],"water":["Fish","Idle","Run",0.0],"earth":["Mushnub","Idle","Walk",0.0],"air":["Birb","Idle","Walk",0.0]}
+	var models={"fire":["Dragon","Flying_Idle","Fast_Flying",.9],"water":["Fish","Idle","Run",0.0],"earth":["Cactoro","Idle","Walk",0.0],"air":["Birb","Idle","Walk",0.0]}
 	var pick=models.get(element,models.fire)
 	var path="res://assets/creatures/%s.glb" % pick[0]
 	if ResourceLoader.exists(path):
@@ -640,8 +753,8 @@ func _process(delta):
 		if cloud.position.x>160: cloud.position.x=-160
 	if is_instance_valid(flame): flame.scale=Vector3.ONE*(1.0+.08*sin(clock*11.0)+.05*sin(clock*17.0))
 	if is_instance_valid(creature):
-		creature.position.y=landmarks.encounter.y+.07*absf(sin(clock*2.2))
-		creature.rotation.y=-PI/2+.25*sin(clock*.8)
+		creature.position.y=(rival_home.y if stage else landmarks.encounter.y)+.07*absf(sin(clock*2.2))
+		creature.rotation.y=creature_facing+.25*sin(clock*.8)
 		for i in range(crab_claws.size()): crab_claws[i].rotation.z=(1 if i==0 else -1)*(.15+.2*absf(sin(clock*2.6+i)))
 		for i in range(crab_legs.size()): crab_legs[i].rotation.y=.18*sin(clock*5.0+i*1.1)
 	if is_instance_valid(companion):
@@ -679,7 +792,7 @@ func stop_input():
 	previous_axis=Vector2.ZERO
 
 func _physics_process(delta):
-	if player==null: return
+	if player==null or stage: return
 	var axis=Vector2(float(held.has(KEY_D) or held.has(KEY_RIGHT))-float(held.has(KEY_A) or held.has(KEY_LEFT)),float(held.has(KEY_S) or held.has(KEY_DOWN))-float(held.has(KEY_W) or held.has(KEY_UP))).normalized()
 	# Automatic orbit must not rotate the movement basis every frame: holding
 	# sideways would otherwise make the player run in circles as the camera follows.

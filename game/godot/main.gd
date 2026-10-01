@@ -52,6 +52,9 @@ var facing=Vector2.DOWN
 var world3d
 var world_prompt: Label
 var world_host: SubViewportContainer
+var battle_host: SubViewportContainer
+var battle_stage
+var stage_result_for
 var world_plate: Control
 var scroll_filter=Control.MOUSE_FILTER_PASS
 var world_hint: Label
@@ -239,6 +242,12 @@ func render():
 	if not keep_world:
 		if is_instance_valid(world_host): world_host.queue_free()
 		world_host=null
+	# A battle keeps its island stage for as long as the battle and its result are on screen.
+	var keep_stage=page in ["battle","result"] and is_instance_valid(battle_host) and not UIStyle.P.board_art
+	if not keep_stage and is_instance_valid(battle_host):
+		battle_host.queue_free()
+		battle_host=null
+		battle_stage=null
 	# On the island the page is a HUD floating over a full-window 3D view, so the empty
 	# parts of the page must let the mouse through to the world.
 	var over_world=page=="map"
@@ -257,7 +266,7 @@ func render():
 	target_widgets={}
 	var header=row_at(body)
 	var title=label_at(header,"eyeland.cards",28 if page=="battle" else 34)
-	if page=="map": hud_outline(title)
+	if page=="map" or (page in ["battle","result"] and not UIStyle.P.board_art): hud_outline(title)
 	if page!="start":
 		if page in ["map","deck"]:
 			var nav=button_at(header,"Collection" if page=="map" else "Back to island",func(): page="deck" if page=="map" else "map"; swap_index=-1; render())
@@ -286,7 +295,7 @@ func render():
 		duel_board.size=previous_battle_rect.size
 	creature_feedback.present(self)
 	save_label=label_at(body,model.error if not model.error.is_empty() else (toast if not toast.is_empty() else "Adventure saved on this device"),11)
-	if page=="map": hud_outline(save_label)
+	if page=="map" or stage_active(): hud_outline(save_label)
 	if not constructed.error.is_empty(): save_label.text=constructed.error
 	save_label.visible=not model.error.is_empty() or not constructed.error.is_empty()
 	save_label.modulate=UIStyle.MUTED
@@ -610,7 +619,45 @@ func enter_battle(starting_player: int=-1):
 	thinking=false
 	render()
 
+func stage_active() -> bool:
+	return is_instance_valid(battle_stage)
+
+## Battles play out on the island: a live 3D stage behind the cards, with the hero and
+## companion facing the enemy. The classic look keeps its painted table instead.
+func ensure_stage():
+	if UIStyle.P.board_art: return
+	if not is_instance_valid(battle_host):
+		battle_host=SubViewportContainer.new()
+		battle_host.name="BattleStage"
+		battle_host.stretch=true
+		battle_host.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+		battle_host.mouse_filter=Control.MOUSE_FILTER_IGNORE
+		add_child(battle_host)
+		move_child(battle_host,0)
+		var viewport=SubViewport.new()
+		viewport.own_world_3d=true
+		viewport.msaa_3d=Viewport.MSAA_4X
+		viewport.render_target_update_mode=SubViewport.UPDATE_ALWAYS
+		battle_host.add_child(viewport)
+		battle_stage=World3DScene.new()
+		battle_stage.stage=true
+		battle_stage.stage_enemy="keeper" if practice_mode else "crab"
+		battle_stage.element=model.profile.get("element","fire")
+		battle_stage.job=model.profile.get("job","warrior")
+		battle_stage.muted=battle_audio.muted
+		viewport.add_child(battle_stage)
+	battle_stage.set_muted(battle_audio.muted)
+	battle_stage.set_night(UIStyle.mode=="night",look_blend)
+
+## Ask the stage characters to react, timed with the card effect that caused it.
+func stage_cue(kind: String,delay: float=0.0):
+	if not stage_active(): return
+	var stage_now=battle_stage
+	get_tree().create_timer(maxf(.01,delay)).timeout.connect(func():
+		if is_instance_valid(stage_now): stage_now.stage_event(kind))
+
 func battle_screen():
+	ensure_stage()
 	duel_board=preload("res://duel_board.gd").new()
 	duel_board.game=self
 	body.add_child(duel_board)
@@ -783,6 +830,9 @@ func retreat():
 
 func result_screen():
 	battle_audio.present_result(battle)
+	if stage_active() and stage_result_for!=battle:
+		stage_result_for=battle
+		battle_stage.stage_event("win" if battle.outcome==0 else "lose")
 	if practice_mode:
 		var center=CenterContainer.new()
 		center.custom_minimum_size.y=520
@@ -1152,6 +1202,8 @@ func present_combat(event: Dictionary,delay: float=0.0):
 	var feel=hit_feel.variant
 	var hit=hit_feel.IMPACT[feel]
 	schedule_sound(hit_feel.CUES[feel],delay+hit-hit_feel.CUE_LEAD[feel])
+	stage_cue("hero_attack" if event.owner==0 else "enemy_attack",delay)
+	if event.target==-1 and event.damage>0: stage_cue("enemy_hit" if event.owner==0 else "hero_hit",delay+hit)
 	if not is_instance_valid(duel_board): return
 	var source=target_widgets.get(event.uid) if event.owner==1 else duel_board.friendly_faces.get(event.uid)
 	var target=duel_board.friendly_faces.get(event.target) if event.owner==1 else target_widgets.get(event.target)

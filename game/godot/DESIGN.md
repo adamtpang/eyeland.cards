@@ -16,10 +16,11 @@ One layout, three looks. Every colour, font, outline and shadow comes from the t
 | Menus: collection, deck, buttons, panels, tooltips | Applied through the shared theme |
 | Card art restyle (cel by day, engraved at night) | Applied with `card_style.gdshader` |
 | Overworld (3D island, sky, water, characters) | First pass applied (2026-10-01), see "The overworld" below |
+| Battle stage (battles played on the 3D island) | First pass applied (2026-10-01), see "The battle stage" |
 | Sound and music per look | Synthesized ambience and placeholder tunes on the island; battle has hit cues only |
 | In-game clock | Built (2026-10-01): 12-minute days on the island, shown in the HUD, saved |
 
-Checked by `tests/looks.gd` (46 automated checks plus screenshots in
+Checked by `tests/looks.gd` (56 automated checks plus screenshots in
 `game/evidence/looks-2026-10-01/`). No human has judged the look in motion yet.
 
 ## The two looks
@@ -128,10 +129,33 @@ Third pass, 2026-10-01:
 
 - **Companion models:** four animated monsters from Quaternius's CC0 "Ultimate Monsters"
   bundle (in `assets/creatures/` with the licence): Dragon for fire, Fish for water,
-  Mushnub for earth, Birb for air. They idle and walk or fly behind the hero, with their
+  Cactoro for earth, Birb for air. They idle and walk or fly behind the hero, with their
   own thinner outline pass because their rigs are authored at a different scale. The
-  code-built friend remains as a fallback. Their colours do not all match their element
-  yet (the earth Mushnub is blue).
+  code-built friend remains as a fallback. The earth companion was swapped from the blue
+  Mushnub to the green Cactoro so it reads as earth; the Birb (air) and Fish (water) are
+  still blue.
+
+## The battle stage
+
+Added 2026-10-01. In the day and night looks a battle is played on the island instead of
+on a table (`world_3d.gd` stage mode, `main.gd` `ensure_stage`):
+
+- **Live 3D backdrop.** A second island instance runs behind the cards with a fixed
+  camera. Your hero and companion stand close at the bottom left, seen from behind. The
+  enemy stands on a rock bluff at the top right, above the card lanes. The Resin Crab is
+  the enemy in the island encounter; practice uses a Barbarian "keeper".
+- **No table.** The opaque board is replaced by two faint lane plates, so the scene shows
+  through. Cards, tokens, portraits and every control are unchanged, so drag, targeting
+  and layout tests cover it as before.
+- **Characters react.** The attacker swings or lunges when a creature attacks, a hero
+  flinches when hit in the face, and the winner cheers while the loser falls on the
+  result screen.
+- **Follows the look.** Day and night light, sky and ambience match the island. The
+  classic look keeps its painted table and has no stage.
+
+Limits: the 2D hero portraits are still shown as well as the 3D characters, spells and
+hero powers do not have their own character animation yet, and a full board of seven
+creatures partly hides the bluff. Nobody has judged it in motion.
 
 Still open: the Resin Crab is still built from shapes in code (the pack has no crab), no
 NPC other than Mira, and no human has judged how any of this looks in motion or how it
