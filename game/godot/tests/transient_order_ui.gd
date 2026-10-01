@@ -18,7 +18,7 @@ func run():
 	b.clean(); game.after_action()
 	var ghosts=game.creature_feedback.get_children()
 	check(ghosts.size()==2,"Both intermediate creatures retained for playback")
-	var center=game.duel_board.global_position.x+game.duel_board.size.x/2-50-game.creature_feedback.global_position.x
+	var center=game.duel_board.global_position.x+game.duel_board.size.x/2-game.duel_board.token_size().x/2-game.creature_feedback.global_position.x
 	check(absf(ghosts[0].position.x-center)<1,"First transient starts centered in its one-creature layout")
 	await create_timer(.1).timeout
 	check(ghosts[0].visible and not ghosts[1].visible,"Second summon waits for first summon animation")
@@ -26,7 +26,7 @@ func run():
 	check(ghosts[1].visible and ghosts[0].current_health==2 and ghosts[1].current_health==2,"Both summons precede either hit")
 	await create_timer(.35).timeout
 	check(ghosts[0].current_health==0 and ghosts[1].current_health==2,"Hits follow recorded cross-creature order")
-	check(absf(ghosts[0].position.x-(center-52.5))<1 and absf(ghosts[1].position.x-(center+52.5))<1,"Transient portraits follow two-creature intermediate layout")
+	check(absf(ghosts[0].position.x-(center-game.duel_board.gap()/2))<1 and absf(ghosts[1].position.x-(center+game.duel_board.gap()/2))<1,"Transient portraits follow two-creature intermediate layout")
 	game.render()
 	check(game.creature_feedback.get_child_count()==2,"Redraw preserves single shared sequence")
 	await create_timer(1.5).timeout

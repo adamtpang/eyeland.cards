@@ -17,7 +17,7 @@ func run():
 	var face=game.duel_board.hand_faces[1]
 	var motion=InputEventMouseMotion.new(); motion.position=face.get_global_rect().get_center(); root.push_input(motion)
 	await create_timer(.2).timeout
-	check(face.scale.is_equal_approx(Vector2(1.3,1.3)) and face.z_index==30,"Native hover enlarges and raises hand card")
+	check(face.scale.is_equal_approx(Vector2(1.75,1.75)) and face.z_index==30,"Native hover enlarges and raises hand card")
 	check(face.disabled and face.unavailable_in_hand,"Unaffordable card remains gray and unplayable while inspected")
 	motion=InputEventMouseMotion.new(); motion.position=Vector2(10,10); root.push_input(motion)
 	await create_timer(.2).timeout

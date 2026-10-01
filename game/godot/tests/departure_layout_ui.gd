@@ -20,7 +20,7 @@ func run():
 	var ghost=game.creature_feedback.get_children().filter(func(n): return n.get_meta("uid",-1)==uid)[0]
 	check(absf(ghost.position.x-before)<1,"Second departing portrait begins at original slot")
 	await create_timer(.45).timeout
-	check(is_instance_valid(ghost) and ghost.position.x<before and ghost.position.x>before-52.5,"Later departure follows earlier death layout")
+	check(is_instance_valid(ghost) and ghost.position.x<before and ghost.position.x>before-game.duel_board.gap()/2,"Later departure follows earlier death layout")
 	game.render()
 	check(game.creature_feedback.get_children().filter(func(n): return n.get_meta("uid",-1)==uid).size()==1,"Redraw does not duplicate departing portrait")
 	await create_timer(.4).timeout

@@ -7,6 +7,26 @@ var drag_slot=-1
 var field_drag=false
 var drag_pointer=Vector2.ZERO
 var board_art: Texture2D
+# Battle layout, top to bottom, in the order Hearthstone uses: opponent hero, opponent
+# creatures, your creatures, your hero, your hand. The two creature rows take the middle
+# of the screen and hand cards are small but shown whole.
+const H=690.0
+const ENEMY_HERO_Y=26.0
+const ENEMY_ROW_Y=148.0
+const MID_Y=274.0
+const ROW_Y=284.0
+const HERO_Y=412.0
+const HAND_Y=536.0
+const TOKEN=Vector2(124,116)
+const HAND_CARD=Vector2(110,150)
+
+## Distance between creatures: seven must fit between the side columns.
+func gap() -> float:
+	return minf(130.0,(game.size.x-48.0)*.74/7.0)
+
+func token_size() -> Vector2:
+	var wide=minf(TOKEN.x,gap()-4.0)
+	return Vector2(wide,wide*TOKEN.y/TOKEN.x)
 
 func place(node: Control, x: float, y: float, dimensions: Vector2):
 	node.custom_minimum_size=dimensions
@@ -77,7 +97,7 @@ func hero(id: String, side: int, y: float):
 func update_secrets(side: int,secrets: Array):
 	for child in get_children():
 		if str(child.name).begins_with("SecretMarker%d_" % side): remove_child(child); child.queue_free()
-	var y=348 if side==0 else 45
+	var y=HERO_Y if side==0 else ENEMY_HERO_Y
 	for i in range(secrets.size()):
 		var marker=caption("?",.5,y-18,22,18)
 		marker.name="SecretMarker%d_%d" % [side,i]
@@ -88,7 +108,7 @@ func update_secrets(side: int,secrets: Array):
 func update_weapon(side: int,weapon: Dictionary):
 	var old=get_node_or_null("PlayerWeapon" if side==0 else "EnemyWeapon")
 	if old!=null: remove_child(old); old.queue_free()
-	var y=348 if side==0 else 45
+	var y=HERO_Y if side==0 else ENEMY_HERO_Y
 
 	if not weapon.is_empty():
 		if game.battle.cards.has(weapon.get("id","")):
@@ -103,13 +123,13 @@ func update_weapon(side: int,weapon: Dictionary):
 				weapon_face.drag_payload={"kind":"attack","uid":-1}
 			place(weapon_face,.36,y,Vector2(100,94))
 		else:
-			var weapon_label=caption("⚔ %d / %d" % [weapon.attack,weapon.durability],.36,y+26,130,20)
+			var weapon_label=caption("Weapon %d / %d" % [weapon.attack,weapon.durability],.36,y+26,130,20)
 			weapon_label.name="PlayerWeapon" if side==0 else "EnemyWeapon"
 			weapon_label.tooltip_text="%d Attack · %d Durability" % [weapon.attack,weapon.durability]
 
 func _ready():
 	board_art=load("res://assets/battle-board.png")
-	custom_minimum_size=Vector2(900,626)
+	custom_minimum_size=Vector2(900,H)
 	size_flags_horizontal=Control.SIZE_EXPAND_FILL
 	resized.connect(queue_redraw)
 	var battle=game.battle
@@ -136,15 +156,18 @@ func _ready():
 		tip.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
 		tip.custom_minimum_size.x=400
 		var plate: Control=coach.get_parent()
-		place(plate,.2,30,Vector2(440,0))
+		place(plate,.2,24,Vector2(440,0))
 		# a wrapped label reports a tall minimum until it knows its width, so refit afterwards
 		plate.minimum_size_changed.connect(func(): plate.size=Vector2(440,0))
-	else: caption(("PRACTICE · " if game.practice_mode else "")+"TURN %d" % ceili(battle.turn/2.0),.13,38,180,12)
-	place(game.button_at(self,"Retreat",game.confirm_retreat,game.thinking),.91,14,Vector2(102,36))
+	else: caption(("PRACTICE · " if game.practice_mode else "")+"TURN %d" % ceili(battle.turn/2.0),.13,34,180,12)
+	place(game.button_at(self,"Retreat",game.confirm_retreat,game.thinking),.9,10,Vector2(102,36))
+	var guide=game.button_at(self,"?",func(): game.help_open=not game.help_open; game.render())
+	place(guide,.965,10,Vector2(36,36))
+	guide.tooltip_text="Drag cards onto the battlefield. Drag attacks and damage spells onto enemies. Hover a card to enlarge it."
 	var sound=game.button_at(self,"Sound off" if game.battle_audio.muted else "Sound on",func(): game.battle_audio.toggle(); game.render())
-	place(sound,.08,395,Vector2(105,34))
+	place(sound,.06,356,Vector2(105,34))
 	sound.tooltip_text="Toggle battle sounds for this session."
-	hero(game.model.starter(CollectionElement()) if game.practice_mode else "home-resin-crab",1,45)
+	hero(game.model.starter(CollectionElement()) if game.practice_mode else "home-resin-crab",1,ENEMY_HERO_Y)
 	var enemy_power=preload("res://hero_art_button.gd").new()
 	enemy_power.portrait=UIStyle.hero_art(battle.job.id,true)
 	enemy_power.is_power=true
@@ -152,10 +175,10 @@ func _ready():
 	enemy_power.used=theirs.power_used
 	enemy_power.tooltip_text="Opponent: "+battle.job.power+"\n"+battle.job.description
 	add_child(enemy_power)
-	place(enemy_power,.63,48,Vector2(66,66))
+	place(enemy_power,.63,ENEMY_HERO_Y+6,Vector2(66,66))
 	for side in [1,0]:
 		var board=battle.sides[side].board
-		var y=148 if side==1 else 251
+		var y=ENEMY_ROW_Y if side==1 else ROW_Y
 
 		for i in range(board.size()):
 			var m=board[i]
@@ -182,8 +205,8 @@ func _ready():
 				face.status="FROZEN"
 				face.tooltip_text+="\nFrozen: misses its next attack."
 			if m.get("stealth",false): face.modulate.a=0.55
-			place(face,.5,y,Vector2(100,94))
-			face.position.x+=(i-(board.size()-1)/2.0)*105
+			place(face,.5,y,token_size())
+			face.position.x+=(i-(board.size()-1)/2.0)*gap()
 			if side==1:
 				game.target_widgets[m.uid]=face
 				face.accepts=func(data): return accepts_enemy(data,m.uid)
@@ -196,7 +219,7 @@ func _ready():
 				face.accepts=func(data): return accepts_enemy(data,m.uid)
 				face.dropped=func(data): drop_enemy(data,m.uid)
 			if side==0 and game.selection=="attack" and game.selected==m.uid: face.chosen=true
-	hero(game.model.starter(game.model.profile.element),0,348)
+	hero(game.model.starter(game.model.profile.element),0,HERO_Y)
 	var power_button=preload("res://hero_art_button.gd").new()
 	power_button.name="HeroPower"
 	power_button.portrait=UIStyle.hero_art(battle.job.id,true)
@@ -211,11 +234,11 @@ func _ready():
 	elif yours.mana<2: power_button.tooltip_text+="\nYou need %d more mana." % (2-yours.mana)
 	power_button.pressed.connect(game.use_power)
 	add_child(power_button)
-	place(power_button,.63,348,Vector2(82,82))
+	place(power_button,.63,HERO_Y,Vector2(82,82))
 
 
 	var end=game.button_at(self,"Opponent's turn" if game.thinking else "End turn",game.end_turn,game.thinking or battle.mulligan_pending)
-	place(end,.91,236,Vector2(132,52))
+	place(end,.925,MID_Y-26,Vector2(124,52))
 	if not end.disabled: UIStyle.primary(end)
 	for side in [1,0]:
 		var pile=Panel.new()
@@ -224,44 +247,44 @@ func _ready():
 		pile_box.shadow_color=UIStyle.P.shadow; pile_box.shadow_size=UIStyle.P.shadow_size; pile_box.shadow_offset=UIStyle.P.shadow_offset
 		pile.add_theme_stylebox_override("panel",pile_box)
 		add_child(pile)
-		place(pile,.91,110 if side==1 else 330,Vector2(72,96))
-		var pile_count=caption(str(battle.sides[side].deck.size()),.91,143 if side==1 else 363,70,18)
+		place(pile,.925,MID_Y-156 if side==1 else MID_Y+60,Vector2(72,96))
+		var pile_count=caption(str(battle.sides[side].deck.size()),.925,MID_Y-123 if side==1 else MID_Y+93,70,18)
 		pile_count.add_theme_color_override("font_color",UIStyle.P.stat_text)
 		pile_count.add_theme_constant_override("outline_size",5)
 		pile_count.add_theme_color_override("font_outline_color",UIStyle.P.stat_outline)
 		pile.tooltip_text="%d cards remaining" % battle.sides[side].deck.size()
 	var locked=int(yours.get("locked_mana",0))
-	var mana_label=caption("◆".repeat(yours.mana)+"◇".repeat(maxi(0,yours.max_mana-yours.mana-locked))+"▣".repeat(locked)+"  %d/%d" % [yours.mana,yours.max_mana],.84,438,260,15)
+	var mana_label=caption("◆".repeat(yours.mana)+"◇".repeat(maxi(0,yours.max_mana-yours.mana-locked))+"▣".repeat(locked)+"  %d/%d" % [yours.mana,yours.max_mana],.85,HERO_Y+34,260,15)
 	mana_label.add_theme_color_override("font_color",UIStyle.P.mana_text)
 	mana_label.mouse_filter=Control.MOUSE_FILTER_STOP
 	mana_label.tooltip_text="%d mana locked this turn.\nOverload: %d mana locked next turn." % [locked,int(yours.get("overload",0))]
-	if yours.get("overload",0)>0: caption("Overload %d" % yours.overload,.84,460,180,13).modulate=Color("e8ba76")
+	if yours.get("overload",0)>0: caption("Overload %d" % yours.overload,.85,HERO_Y+56,180,13).modulate=Color("e8ba76")
 	game.timer_bar=ProgressBar.new()
 	game.timer_bar.max_value=75
 	game.timer_bar.value=game.clock_left
 	game.timer_bar.show_percentage=false
 	add_child(game.timer_bar)
-	place(game.timer_bar,.5,241,Vector2(640,3))
+	place(game.timer_bar,.5,MID_Y,Vector2(640,3))
 	game.timer_bar.add_theme_stylebox_override("background",UIStyle.box(UIStyle.P.timer_bg,Color.TRANSPARENT,1,0))
 	game.timer_bar.add_theme_stylebox_override("fill",UIStyle.box(UIStyle.GOLD if UIStyle.P.board_art else Color(UIStyle.P.board_edge,.55),Color.TRANSPARENT,1,0))
-	game.timer_label=caption("",.91,292,100,12)
+	game.timer_label=caption("",.925,MID_Y+30,100,12)
 	var count=yours.hand.size()
 	for i in range(count):
 		var combo_ready=battle.cards[yours.hand[i]].has("combo") and yours.get("cards_played",0)>0
 		var face=game.card_button(self,yours.hand[i],func(): game.play_card(i),game.thinking or not battle.can_play(0,i),"COMBO READY" if combo_ready else "IN HAND")
 		face.active_hint=combo_ready
-		place(face,.5,446,Vector2(130,178))
-		face.position.x+=(i-(count-1)/2.0)*minf(137,720.0/maxi(1,count-1))
+		place(face,.5,HAND_Y,HAND_CARD)
+		face.position.x+=(i-(count-1)/2.0)*minf(HAND_CARD.x+6,(game.size.x-48.0)*.62/maxi(1,count-1))
 		face.set_hand_available(not face.disabled)
 		face.set_hand_hover(not battle.mulligan_pending and battle.pending_choice.is_empty() and game.selection!="choice")
 		face.drag_payload={"kind":"hand","index":i}
 		face.arm_drag=game.arm_card_drag
 		hand_faces.append(face)
-	var history=game.button_at(self,"⋯",game.show_battle_history)
-	place(history,.08,290,Vector2(88,36))
+	var history=game.button_at(self,"Log",game.show_battle_history)
+	place(history,.06,268,Vector2(88,36))
 	history.tooltip_text="\n".join(battle.log.slice(maxi(0,battle.log.size()-8))) if not battle.log.is_empty() else "No actions yet."
 	var report=game.button_at(self,"Report bug",func(): game.save_bug_snapshot())
-	place(report,.08,340,Vector2(105,36))
+	place(report,.06,312,Vector2(105,36))
 	report.tooltip_text="F8 saves the current match state and recent actions locally. Tell Codex what felt wrong."
 	if battle.mulligan_pending: opening_hand()
 	elif game.player_choice_ready(): discover_screen()
@@ -333,27 +356,27 @@ func opening_hand():
 func _draw():
 	var p=UIStyle.P
 	if p.board_art and board_art:
-		draw_texture_rect(board_art,Rect2(0,0,size.x,626),false)
+		draw_texture_rect(board_art,Rect2(0,0,size.x,H),false)
 	elif game.stage_active():
 		# On the island stage the table disappears: two soft lanes hold the creatures and the
 		# 3D scene shows through everywhere else.
 		var day=UIStyle.mode=="day"
-		for lane_y in [140,247]:
+		for lane_y in [ENEMY_ROW_Y-6,ROW_Y-4]:
 			var lane=UIStyle.box(Color(p.panel if day else p.ink,.2 if day else .42),Color(p.board_edge,.3 if day else .35),22 if day else 6,0)
 			lane.set_border_width_all(2 if day else 1)
-			draw_style_box(lane,Rect2(size.x*.14,lane_y,size.x*.69,104))
+			draw_style_box(lane,Rect2(size.x*.11,lane_y,size.x*.76,TOKEN.y+10))
 	else:
 		var table=UIStyle.box(p.board,p.board_edge,p.board_r,0)
 		table.set_border_width_all(p.board_edge_w)
 		table.shadow_color=p.shadow; table.shadow_size=p.shadow_size; table.shadow_offset=p.shadow_offset*1.5
-		draw_style_box(table,Rect2(2,0,size.x-4,622))
-		var middle=Vector2(size.x/2,241)
+		draw_style_box(table,Rect2(2,0,size.x-4,H-4))
+		var middle=Vector2(size.x/2,MID_Y)
 		if UIStyle.mode=="night":
 			# engraved chart: faint diagonal hatching and two compass rings
 			var step=18.0
-			var x=-622.0
+			var x=-H
 			while x<size.x:
-				draw_line(Vector2(maxf(x,6),maxf(6,-x)),Vector2(minf(x+616,size.x-6),minf(616,size.x-6-x)),Color(p.board_edge,.035),1)
+				draw_line(Vector2(maxf(x,6),maxf(6,-x)),Vector2(minf(x+H-10,size.x-6),minf(H-10,size.x-6-x)),Color(p.board_edge,.035),1)
 				x+=step
 			draw_circle(middle,210,Color(0.56,0.5,0.96,.05))
 			draw_arc(middle,196,0,TAU,96,p.board_mark,1.5,true)
@@ -364,15 +387,15 @@ func _draw():
 			draw_style_box(UIStyle.box(Color(1,1,1,.32),Color(1,1,1,0),p.board_r-6,0),Rect2(8,6,size.x-16,118))
 			draw_circle(middle,204,Color(1,1,1,.36))
 			draw_arc(middle,204,0,TAU,96,p.board_mark,3,true)
-	draw_line(Vector2(size.x*.16,241),Vector2(size.x*.81,241),p.board_mark,1 if p.board_art else 2)
+	draw_line(Vector2(size.x*.13,MID_Y),Vector2(size.x*.85,MID_Y),p.board_mark,1 if p.board_art else 2)
 
 
 
 	if field_drag:
-		draw_style_box(UIStyle.box(Color(.3,.8,.65,.06),UIStyle.TEAL,30,0),Rect2(size.x*.12,135,size.x*.73,300))
+		draw_style_box(UIStyle.box(Color(.3,.8,.65,.06),UIStyle.TEAL,30,0),Rect2(size.x*.1,ENEMY_ROW_Y-12,size.x*.78,HERO_Y-ENEMY_ROW_Y+4))
 	if drag_slot>=0:
-		var x=size.x/2+(drag_slot-game.battle.sides[0].board.size()/2.0)*105
-		draw_style_box(UIStyle.box(Color(.3,.8,.65,.18),UIStyle.TEAL,20,0),Rect2(x-47,249,94,98))
+		var x=size.x/2+(drag_slot-game.battle.sides[0].board.size()/2.0)*gap()
+		draw_style_box(UIStyle.box(Color(.3,.8,.65,.18),UIStyle.TEAL,20,0),Rect2(x-token_size().x/2,ROW_Y-2,token_size().x,token_size().y+4))
 	draw_targeting()
 
 func accepts_enemy(data: Variant,uid: int) -> bool:
@@ -391,7 +414,7 @@ func drop_enemy(data: Dictionary,uid: int):
 
 func _can_drop_data(at: Vector2,data: Variant) -> bool:
 	if not data is Dictionary or data.get("kind")!="hand" or game.thinking: return false
-	if at.y<135 or at.y>435 or at.x<size.x*.12 or at.x>size.x*.85 or not game.battle.can_play(0,data.index): return false
+	if at.y<ENEMY_ROW_Y-12 or at.y>HERO_Y-8 or at.x<size.x*.1 or at.x>size.x*.88 or not game.battle.can_play(0,data.index): return false
 	return game.battle.cards[game.battle.sides[0].hand[data.index]].get("targeting","")!="optionalCreature"
 
 func _drop_data(at: Vector2,data: Variant):
@@ -402,7 +425,7 @@ func _drop_data(at: Vector2,data: Variant):
 
 func insertion_slot(x: float) -> int:
 	var count=game.battle.sides[0].board.size()
-	return clampi(roundi((x-size.x/2)/105.0+count/2.0),0,count)
+	return clampi(roundi((x-size.x/2)/gap()+count/2.0),0,count)
 
 func untargeted_drag(data: Variant) -> bool:
 	if not data is Dictionary or data.get("kind")!="hand" or game.thinking: return false
@@ -422,8 +445,8 @@ func _process(_delta):
 			if drag_slot<0: continue
 			game.creature_feedback.movement_tracks.erase(game.battle.sides[0].board[i].uid)
 			face.remove_meta("layout_active")
-		var offset=(i-(count-1)/2.0)*105
-		if drag_slot>=0: offset=(i+(1 if i>=drag_slot else 0)-count/2.0)*105
+		var offset=(i-(count-1)/2.0)*gap()
+		if drag_slot>=0: offset=(i+(1 if i>=drag_slot else 0)-count/2.0)*gap()
 		face.position.x=size.x/2-face.size.x/2+offset
 	for uid in game.target_widgets:
 		var widget=game.target_widgets[uid]
@@ -450,7 +473,7 @@ func draw_targeting():
 		origin=friendly_faces[game.selected].position+friendly_faces[game.selected].size/2
 		active=true
 	elif game.selection in ["spell","power"]:
-		origin=Vector2(size.x/2,420)
+		origin=Vector2(size.x/2,HERO_Y+44)
 		active=true
 	if active:
 		var destination=drag_pointer if not game.drag_payload.is_empty() else get_local_mouse_position()

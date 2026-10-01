@@ -19,13 +19,13 @@ func run():
 	b.record_event("secret",{"owner":0,"id":"earth-pebble-ward"})
 	b.summon(0,"home-breeze-finch"); b.summon(0,"home-breeze-finch"); game.after_action()
 	await create_timer(2.18).timeout
-	check(absf(game.target_widgets[uid].position.x-(before-52.5))<2,"First summon produces two-creature intermediate layout")
+	check(absf(game.target_widgets[uid].position.x-(before-game.duel_board.gap()/2))<2,"First summon produces two-creature intermediate layout")
 	game.render()
-	check(absf(game.target_widgets[uid].position.x-(before-52.5))<2,"Redraw retains intermediate layout")
+	check(absf(game.target_widgets[uid].position.x-(before-game.duel_board.gap()/2))<2,"Redraw retains intermediate layout")
 	await create_timer(.14).timeout
-	check(game.target_widgets[uid].position.x<before-52.5 and game.target_widgets[uid].position.x>before-105,"Second summon slides from intermediate to final layout")
+	check(game.target_widgets[uid].position.x<before-game.duel_board.gap()/2 and game.target_widgets[uid].position.x>before-game.duel_board.gap(),"Second summon slides from intermediate to final layout")
 	await create_timer(.35).timeout
-	check(absf(game.target_widgets[uid].position.x-(before-105))<1,"Three-creature layout settles")
+	check(absf(game.target_widgets[uid].position.x-(before-game.duel_board.gap()))<1,"Three-creature layout settles")
 	check(game.creature_feedback.movement_tracks.is_empty(),"Completed multi-step movement clears")
 	game.queue_free(); await process_frame; await create_timer(.2).timeout
 	print("MULTI LAYOUT UI: %d / %d passed" % [checks-failed,checks])

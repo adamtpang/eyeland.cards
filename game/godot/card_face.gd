@@ -30,7 +30,7 @@ func animate_hand_hover(raised: bool):
 	pivot_offset=Vector2(size.x/2,size.y)
 	z_index=30 if raised else 0
 	hover_tween=create_tween()
-	hover_tween.tween_property(self,"scale",Vector2(1.3,1.3) if raised else Vector2.ONE,.12).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+	hover_tween.tween_property(self,"scale",Vector2(1.75,1.75) if raised else Vector2.ONE,.12).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
 
 func set_hand_available(available: bool):
 	unavailable_in_hand=not available

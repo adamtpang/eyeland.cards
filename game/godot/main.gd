@@ -53,6 +53,8 @@ var world3d
 var world_prompt: Label
 var world_host: SubViewportContainer
 var feel_chosen=false     # the player picked an attack feel, so looks stop changing it
+var touch_controls=DisplayServer.is_touchscreen_available()
+var touch_pad: Control
 var lesson=0             # 1 to 3 while a coached lesson with Mira is being played
 var show_intro=not OS.get_cmdline_args().has("--script")
 var goal_changed_at=-100000
@@ -261,15 +263,21 @@ func save_settings():
 	if automated(): return
 	var file=FileAccess.open(SETTINGS_PATH,FileAccess.WRITE)
 	if file==null: return
-	file.store_string(JSON.stringify({"fullscreen":is_fullscreen(),"muted":battle_audio.muted,"classic":classic_look,"feel":hit_feel.variant,"feel_chosen":feel_chosen}))
+	file.store_string(JSON.stringify({"v":2,"fullscreen":is_fullscreen(),"muted":battle_audio.muted,"classic":classic_look,"feel":hit_feel.variant,"touch":touch_controls,"feel_chosen":feel_chosen}))
 
 func load_settings():
-	if automated() or not FileAccess.file_exists(SETTINGS_PATH): return
+	if automated(): return
+	if not FileAccess.file_exists(SETTINGS_PATH):
+		# sound starts off; the player turns it on in Settings
+		if not battle_audio.muted: battle_audio.toggle()
+		return
 	var saved=JSON.parse_string(FileAccess.get_file_as_string(SETTINGS_PATH))
 	if not saved is Dictionary: return
 	if saved.get("fullscreen",false): get_window().mode=Window.MODE_FULLSCREEN
-	if saved.get("muted",false) and not battle_audio.muted: battle_audio.toggle()
+	# settings saved before sound defaulted to off (no "v") start muted once
+	if (saved.get("muted",true) or int(saved.get("v",1))<2) and not battle_audio.muted: battle_audio.toggle()
 	classic_look=saved.get("classic",false)
+	touch_controls=saved.get("touch",touch_controls) or DisplayServer.is_touchscreen_available()
 	feel_chosen=saved.get("feel_chosen",false)
 	if feel_chosen: hit_feel.variant=int(saved.get("feel",0))
 
@@ -407,6 +415,9 @@ func render():
 	if not keep_world:
 		if is_instance_valid(world_host): world_host.queue_free()
 		world_host=null
+	if is_instance_valid(touch_pad):
+		touch_pad.queue_free()
+		touch_pad=null
 	# A battle keeps its island stage for as long as the battle and its result are on screen.
 	var keep_stage=page in ["battle","result"] and is_instance_valid(battle_host) and not UIStyle.P.board_art
 	if not keep_stage and is_instance_valid(battle_host):
@@ -421,7 +432,7 @@ func render():
 		layer.mouse_filter=Control.MOUSE_FILTER_IGNORE if over_world else Control.MOUSE_FILTER_PASS
 		layer.size_flags_vertical=Control.SIZE_EXPAND_FILL if over_world else Control.SIZE_FILL
 	if page!="map": held_keys.clear(); route.clear(); traveling=false
-	body.add_theme_constant_override("separation",6 if page=="battle" else 12)
+	body.add_theme_constant_override("separation",0 if page=="battle" else 12)
 	for side in ["top","bottom"]: body.get_parent().add_theme_constant_override("margin_"+side,12 if page=="battle" else 24)
 	for node in body.get_children():
 		body.remove_child(node)
@@ -430,7 +441,8 @@ func render():
 	timer_bar=null
 	target_widgets={}
 	var header=row_at(body)
-	var title=label_at(header,"eyeland.cards",28 if page=="battle" else 34)
+	header.visible=page!="battle"  # the battle uses the whole window; its ? button is on the board
+	var title=label_at(header,"eyeland.cards",34)
 	if page=="map" or (page in ["battle","result"] and not UIStyle.P.board_art): hud_outline(title)
 	if page!="start":
 		if page in ["map","deck"]:
@@ -534,6 +546,8 @@ func settings_screen():
 		save_settings(); render())
 	choice_row(left,"LOOK",["Day and night","Classic painted"],1 if classic_look else 0,func(i):
 		classic_look=i==1; choose_look(); save_settings(); render())
+	choice_row(left,"TOUCH CONTROLS",["Off","On"],1 if touch_controls else 0,func(i):
+		touch_controls=i==1; save_settings(); render())
 	choice_row(left,"ATTACK FEEL",["Original","Snap","Heavy","Slash"],hit_feel.variant,func(i):
 		feel_chosen=true; hit_feel.variant=i; save_settings(); render())
 	var right=panel(split,UIStyle.P.panel2)
@@ -621,6 +635,10 @@ func map_screen():
 	muted(info,"♥ %d / 30   ◆ %d resin" % [p.hp,p.resin],14).autowrap_mode=TextServer.AUTOWRAP_OFF
 	world_clock=muted(info,clock_text(),14)
 	world_clock.autowrap_mode=TextServer.AUTOWRAP_OFF
+	if touch_controls:
+		touch_pad=preload("res://touch_pad.gd").new()
+		touch_pad.world=world3d
+		add_child(touch_pad)
 	var step=quest()
 	world3d.set_goal(QUESTS[step].at if step<QUESTS.size() else "")
 	if step<QUESTS.size():
@@ -1598,7 +1616,7 @@ func card_drag_input(event) -> bool:
 				drag_preview=CardFace.new()
 				drag_preview.card=drag_source.card
 				drag_preview.compact=drag_source.compact
-				drag_preview.custom_minimum_size=Vector2(130,178) if not drag_preview.compact else Vector2(100,94)
+				drag_preview.custom_minimum_size=duel_board.HAND_CARD if not drag_preview.compact else duel_board.token_size()
 			drag_preview.mouse_filter=Control.MOUSE_FILTER_IGNORE
 			drag_preview.z_index=100
 			add_child(drag_preview)

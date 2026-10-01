@@ -22,9 +22,9 @@ func run():
 	game.render(); await create_timer(.5).timeout
 	check(absf(game.target_widgets[uid].position.x-before)<1,"Redraw preserves pending movement")
 	await create_timer(1.9).timeout
-	check(game.target_widgets[uid].position.x>before and game.target_widgets[uid].position.x<before+52.5,"Neighbor slides after departure instead of snapping")
+	check(game.target_widgets[uid].position.x>before and game.target_widgets[uid].position.x<before+game.duel_board.gap()/2,"Neighbor slides after departure instead of snapping")
 	await create_timer(.3).timeout
-	check(absf(game.target_widgets[uid].position.x-before-52.5)<1,"Neighbor settles in centered two-creature row")
+	check(absf(game.target_widgets[uid].position.x-before-game.duel_board.gap()/2)<1,"Neighbor settles in centered two-creature row")
 	check(not game.target_widgets[uid].has_meta("layout_active"),"Completed movement releases drag layout")
 	game.queue_free(); await process_frame; await create_timer(.2).timeout
 	print("BOARD MOVEMENT UI: %d / %d passed" % [checks-failed,checks])

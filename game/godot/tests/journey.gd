@@ -109,7 +109,7 @@ func run():
 				if played_card.type=="minion" and played_card.get("targeting","")!="optionalCreature" and not played_card.has("choices"):
 					var board=game.duel_board
 					var count=game.battle.sides[0].board.size()
-					var x=board.size.x/2.0+(decision.get("position",count)-count/2.0)*105.0
+					var x=board.size.x/2.0+(decision.get("position",count)-count/2.0)*board.gap()
 					board._drop_data(Vector2(x,300),{"kind":"hand","index":decision.index})
 					await process_frame
 					actions+=1

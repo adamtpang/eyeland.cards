@@ -102,7 +102,7 @@ func queue_board_movement(game,events: Array):
 			for event in events:
 				if event.kind not in ["summon","death"] or event.owner!=owner or not event.get("layout",[]).has(m.uid): continue
 				var layout=event.layout
-				var destination=Vector2(game.duel_board.size.x/2-face.size.x/2+(layout.find(m.uid)-(layout.size()-1)/2.0)*105,face.position.y)
+				var destination=Vector2(game.duel_board.size.x/2-face.size.x/2+(layout.find(m.uid)-(layout.size()-1)/2.0)*game.duel_board.gap(),face.position.y)
 				if not born:
 					origin=destination; point=destination; face.position=destination; born=true
 					continue
@@ -201,7 +201,7 @@ func schedule_portrait_layouts(game,ghosts: Dictionary,events: Array):
 			if uid==event.uid or not layout.has(uid): continue
 			var ghost=ghosts[uid]
 			var delay=maxf(0.0,game.effect_event_times.get(event.sequence,0.0)+(.35 if event.kind=="death" else 0.0)-Time.get_ticks_usec()/1000000.0)
-			var x=game.duel_board.global_position.x+game.duel_board.size.x/2+(layout.find(uid)-(layout.size()-1)/2.0)*105-50-global_position.x
+			var x=game.duel_board.global_position.x+game.duel_board.size.x/2+(layout.find(uid)-(layout.size()-1)/2.0)*game.duel_board.gap()-game.duel_board.token_size().x/2-global_position.x
 			var movement=create_tween()
 			animations.append(movement)
 			if delay>0: movement.tween_interval(delay)
@@ -234,10 +234,10 @@ func make_transient(game,summoned: Dictionary):
 	ghost.card=game.battle.cards[summoned.id].duplicate(true); ghost.compact=true
 	set_transient_state(ghost,summoned.minion)
 	ghost.mouse_filter=Control.MOUSE_FILTER_IGNORE; ghost.focus_mode=Control.FOCUS_NONE
-	ghost.size=Vector2(100,94)
+	ghost.size=game.duel_board.token_size()
 	var count=summoned.get("layout",[]).size()
 	if count==0: count=int(summoned.position)+1
-	var local_point=Vector2(game.duel_board.size.x/2+(summoned.position-(count-1)/2.0)*105-50,148 if summoned.owner==1 else 251)
+	var local_point=Vector2(game.duel_board.size.x/2+(summoned.position-(count-1)/2.0)*game.duel_board.gap()-game.duel_board.token_size().x/2,game.duel_board.ENEMY_ROW_Y if summoned.owner==1 else game.duel_board.ROW_Y)
 	ghost.position=game.duel_board.global_position+local_point-global_position
 	add_child(ghost)
 	ghost.set_meta("uid",summoned.uid)

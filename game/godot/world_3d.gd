@@ -64,6 +64,7 @@ var rival_home=Vector3.ZERO
 var rival_animator: AnimationPlayer
 var creature_facing=-PI/2
 var goal_marker: Node3D
+var stick=Vector2.ZERO  # on-screen movement stick, each axis -1 to 1
 var goal_at=Vector3.ZERO
 var goal_id=""
 var last_stage_event=""
@@ -816,12 +817,15 @@ func _physics_process(delta):
 	var axis=Vector2(float(held.has(KEY_D) or held.has(KEY_RIGHT))-float(held.has(KEY_A) or held.has(KEY_LEFT)),float(held.has(KEY_S) or held.has(KEY_DOWN))-float(held.has(KEY_W) or held.has(KEY_UP))).normalized()
 	# Automatic orbit must not rotate the movement basis every frame: holding
 	# sideways would otherwise make the player run in circles as the camera follows.
-	if not axis.is_equal_approx(previous_axis) or orbiting:
+	var by_stick=stick.length()>.15
+	if by_stick: axis=stick.limit_length(1.0)
+	# a stick wobbles all the time, so it only re-reads the camera when it is first pushed
+	if (previous_axis.is_zero_approx() if by_stick else not axis.is_equal_approx(previous_axis)) or orbiting:
 		movement_yaw=yaw
 	previous_axis=axis
 	var movement=Basis(Vector3.UP,movement_yaw)*Vector3(axis.x,0,axis.y)
 	manual_camera_grace=maxf(0,manual_camera_grace-delta)
-	var speed=RUN if held.has(KEY_SHIFT) else WALK
+	var speed=RUN if held.has(KEY_SHIFT) or stick.length()>.9 else WALK
 	player.velocity.x=move_toward(player.velocity.x,movement.x*speed,24*delta)
 	player.velocity.z=move_toward(player.velocity.z,movement.z*speed,24*delta)
 	if not player.is_on_floor(): player.velocity.y-=GRAVITY*delta

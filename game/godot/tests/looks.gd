@@ -130,6 +130,23 @@ func run():
 		check(world.pet_animator!=null and world.pet_animator.is_playing(),"%s companion model animates" % kind)
 		shot(folder,"companion-%s.png" % kind)
 	check(is_zero_approx(world.mix),"Night blends back to day")
+	# phone controls: the on-screen stick walks the hero
+	game.touch_controls=true; game.render(); await process_frame
+	var pad=game.touch_pad
+	var from=world.player.position
+	var touch=InputEventScreenTouch.new(); touch.index=0; touch.pressed=true; touch.position=pad.get_global_transform()*pad.stick_center()
+	root.push_input(touch,true)
+	var slide=InputEventScreenDrag.new(); slide.index=0; slide.position=touch.position+Vector2(0,-pad.REACH)
+	root.push_input(slide,true)
+	await create_timer(.8).timeout
+	shot(folder,"island-touch.png")
+	check(is_instance_valid(pad) and world.player.position.distance_to(from)>1.5,"The on-screen stick moves the hero")
+	touch=InputEventScreenTouch.new(); touch.index=0; touch.pressed=false; touch.position=slide.position
+	root.push_input(touch,true)
+	await process_frame
+	check(world.stick==Vector2.ZERO,"Letting go of the stick stops the hero")
+	game.touch_controls=false; game.render(); await process_frame
+	check(not is_instance_valid(game.touch_pad),"Touch controls can be turned off")
 	# settings: reachable from the island, changes class, returns to the island
 	game.open_settings(); await process_frame
 	check(game.page=="settings" and not is_instance_valid(game.world_host),"Settings opens from the island")

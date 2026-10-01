@@ -76,9 +76,16 @@ const IDS = ["home-emberling","home-tideling","home-mossling","home-cloudling","
 
 static func typeface(spec: Array) -> Font:
 	var base = load("res://assets/fonts/"+spec[0])
+	# Browsers and phones have no system fonts to fall back on, so symbols such as the
+	# heart and the mana diamonds come from two bundled fonts that contain them.
+	var spare: Array[Font] = []
+	for file in ["Spectral-Regular.ttf","NotoSansSymbols2-Regular.ttf"]:
+		if file != spec[0]: spare.append(load("res://assets/fonts/"+file))
+	base.fallbacks = spare
 	if spec[1] == 0: return base
 	var weighted = FontVariation.new()
 	weighted.base_font = base
+	weighted.fallbacks = spare
 	weighted.variation_opentype = {TextServerManager.get_primary_interface().name_to_tag("wght"): spec[1]}
 	return weighted
 
