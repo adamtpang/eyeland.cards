@@ -1,3 +1,5 @@
+> **Current game checkpoint — 2026-09-20:** The active MVP is native Godot: third-person home island, card combat, earned Crab reward, local saves, 100-card collection and elemental practice. Read [the current roadmap](game/docs/ROADMAP.md) for built/partial/planned distinctions. Dated inventories below are historical.
+
 # eyeland.cards: Masterplan
 
 Written 2026-08-10, **pivoted 2026-08-20.** This is the constitution: what
@@ -107,8 +109,9 @@ The vertical slice this rung is measured against, in one sentence, per the
 mechanism above:
 
 > **One procedurally generated island with three mob camps and one warden,
-> where every fight is the v0 duel loop and every win drops a card that
-> changes your deck for the next fight, playable start to finish in 20
+> where every fight is the v0 duel loop and creature victories award their
+> own cards plus crafting resources, changing your deck for the next fight,
+> playable start to finish in 20
 > minutes.**
 
 **Two design decisions committed with it, both Adam's, 2026-08-22:**
@@ -138,7 +141,15 @@ back in silently:
   role) and this file won't silently pick it.
 - No multiplayer. Adam confirmed 2026-08-22 that solo is a real game, so
   co-op stays at `v4 Online` where the ladder already puts it.
-- No crafting, no questbook UI, no overworld beyond the one island.
+- No crafting interface or recipes yet, no questbook UI, no overworld beyond
+  the one island. Adam's 2026-09-09 clarification adds crafting-resource drops
+  to creature rewards; the crafting system itself remains unspecified.
+
+**Reward clarification (Adam, 2026-09-09):** defeating stronger creatures
+earns their cards and makes the player stronger through deck progression.
+Creatures/cards have Common, Rare, Epic, and Legendary tiers, and creatures
+also drop crafting resources. See `game/DESIGN.md` Principle 11a. These are
+design requirements; the integrated island reward system is not built yet.
 
 **Why these four pillars and not the other four:** deckbuilding + procgen +
 cards-as-combat-loot is already one proven shape (Slay the Spire, built by
@@ -186,3 +197,7 @@ committed (2026-08-22), so the next real step is building against it, not
 more planning. First concrete task: add a turn timer to `v0 Duel`'s turn
 engine, since that is the one decision above that changes already-shipped
 code rather than adding new code.
+
+## Research follow-up: September 12
+
+[GDC lessons](game/GDC-LESSONS.md) applies a focused reading to the connected Ember Reach prototype. Keep the one-master-game thesis and rung order. Its three proposed playtests evaluate earned-card payoff, opponent-turn explanation and a small crafting goal before expanding systems. These are not completed human playtests.

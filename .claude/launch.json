@@ -1,0 +1,17 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "games-hub-webgl",
+      "runtimeExecutable": "npx",
+      "runtimeArgs": ["-y", "serve", "-l", "8550", "--no-clipboard", "game/unity/Builds/WebGL"],
+      "port": 8550
+    },
+    {
+      "name": "eyeland-web",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["--prefix", "game/web", "run", "dev"],
+      "port": 8080
+    }
+  ]
+}

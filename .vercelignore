@@ -5,3 +5,5 @@ hearthstone/
 game/
 .agents/
 .gitignore
+
+knowledge-private/
