@@ -53,6 +53,36 @@ var world3d
 var world_prompt: Label
 var world_host: SubViewportContainer
 var feel_chosen=false     # the player picked an attack feel, so looks stop changing it
+var lesson=0             # 1 to 3 while a coached lesson with Mira is being played
+var show_intro=not OS.get_cmdline_args().has("--script")
+var goal_changed_at=-100000
+## The opening goals, in order. Each points at a landmark so the world can mark it.
+const QUESTS=[
+	{"goal":"Talk to your family at home","at":"home"},
+	{"goal":"Find Mira for your first lesson","at":"friend"},
+	{"goal":"Lesson 2 with Mira: spells and Taunt","at":"friend"},
+	{"goal":"Lesson 3 with Mira: your class power","at":"friend"},
+	{"goal":"Face the Resin Crab, east of the garden","at":"encounter"},
+	{"goal":"Rest at the campfire","at":"camp"},
+	{"goal":"Look out from the dock","at":"dock"}]
+## Coached lessons: fixed hands and draw order so each one teaches a single idea.
+## "S" stands for the player's own starter companion.
+const LESSONS=[
+	{"name":"Creatures","hp":8,
+		"hand":["home-breeze-finch","home-breeze-finch","home-shore-guard"],
+		"deck":["home-breeze-finch","S","home-shore-guard","home-breeze-finch","home-breeze-finch","home-shore-guard","home-breeze-finch","home-breeze-finch"],
+		"foe_hand":[],"foe":["home-resin-crab","home-resin-crab","home-resin-crab","home-resin-crab","home-resin-crab","home-resin-crab","home-resin-crab","home-resin-crab"],
+		"done":"You played creatures, waited a turn, and attacked. That is the heart of every battle."},
+	{"name":"Spells and Taunt","hp":10,
+		"hand":["home-spark","home-breeze-finch","home-spark"],
+		"deck":["home-breeze-finch","home-spark","S","home-mending-tide","home-breeze-finch","home-spark","home-shore-guard","home-breeze-finch","home-spark"],
+		"foe_hand":["home-shore-guard"],"foe":["home-resin-crab","home-shore-guard","home-resin-crab","home-shore-guard","home-resin-crab","home-resin-crab","home-shore-guard","home-resin-crab"],
+		"done":"Spells clear the way, and Taunt creatures must fall before you can reach the hero."},
+	{"name":"Your class power","hp":12,
+		"hand":["home-breeze-finch","home-shore-guard","S"],
+		"deck":["home-breeze-finch","home-spark","home-shore-guard","home-breeze-finch","home-mending-tide","home-spark","home-breeze-finch","home-shore-guard","home-spark"],
+		"foe_hand":[],"foe":["home-breeze-finch","home-resin-crab","home-shore-guard","home-resin-crab","home-breeze-finch","home-resin-crab","home-shore-guard","home-resin-crab"],
+		"done":"Your class power is always there when you have 2 mana to spare. You are ready for the Resin Crab."}]
 var spoken=""            # the landmark whose dialogue box is open on the island
 var settings_back="map"  # the page Settings returns to
 var confirm_new=false
@@ -121,6 +151,101 @@ func choose_look(next: String=""):
 	theme=UIStyle.theme()
 	# each look has a matching attack feel; F1 to F4 still override it
 	if not automated() and not feel_chosen: hit_feel.variant={"day":2,"night":3}.get(UIStyle.mode,0)
+
+func quest() -> int:
+	if model.profile.is_empty(): return QUESTS.size()
+	return int(model.profile.get("quest",QUESTS.size() if model.profile.get("won",false) else 0))
+
+func advance_quest(from: int):
+	if quest()!=from: return
+	model.profile.quest=from+1
+	model.save()
+	goal_changed_at=Time.get_ticks_msec()
+	if is_instance_valid(world3d): world3d.audio.chime()
+
+func lesson_offer() -> int:
+	var q=quest()
+	return q if q>=1 and q<=3 else (1 if q>3 else 0)
+
+func start_lesson(n: int):
+	if not page in ["map","result"] or n<1 or n>LESSONS.size(): return
+	var plan=LESSONS[n-1]
+	var own=model.starter(model.profile.element)
+	var fill=func(ids: Array) -> Array: return ids.map(func(id): return own if id=="S" else id)
+	lesson=n
+	practice_mode=true
+	spoken=""
+	var class_data=model.world.classes.filter(func(c): return c.id==model.profile.job)[0]
+	match_seed=n
+	battle=Battle.new(model.cards,fill.call(plan.deck),plan.foe,30,plan.hp,class_data,n,false,0)
+	battle.enemy_name="Mira"
+	# fixed hands and draw order (cards are drawn from the end of the deck)
+	var yours=battle.sides[0]
+	var theirs=battle.sides[1]
+	yours.hand=fill.call(plan.hand)
+	yours.deck=fill.call(plan.deck)
+	yours.deck.reverse()
+	theirs.hand=plan.foe_hand.duplicate()
+	theirs.deck=plan.foe.duplicate()
+	theirs.deck.reverse()
+	theirs.hp=plan.hp
+	theirs.max_hp=plan.hp
+	mulligan_picks=[]
+	page="battle"
+	selection=""
+	thinking=false
+	render()
+
+func leave_lesson():
+	lesson=0
+	practice_mode=false
+	page="map"
+	render()
+
+## What the coach says right now: one short instruction for the next useful action.
+func coach_text() -> String:
+	if lesson==0 or battle==null or battle.outcome!=-1: return ""
+	if battle.active!=0 or thinking: return "Mira takes her turn. Watch what she plays."
+	var yours=battle.sides[0]
+	var theirs=battle.sides[1]
+	var creature=""
+	var spell=""
+	for i in range(yours.hand.size()):
+		if not battle.can_play(0,i): continue
+		var c=battle.cards[yours.hand[i]]
+		if c.type=="spell":
+			if spell.is_empty() or yours.hand[i]=="home-spark": spell=yours.hand[i]
+		elif creature.is_empty(): creature=c.name
+	var ready=yours.board.any(func(unit): return not battle.attack_targets(0,unit.uid).is_empty())
+	var taunt=theirs.board.any(func(unit): return unit.get("taunt",false) or unit.get("keywords",[]).has("Taunt"))
+	if lesson==3 and yours.mana>=2 and not yours.power_used and (yours.max_mana>=3 or creature.is_empty()):
+		return "Click your class power, the round button beside your hero. %s Once per turn." % battle.job.description
+	if lesson==2 and spell=="home-spark" and not theirs.board.is_empty():
+		return "Drag Spark onto an enemy creature to deal 2 damage. A spell is used up when you play it."
+	if ready and taunt: return "A Taunt creature (heavy frame) protects Mira. Drag your creature onto it first."
+	if ready: return "Your creature is ready. Drag it onto Mira's portrait to attack her, or onto one of her creatures."
+	if not creature.is_empty(): return "Drag %s from your hand onto the field. The blue gem is its cost. You have %d mana." % [creature,yours.mana]
+	if spell=="home-mending-tide" and yours.hp<30: return "Drag Mending Tide onto the field to heal your hero."
+	if spell=="home-spark": return "Drag Spark onto Mira's portrait to deal 2 damage."
+	if yours.board.is_empty(): return "Nothing to play. Press End turn. You gain 1 more mana every turn."
+	return "New creatures rest for a turn before they can attack. Press End turn."
+
+func intro_screen():
+	var center=CenterContainer.new()
+	center.custom_minimum_size.y=560
+	body.add_child(center)
+	var story=panel(center)
+	story.get_parent().custom_minimum_size.x=560
+	var own=model.starter(model.profile.element)
+	art_at(story,own,220)
+	label_at(story,"Home Island",36).horizontal_alignment=HORIZONTAL_ALIGNMENT_CENTER
+	for line in ["Your family tends the luminous resin garden that keeps the island's lamps burning.",
+		"This morning, something has been eating the crop.",
+		"%s, your companion, is ready to help. Follow the golden marker to your family." % model.cards[own].name]:
+		var text=label_at(story,line,17)
+		text.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
+		text.horizontal_alignment=HORIZONTAL_ALIGNMENT_CENTER
+	primary(story,"Step outside",func(): page="map"; render())
 
 func automated() -> bool:
 	return OS.get_cmdline_args().has("--script")
@@ -314,7 +439,7 @@ func render():
 	if page=="settings":
 		var done=button_at(header,"Back",func(): page=settings_back; render())
 		done.size_flags_horizontal=Control.SIZE_SHRINK_END
-	elif page!="battle" and page!="result":
+	elif not page in ["battle","result","intro"]:
 		var gear=button_at(header,"Settings",open_settings)
 		gear.size_flags_horizontal=Control.SIZE_SHRINK_END
 		gear.tooltip_text="Sound, fullscreen, look, attack feel and class. F11 toggles fullscreen."
@@ -331,6 +456,9 @@ func render():
 	var p=model.profile
 	if page == "settings":
 		settings_screen()
+		return
+	if page == "intro":
+		intro_screen()
 		return
 	if page == "map": map_screen()
 	elif page == "deck": deck_screen()
@@ -443,8 +571,9 @@ func begin():
 	game_hour=9.0
 	choose_look()
 	if not FileAccess.file_exists(constructed.path): constructed.preset(model.profile.element)
+	model.profile.quest=0
 	model.save()
-	page="map"
+	page="intro" if show_intro else "map"
 	render()
 
 ## Text that sits directly on the 3D world gets an outline in the panel colour.
@@ -492,6 +621,22 @@ func map_screen():
 	muted(info,"♥ %d / 30   ◆ %d resin" % [p.hp,p.resin],14).autowrap_mode=TextServer.AUTOWRAP_OFF
 	world_clock=muted(info,clock_text(),14)
 	world_clock.autowrap_mode=TextServer.AUTOWRAP_OFF
+	var step=quest()
+	world3d.set_goal(QUESTS[step].at if step<QUESTS.size() else "")
+	if step<QUESTS.size():
+		var goal=panel(top,UIStyle.P.panel2)
+		goal.get_parent().name="Goal"
+		goal.get_parent().size_flags_horizontal=Control.SIZE_SHRINK_BEGIN
+		goal.get_parent().size_flags_vertical=Control.SIZE_SHRINK_BEGIN
+		goal.add_theme_constant_override("separation",0)
+		var fresh=Time.get_ticks_msec()-goal_changed_at<8000
+		eyebrow(goal,"GOAL COMPLETE. NEXT:" if fresh else "GOAL  %d of %d" % [step+1,QUESTS.size()])
+		label_at(goal,QUESTS[step].goal,19).autowrap_mode=TextServer.AUTOWRAP_OFF
+		muted(goal,"Follow the golden marker",12)
+		if fresh:
+			goal.get_parent().pivot_offset=Vector2(120,30)
+			goal.get_parent().scale=Vector2(1.12,1.12)
+			create_tween().tween_property(goal.get_parent(),"scale",Vector2.ONE,.35).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
 	var gap=Control.new()
 	gap.size_flags_vertical=Control.SIZE_EXPAND_FILL
 	gap.mouse_filter=Control.MOUSE_FILTER_IGNORE
@@ -507,6 +652,9 @@ func map_screen():
 		eyebrow(speech,speaker.to_upper())
 		var line=label_at(speech,note,18)
 		line.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
+		if spoken=="friend" and lesson_offer()>0:
+			var n=lesson_offer()
+			primary(speech,("Start lesson %d: %s" if quest()<=3 else "Replay lesson %d: %s") % [n,LESSONS[n-1].name],start_lesson.bind(n)).name="LessonButton"
 		muted(speech,"E to close",11)
 	var hud=row_at(body)
 	hud.alignment=BoxContainer.ALIGNMENT_CENTER
@@ -558,11 +706,23 @@ func world_interact(id: String):
 		model.profile.hp=30
 		model.save()
 		note="The fire warms your hands. You and your companion are ready again. Health restored to 30."
+		if quest()==5: note+=" From the dock you can see what lies beyond the island."
+		advance_quest(5)
 	else:
 		for mark in model.world.landmarks:
 			if mark.id==id: note=mark.dialogue
 		if id=="home": model.profile.met_home=true; model.save()
 		if id=="crop" and model.profile.won: note="The garden is flowering again. Your family has already replanted the beds you protected."
+		if id=="home" and quest()==0:
+			note+=" But first, find Mira on the path. She will teach you how to battle."
+			advance_quest(0)
+		if id=="friend":
+			match quest():
+				0: note="Mira: Your family was looking for you. Go and see them at home, then come back to me."
+				1: note="Mira: Before you face that Crab, let me show you how cards work. First lesson: creatures."
+				2: note="Mira: Good. Next, spells, and creatures with Taunt."
+				3: note="Mira: Last lesson. Every class has a power of its own."
+		if id=="dock": advance_quest(6)
 	# pressing E again closes the box
 	spoken="" if spoken==id else id
 	render()
@@ -683,6 +843,7 @@ func deck_screen():
 
 func start_practice(element: String,featured: String="",custom_deck=false,starting_player: int=-1):
 	if page!="deck": return
+	lesson=0
 	practice_mode=true
 	practice_element=element
 	var deck=constructed.deck.duplicate() if custom_deck else Collection.practice_deck(model.cards,element)
@@ -722,6 +883,7 @@ func enter_battle(starting_player: int=-1):
 	if not constructed.valid(constructed.deck):
 		page="deck"; adventure_deck_view=false; render(); return
 	practice_mode=false
+	lesson=0
 	var p=model.profile
 	p.battle_pending=true
 	p.seed = (int(p.seed)%1000000)+1
@@ -758,7 +920,7 @@ func ensure_stage():
 		battle_host.add_child(viewport)
 		battle_stage=World3DScene.new()
 		battle_stage.stage=true
-		battle_stage.stage_enemy="keeper" if practice_mode else "crab"
+		battle_stage.stage_enemy="mira" if lesson>0 else ("keeper" if practice_mode else "crab")
 		battle_stage.element=model.profile.get("element","fire")
 		battle_stage.job=model.profile.get("job","warrior")
 		battle_stage.muted=battle_audio.muted
@@ -783,7 +945,7 @@ func confirm_retreat():
 	if retreat_dialog_open or page!="battle" or thinking: return
 	retreat_dialog_open=true
 	var dialog=ConfirmationDialog.new()
-	dialog.title="Leave practice?" if practice_mode else "Return to camp?"
+	dialog.title="Leave the lesson?" if lesson>0 else ("Leave practice?" if practice_mode else "Return to camp?")
 	dialog.dialog_text="Leave practice? Your adventure is unchanged." if practice_mode else "You will return with 1 health. Your collected cards and resin are safe."
 	dialog.ok_button_text="Leave practice" if practice_mode else "Return to camp"
 	dialog.cancel_button_text="Keep battling"
@@ -882,7 +1044,11 @@ func after_action():
 	selection=""
 	if battle.outcome!=-1:
 		settled_battle=battle
+		if lesson>0 and battle.outcome==0: advance_quest(lesson)
 		if not practice_mode:
+			if battle.outcome==0 and quest()<5:
+				model.profile.quest=5
+				goal_changed_at=Time.get_ticks_msec()
 			last_reward=model.finish(battle.outcome==0,battle.sides[0].hp)
 			if battle.outcome!=0:
 				model.profile.world_position=[0,2,6]
@@ -950,6 +1116,23 @@ func result_screen():
 	if stage_active() and stage_result_for!=battle:
 		stage_result_for=battle
 		battle_stage.stage_event("win" if battle.outcome==0 else "lose")
+	if lesson>0:
+		var won=battle.outcome==0
+		var middle=CenterContainer.new()
+		middle.custom_minimum_size.y=520
+		body.add_child(middle)
+		var card=panel(middle)
+		card.get_parent().name="LessonResult"
+		card.get_parent().custom_minimum_size.x=480
+		eyebrow(card,"LESSON %d OF %d" % [lesson,LESSONS.size()])
+		label_at(card,"Lesson complete" if won else "Not this time",36)
+		var words=label_at(card,LESSONS[lesson-1].done if won else "Mira: No harm done. Let's go again, and watch the hints at the top.",16)
+		words.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
+		if won and lesson<LESSONS.size(): primary(card,"Next lesson: "+LESSONS[lesson].name,start_lesson.bind(lesson+1))
+		elif not won: primary(card,"Try again",start_lesson.bind(lesson))
+		var back=button_at(card,"Back to the island",leave_lesson)
+		if won and lesson==LESSONS.size(): UIStyle.primary(back)
+		return
 	if practice_mode:
 		var center=CenterContainer.new()
 		center.custom_minimum_size.y=520
@@ -1015,7 +1198,7 @@ func _process(delta: float):
 		if is_instance_valid(choice_timer_label): choice_timer_label.text="%ds" % ceili(choice_clock_left)
 		if choice_clock_left<=0 and battle.choose_discover(0,0): after_action()
 	else: choice_clock_running=false
-	if page=="battle" and not thinking and not retreat_dialog_open and battle.outcome==-1 and not battle.mulligan_pending and battle.active==0:
+	if page=="battle" and lesson==0 and not thinking and not retreat_dialog_open and battle.outcome==-1 and not battle.mulligan_pending and battle.active==0:
 		clock_left-=delta
 		if is_instance_valid(timer_label): timer_label.text="%ds" % ceili(clock_left)
 		if is_instance_valid(timer_bar): timer_bar.value=clock_left

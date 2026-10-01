@@ -63,6 +63,9 @@ var rival: Node3D
 var rival_home=Vector3.ZERO
 var rival_animator: AnimationPlayer
 var creature_facing=-PI/2
+var goal_marker: Node3D
+var goal_at=Vector3.ZERO
+var goal_id=""
 var last_stage_event=""
 var pet_animator: AnimationPlayer
 var pet_ink: StandardMaterial3D
@@ -209,6 +212,19 @@ func stage_spots() -> Array:
 	enemy.y=hero.y+BLUFF
 	return [hero,enemy,forward,right]
 
+## A golden marker that bobs above the landmark the current goal points at.
+func set_goal(id: String):
+	goal_id=id
+	if not landmarks.has(id):
+		if is_instance_valid(goal_marker): goal_marker.visible=false
+		return
+	if not is_instance_valid(goal_marker):
+		goal_marker=cylinder(self,Vector3.ZERO,.5,1.0,Color("ffd23f"),false,0,true,Vector2(1.4,2.4))
+		goal_marker.rotation.x=PI
+	goal_at=Vector3(landmarks[id].x,ground_height(landmarks[id].x,landmarks[id].z)+4.6,landmarks[id].z)
+	goal_marker.position=goal_at
+	goal_marker.visible=true
+
 func near_stage(at: Vector3,clear: float) -> bool:
 	return stage and Vector2(at.x-stage_center.x,at.z-stage_center.z).length()<clear
 
@@ -238,7 +254,8 @@ func setup_stage():
 		creature.position=spots[1]
 	else:
 		if is_instance_valid(creature): creature.visible=false
-		rival=make_character("Barbarian",["1H_Axe"])
+		if stage_enemy=="mira": rival=make_character("Rogue_Hooded" if job=="wizard" else "Mage",[])
+		else: rival=make_character("Barbarian",["1H_Axe"])
 		add_child(rival)
 		rival.position=spots[1]
 		rival.rotation.y=creature_facing
@@ -748,6 +765,9 @@ func build_player():
 
 func _process(delta):
 	clock+=delta
+	if is_instance_valid(goal_marker) and goal_marker.visible:
+		goal_marker.position.y=goal_at.y+.3*sin(clock*3.0)
+		goal_marker.rotation.y=clock*1.6
 	for cloud in clouds:
 		cloud.position.x+=delta*.6
 		if cloud.position.x>160: cloud.position.x=-160

@@ -126,7 +126,20 @@ func _ready():
 		back.rotation=(i-(theirs.hand.size()-1)/2.0)*.06
 		back.mouse_filter=Control.MOUSE_FILTER_IGNORE
 
-	caption(("PRACTICE · " if game.practice_mode else "")+"TURN %d" % ceili(battle.turn/2.0),.13,38,180,12)
+	if game.lesson>0:
+		var coach=game.panel(self)
+		coach.get_parent().name="Coach"
+		coach.get_parent().mouse_filter=Control.MOUSE_FILTER_IGNORE
+		coach.add_theme_constant_override("separation",0)
+		game.eyebrow(coach,"LESSON %d: %s" % [game.lesson,game.LESSONS[game.lesson-1].name.to_upper()])
+		var tip=game.label_at(coach,game.coach_text(),15)
+		tip.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
+		tip.custom_minimum_size.x=400
+		var plate: Control=coach.get_parent()
+		place(plate,.2,30,Vector2(440,0))
+		# a wrapped label reports a tall minimum until it knows its width, so refit afterwards
+		plate.minimum_size_changed.connect(func(): plate.size=Vector2(440,0))
+	else: caption(("PRACTICE · " if game.practice_mode else "")+"TURN %d" % ceili(battle.turn/2.0),.13,38,180,12)
 	place(game.button_at(self,"Retreat",game.confirm_retreat,game.thinking),.91,14,Vector2(102,36))
 	var sound=game.button_at(self,"Sound off" if game.battle_audio.muted else "Sound on",func(): game.battle_audio.toggle(); game.render())
 	place(sound,.08,395,Vector2(105,34))
