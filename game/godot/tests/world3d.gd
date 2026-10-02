@@ -99,7 +99,7 @@ func run():
 	game.page="map"
 	game.render()
 	await create_timer(.5).timeout
-	check(game.world3d.player.position.distance_to(Vector3(0,game.world3d.player.position.y,6))<.1,"retreat returns to 3D camp")
+	check(game.near_location("encounter"),"retreat returns to the island beside the creature, with no penalty")
 	world=game.world3d
 	world.held[KEY_W]=true
 	game._notification(MainLoop.NOTIFICATION_APPLICATION_FOCUS_OUT)

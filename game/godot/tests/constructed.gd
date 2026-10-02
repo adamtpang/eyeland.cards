@@ -68,8 +68,8 @@ func run():
 	game.world3d.player.position=Vector3(18,1,-3)
 	game.model.profile.hp=1
 	game.enter_battle()
-	check(game.battle.sides[0].hp==30 and game.battle.sides[1].hp==30,"island encounter also starts thirty versus thirty")
-	check(game.battle.sides[0].deck.size()+game.battle.sides[0].hand.size()-game.battle.sides[0].hand.count("the-coin")==30,"island uses edited thirty-card deck")
+	check(game.battle.sides[0].hp==10 and game.battle.sides[1].hp==5,"island encounter starts small: ten health against five")
+	check(game.battle.sides[0].deck.size()+game.battle.sides[0].hand.size()-game.battle.sides[0].hand.count("the-coin")==10,"island uses the ten-card adventure deck")
 	game.battle.outcome=0; game.after_action()
 	check(game.model.profile.won and game.model.profile.owned.has("home-resin-crab"),"island still grants earned reward")
 	game.page="deck"; game.render()

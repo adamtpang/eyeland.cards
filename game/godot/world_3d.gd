@@ -64,6 +64,9 @@ var rival_home=Vector3.ZERO
 var rival_animator: AnimationPlayer
 var creature_facing=-PI/2
 var goal_marker: Node3D
+## Wild creatures that wait at their camps: model name and size. The models are stand-ins
+## from the same CC0 pack as the companions.
+const WILD={"camp2":["Mushnub",1.7],"camp3":["Fish",1.7],"warden":["Dragon",3.2]}
 var stick=Vector2.ZERO  # on-screen movement stick, each axis -1 to 1
 var goal_at=Vector3.ZERO
 var goal_id=""
@@ -74,7 +77,7 @@ var pet_idle=""
 var pet_move=""
 const PET_SCALE=.28
 var airborne=false
-var landmarks={"home":Vector3(-18,0,-6),"friend":Vector3(-6,0,-12),"crop":Vector3(6,0,-6),"encounter":Vector3(18,0,-6),"camp":Vector3(0,0,6),"dock":Vector3(18,0,6)}
+var landmarks={"home":Vector3(-18,0,-6),"friend":Vector3(-6,0,-12),"crop":Vector3(6,0,-6),"encounter":Vector3(18,0,-6),"camp":Vector3(0,0,6),"dock":Vector3(18,0,6),"camp2":Vector3(-13,0,9),"camp3":Vector3(11,0,11),"warden":Vector3(0,0,-15)}
 const WALK=4.2
 const RUN=7.4
 const JUMP=7.1
@@ -255,13 +258,24 @@ func setup_stage():
 		creature.position=spots[1]
 	else:
 		if is_instance_valid(creature): creature.visible=false
-		if stage_enemy=="mira": rival=make_character("Rogue_Hooded" if job=="wizard" else "Mage",[])
+		if stage_enemy.begins_with("wild:"):
+			rival=make_wild(stage_enemy.trim_prefix("wild:"))
+			if stage_enemy=="wild:warden" and rival.get_child_count()>0:
+				# the bluff sits near the top of the screen, so the Warden is shown smaller here
+				rival.get_child(0).scale*=.5
+				rival.get_child(0).position.y=.35
+			add_child(rival)
+			rival.position=spots[1]
+			rival.rotation.y=creature_facing
+			rival_home=spots[1]
+		elif stage_enemy=="mira": rival=make_character("Rogue_Hooded" if job=="wizard" else "Mage",[])
 		else: rival=make_character("Barbarian",["1H_Axe"])
-		add_child(rival)
-		rival.position=spots[1]
-		rival.rotation.y=creature_facing
-		rival_animator=rival.find_child("AnimationPlayer",true,false)
-		loop_and_play(rival_animator,"Idle")
+		if not stage_enemy.begins_with("wild:"):
+			add_child(rival)
+			rival.position=spots[1]
+			rival.rotation.y=creature_facing
+			rival_animator=rival.find_child("AnimationPlayer",true,false)
+			loop_and_play(rival_animator,"Idle")
 	var view=Camera3D.new()
 	view.name="StageCamera"
 	view.fov=44.0
@@ -449,6 +463,13 @@ func build_landmarks():
 				for i in range(6): box(self,at+Vector3(-2.9+i*1.15,.35,1.7),Vector3(.14,.7,.14),Color("fff5dc"))
 				box(self,at+Vector3(0,.5,1.7),Vector3(6.2,.1,.08),Color("fff5dc"))
 				lamp(self,at+Vector3(0,1.6,1.2),warm,7,0,1.2)
+			"camp2","camp3","warden":
+				if not stage:
+					var beast=make_wild(id)
+					add_child(beast)
+					beast.position=at
+					beast.rotation.y=atan2(-at.x,-at.z+6.0)
+					for i in range(5): sphere(self,at+Vector3(sin(i*1.3)*2.4,.12,cos(i*1.3)*2.4),.22,Color("c9c2b0"))
 			"friend":
 				var npc=make_character("Rogue_Hooded" if job=="wizard" else "Mage",[])
 				add_child(npc)
@@ -654,6 +675,25 @@ func make_person(color: Color) -> Node3D:
 	return person
 
 ## The starter companion: a round friend with big eyes and one feature for its element.
+func make_wild(id: String) -> Node3D:
+	var holder=Node3D.new()
+	var kind=WILD[id][0]
+	var path="res://assets/creatures/%s.glb" % kind
+	if ResourceLoader.exists(path):
+		var model=load(path).instantiate()
+		model.scale=Vector3.ONE*PET_SCALE*WILD[id][1]
+		if kind=="Dragon": model.position.y=1.1
+		toonify(model,pet_ink)
+		holder.add_child(model)
+		var mover=model.find_child("AnimationPlayer",true,false)
+		if mover!=null:
+			for clip in ["CharacterArmature|Flying_Idle","CharacterArmature|Idle"]:
+				if mover.has_animation(clip):
+					loop_and_play(mover,clip)
+					break
+	else: sphere(holder,Vector3(0,.7,0),.7,Color("ff8a3d"))
+	return holder
+
 func make_companion() -> Node3D:
 	var pet=Node3D.new()
 	# Animated Quaternius monsters (CC0) when present; the code-built friend is the fallback.

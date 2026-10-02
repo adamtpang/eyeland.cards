@@ -41,7 +41,7 @@ func run():
 	game.world3d.player.position=Vector3(18,1,-3)
 	check(game.near_location("encounter"),"3D proximity arrives at encounter")
 	game.enter_battle(0)
-	game.battle.mulligan([])
+	game.battle.sides[1].hp=30  # a roomy fixture; the real first fight is small
 	# Deliberate visual fixtures, independent of real-game journey tests.
 	game.battle.sides[0].mana=10
 	game.battle.sides[0].max_mana=10

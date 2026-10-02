@@ -67,8 +67,9 @@ func run():
 	game.begin()
 	game.world3d.player.position=Vector3(18,1,-3)
 	game.enter_battle(0)
-	check(game.battle.mulligan_pending,"adventure opens mulligan UI")
-	game.battle.mulligan([])
+	check(not game.battle.mulligan_pending and game.battle.active==0,"adventure fights skip the opening-hand choice")
+	game.battle.sides[1].hp=30  # roomy fixtures; the real first fight is small
+	game.battle.sides[0].max_hp=30
 	game.battle.sides[0].hand=["home-breeze-finch","home-spark"]
 	game.battle.sides[0].mana=2
 	game.battle.sides[0].max_mana=2

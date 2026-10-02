@@ -12,6 +12,7 @@ var mulligan_pending=false
 var shuffle_rng=RandomNumberGenerator.new()
 var enemy_name="Crab"
 var first_player=0
+var enemy_power=true  # wild creatures have no class power
 var opponent_mulligan_count=0
 var pending_choice: Dictionary={}
 var pending_attack: Dictionary={}
@@ -710,7 +711,7 @@ func ai_choice(p: int) -> Dictionary:
 						else: score+=float(amount)*0.2
 		if score<10000.0: score-=float(c.get("overload",0))*0.75
 		if score>best.score: best={"kind":"play","index":i,"target":target,"score":score,"choice":chosen,"position":position}
-	if s.mana>=2 and not s.power_used:
+	if s.mana>=2 and not s.power_used and (p==0 or enemy_power):
 		var choice={"target":-1,"score":float(job.amount)*0.35}
 		if job.effect=="target": choice=damage_choice(p,int(job.amount))
 		elif job.effect=="damage": choice.score=10000.0 if job.amount>=sides[1-p].hp+sides[1-p].armor else float(job.amount)*0.6

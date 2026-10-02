@@ -121,3 +121,16 @@ Working rule until one fight feels satisfying to Adam:
 3. No new cards or systems until then.
 
 This is the same gate as the unaided playtest: play it, name the one thing that feels worst, iterate on that.
+
+## October 1: Home Island loop, small starter fights (Adam's playtest direction)
+
+Adam's notes: starter fights were too hard, slow and complex; "as simple as Pokemon"; and there was no objective. Built in Godot:
+
+- **Objective:** clear three camps, then defeat the Hearth Warden. Shown in the island HUD with a goal plate and a golden marker.
+- **Ladder:** Resin Crab (5 health), Mossback Cub (8), Reef Otter (9), Hearth Warden (14). You have 10 health and a 10-card deck. No opening-hand choice, you go first, and wild creatures have no class power.
+- **Rewards:** each first win awards that creature's card (two copies, one for the Warden) plus resin. Rematches award nothing. Losing costs nothing.
+- **Deck:** a 10-card adventure deck edited on its own Deck screen from the cards you have earned. Practice keeps the 30-card deck with all 100 cards.
+- **Balance evidence:** `tests/adventure_sim.gd` plays both sides with the same AI, 300 games each. The player side wins 100% against the Crab and about 80% against the other three. This is not human evidence.
+- **Supersedes** the September 20 "island fights use 30 health and the 30-card deck" decision for the adventure only.
+
+Not built: growth of health or deck size, a use for resin, unique models (the Cub uses the Mushnub model, the Otter the Fish, the Warden a large Dragon), and anything after the Warden beyond the dock line.

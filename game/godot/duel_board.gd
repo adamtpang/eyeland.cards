@@ -167,7 +167,7 @@ func _ready():
 	var sound=game.button_at(self,"Sound off" if game.battle_audio.muted else "Sound on",func(): game.battle_audio.toggle(); game.render())
 	place(sound,.06,356,Vector2(105,34))
 	sound.tooltip_text="Toggle battle sounds for this session."
-	hero(game.model.starter(CollectionElement()) if game.practice_mode else "home-resin-crab",1,ENEMY_HERO_Y)
+	hero(game.model.starter(CollectionElement()) if game.practice_mode else game.ENCOUNTERS[game.encounter_id].reward,1,ENEMY_HERO_Y)
 	var enemy_power=preload("res://hero_art_button.gd").new()
 	enemy_power.portrait=UIStyle.hero_art(battle.job.id,true)
 	enemy_power.is_power=true
@@ -176,6 +176,7 @@ func _ready():
 	enemy_power.tooltip_text="Opponent: "+battle.job.power+"\n"+battle.job.description
 	add_child(enemy_power)
 	place(enemy_power,.63,ENEMY_HERO_Y+6,Vector2(66,66))
+	enemy_power.visible=battle.enemy_power
 	for side in [1,0]:
 		var board=battle.sides[side].board
 		var y=ENEMY_ROW_Y if side==1 else ROW_Y

@@ -80,7 +80,7 @@ func run():
 	await snapshot("island")
 	var seed_found=false
 	for candidate in range(1,101):
-		var sample=game.Battle.new(game.model.cards,game.constructed.deck,game.Collection.practice_deck(game.model.cards,"earth"),30,30,game.model.world.classes[1],candidate,true,-1)
+		var sample=game.Battle.new(game.model.cards,game.adventure().deck,game.ENCOUNTERS.encounter.deck,10,5,game.model.world.classes[1],candidate,false,0)
 		if sample.first_player!=0: continue
 		sample.mulligan([])
 		for action in range(1500):
@@ -92,10 +92,8 @@ func run():
 			break
 	check(seed_found,"winning real-engine fixture seed found")
 	game.world_interact("encounter")
-	check(game.page=="battle" and game.model.profile.battle_pending,"3D encounter enters battle")
-	await snapshot("mulligan")
-	await click_control("Keep hand & begin")
-	check(not game.battle.mulligan_pending,"opening hand confirmed with mouse")
+	check(game.page=="battle" and game.battle.sides[1].hp==5,"3D encounter enters a small battle")
+	check(not game.battle.mulligan_pending,"adventure fights start at once")
 	await snapshot("tabletop")
 	var actions = 0
 	while game.page == "battle" and actions < 200:
@@ -137,27 +135,27 @@ func run():
 	check(game.page == "result" and game.battle.outcome == 0, "real-engine victory")
 	check(game.model.profile.resin == 2 and game.model.profile.owned.has("home-resin-crab"), "reward received")
 	await snapshot("reward")
-	press("Continue to island")
-	press("Collection")
-	# Change the saved thirty-card playtest deck while keeping earned inventory.
-	var removed=game.constructed.deck[0]
-	game.constructed.remove(removed)
-	check(game.constructed.add("home-resin-crab"),"earned Crab added to constructed deck")
+	press("Add it to your deck")
+	# Swap the earned Crab into the ten-card adventure deck.
+	var adv=game.adventure()
+	adv.deck.erase("home-mending-tide")
+	adv.deck.append("home-resin-crab")
+	game.settle_quest(); game.model.save()
+	check(game.page=="adeck" and adv.deck.size()==10,"earned Crab added to the adventure deck")
 	game.render()
-	check(game.constructed.deck.has("home-resin-crab"), "reward equipped")
+	check(game.adventure().deck.has("home-resin-crab"), "reward equipped")
 	await snapshot("deck")
 	game.queue_free()
 	await process_frame
 	game = Main.instantiate()
 	game.model.save_path = path
 	root.add_child(game)
-	check(game.page == "map" and game.constructed.deck.has("home-resin-crab"), "scene restart reloads earned deck")
+	check(game.page == "map" and game.adventure().deck.has("home-resin-crab"), "scene restart reloads earned deck")
 	game.world3d.player.position=Vector3(0,1,6)
 	game.world_interact("camp")
 	check(game.model.profile.hp==30,"camp heals")
 	game.world3d.player.position=Vector3(18,1,-3)
 	game.world_interact("encounter")
-	press("Keep hand & begin")
 	while game.thinking: await create_timer(.1).timeout
 	var index=game.battle.sides[0].deck.find("home-resin-crab")
 	if index>=0 and not game.battle.sides[0].hand.has("home-resin-crab"):
@@ -178,7 +176,7 @@ func run():
 	for child in game.get_children():
 		if child is ConfirmationDialog: child.confirmed.emit()
 	press("Continue to island")
-	check(game.model.profile.hp == 1 and game.model.profile.resin == 2, "retreat preserves loot")
+	check(game.model.profile.hp == 30 and game.model.profile.resin == 2 and int(game.adventure().cards["home-resin-crab"])==2, "retreat preserves loot, with no penalty")
 	game.world_interact("camp")
 	check(game.model.profile.hp == 30, "rest after retreat")
 	game.queue_free()

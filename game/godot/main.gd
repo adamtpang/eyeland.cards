@@ -53,7 +53,7 @@ var world3d
 var world_prompt: Label
 var world_host: SubViewportContainer
 var feel_chosen=false     # the player picked an attack feel, so looks stop changing it
-var touch_controls=DisplayServer.is_touchscreen_available()
+var touch_controls=OS.has_feature("web_android") or OS.has_feature("web_ios") or OS.has_feature("mobile")
 var touch_pad: Control
 var lesson=0             # 1 to 3 while a coached lesson with Mira is being played
 var show_intro=not OS.get_cmdline_args().has("--script")
@@ -64,9 +64,27 @@ const QUESTS=[
 	{"goal":"Find Mira for your first lesson","at":"friend"},
 	{"goal":"Lesson 2 with Mira: spells and Taunt","at":"friend"},
 	{"goal":"Lesson 3 with Mira: your class power","at":"friend"},
-	{"goal":"Face the Resin Crab, east of the garden","at":"encounter"},
-	{"goal":"Rest at the campfire","at":"camp"},
+	{"goal":"Beat the Resin Crab, east of the garden","at":"encounter"},
+	{"goal":"Open Deck and add a Resin Crab","at":""},
+	{"goal":"Beat the Mossback Cub in the west meadow","at":"camp2"},
+	{"goal":"Beat the Reef Otter on the south shore","at":"camp3"},
+	{"goal":"Defeat the Hearth Warden on the north ridge","at":"warden"},
 	{"goal":"Look out from the dock","at":"dock"}]
+## Home Island's ladder: three camps, then the Warden. Fights start small (you have 10
+## health and 10 cards) and each first win awards that creature's card.
+const DECK_SIZE=10
+const START_HP=10
+const CAMPS=["encounter","camp2","camp3"]
+const ENCOUNTERS={
+	"encounter":{"name":"Resin Crab","hp":5,"reward":"home-resin-crab","copies":2,"resin":2,"stage":"crab",
+		"deck":["home-resin-crab","home-resin-crab","home-resin-crab","home-resin-crab","home-resin-crab","home-resin-crab","home-resin-crab","home-breeze-finch","home-breeze-finch","home-breeze-finch"]},
+	"camp2":{"name":"Mossback Cub","hp":8,"reward":"earth-mossback-cub","copies":2,"resin":3,"stage":"wild:camp2",
+		"deck":["earth-mossback-cub","earth-mossback-cub","earth-mossback-cub","home-resin-crab","home-resin-crab","home-resin-crab","earth-pebble-sentry","earth-pebble-sentry","home-breeze-finch","home-breeze-finch","earth-resin-salve","earth-mossback-cub"]},
+	"camp3":{"name":"Reef Otter","hp":9,"reward":"water-reef-otter","copies":2,"resin":3,"stage":"wild:camp3",
+		"deck":["water-reef-otter","water-reef-otter","water-reef-otter","water-pearl-keeper","water-pearl-keeper","home-resin-crab","home-resin-crab","home-resin-crab","home-breeze-finch","home-breeze-finch","water-coral-defender","home-resin-crab"]},
+	"warden":{"name":"Hearth Warden","hp":14,"reward":"fire-furnace-beetle","copies":1,"resin":6,"stage":"wild:warden",
+		"deck":["fire-cinder-moth","fire-cinder-moth","fire-coalback-pup","fire-kiln-keeper","fire-kiln-keeper","fire-hearth-turtle","fire-flare-fox","home-resin-crab","home-resin-crab","home-resin-crab","home-breeze-finch","home-breeze-finch","fire-kindle","fire-kindle"]}}
+var encounter_id="encounter"
 ## Coached lessons: fixed hands and draw order so each one teaches a single idea.
 ## "S" stands for the player's own starter companion.
 const LESSONS=[
@@ -158,6 +176,87 @@ func quest() -> int:
 	if model.profile.is_empty(): return QUESTS.size()
 	return int(model.profile.get("quest",QUESTS.size() if model.profile.get("won",false) else 0))
 
+## The adventure's own cards, deck and cleared camps. Kept beside the older save fields.
+func adventure() -> Dictionary:
+	if not model.profile.has("adv"):
+		var own=model.starter(model.profile.element)
+		var cards={own:1,"home-shore-guard":2,"home-breeze-finch":3,"home-spark":2,"home-mending-tide":2}
+		var deck=[]
+		for id in cards:
+			for i in range(cards[id]): deck.append(id)
+		var cleared=[]
+		if model.profile.get("won",false):
+			cleared.append("encounter")
+			cards["home-resin-crab"]=2
+		model.profile.adv={"cards":cards,"deck":deck,"cleared":cleared,"resin":int(model.profile.get("resin",0))}
+	return model.profile.adv
+
+func camps_cleared() -> int:
+	var done=adventure().cleared
+	return CAMPS.filter(func(id): return done.has(id)).size()
+
+## Move the goal past anything already achieved (camps can be beaten in any order).
+func settle_quest():
+	var adv=adventure()
+	var q=quest()
+	var from=q
+	while q<QUESTS.size():
+		var at=QUESTS[q].at
+		if ENCOUNTERS.has(at) and adv.cleared.has(at): q+=1
+		elif q==5 and adv.deck.has("home-resin-crab"): q+=1
+		else: break
+	if q!=from:
+		model.profile.quest=q
+		goal_changed_at=Time.get_ticks_msec()
+
+func finish_encounter():
+	last_reward=false
+	var adv=adventure()
+	if battle.outcome==0:
+		if not adv.cleared.has(encounter_id):
+			var plan=ENCOUNTERS[encounter_id]
+			adv.cleared.append(encounter_id)
+			adv.cards[plan.reward]=int(adv.cards.get(plan.reward,0))+plan.copies
+			adv.resin=int(adv.get("resin",0))+plan.resin
+			last_reward=true
+			if encounter_id=="encounter" and not model.profile.won:
+				# the older save fields still record the first Crab win
+				model.profile.battle_pending=true
+				model.finish(true,30)
+		if quest()<4: model.profile.quest=4
+		settle_quest()
+	model.save()
+
+func adventure_deck_screen():
+	var adv=adventure()
+	var split=row_at(body)
+	var left=panel(split)
+	left.get_parent().name="AdventureDeck"
+	label_at(left,"Your deck   %d / %d" % [adv.deck.size(),DECK_SIZE],28)
+	muted(left,"Click a card to take it out." if adv.deck.size()>=DECK_SIZE else "Add %d more to battle." % (DECK_SIZE-adv.deck.size()))
+	var slots=HFlowContainer.new()
+	slots.add_theme_constant_override("h_separation",8)
+	slots.add_theme_constant_override("v_separation",8)
+	left.add_child(slots)
+	for i in range(adv.deck.size()):
+		var held=card_button(slots,adv.deck[i],func(): adv.deck.remove_at(i); model.save(); render())
+		held.custom_minimum_size=Vector2(118,162)
+	var right=panel(split,UIStyle.P.panel2)
+	label_at(right,"Spare cards",28)
+	muted(right,"Click a card to put it in your deck. Beat creatures to earn theirs.")
+	var spare=HFlowContainer.new()
+	spare.add_theme_constant_override("h_separation",8)
+	spare.add_theme_constant_override("v_separation",8)
+	right.add_child(spare)
+	var any=false
+	for id in adv.cards:
+		var free=int(adv.cards[id])-adv.deck.count(id)
+		if free<=0: continue
+		any=true
+		var extra=card_button(spare,id,func(): adv.deck.append(id); settle_quest(); model.save(); render(),adv.deck.size()>=DECK_SIZE,"x%d" % free)
+		extra.custom_minimum_size=Vector2(118,162)
+	if not any: muted(right,"No spare cards yet.")
+
 func advance_quest(from: int):
 	if quest()!=from: return
 	model.profile.quest=from+1
@@ -179,7 +278,9 @@ func start_lesson(n: int):
 	spoken=""
 	var class_data=model.world.classes.filter(func(c): return c.id==model.profile.job)[0]
 	match_seed=n
-	battle=Battle.new(model.cards,fill.call(plan.deck),plan.foe,30,plan.hp,class_data,n,false,0)
+	battle=Battle.new(model.cards,fill.call(plan.deck),plan.foe,START_HP,plan.hp,class_data,n,false,0)
+	battle.sides[0].max_hp=START_HP
+	battle.enemy_power=false
 	battle.enemy_name="Mira"
 	# fixed hands and draw order (cards are drawn from the end of the deck)
 	var yours=battle.sides[0]
@@ -277,7 +378,7 @@ func load_settings():
 	# settings saved before sound defaulted to off (no "v") start muted once
 	if (saved.get("muted",true) or int(saved.get("v",1))<2) and not battle_audio.muted: battle_audio.toggle()
 	classic_look=saved.get("classic",false)
-	touch_controls=saved.get("touch",touch_controls) or DisplayServer.is_touchscreen_available()
+	touch_controls=saved.get("touch",touch_controls) or touch_controls
 	feel_chosen=saved.get("feel_chosen",false)
 	if feel_chosen: hit_feel.variant=int(saved.get("feel",0))
 
@@ -446,12 +547,19 @@ func render():
 	if page=="map" or (page in ["battle","result"] and not UIStyle.P.board_art): hud_outline(title)
 	if page!="start":
 		if page in ["map","deck"]:
-			var nav=button_at(header,"Collection" if page=="map" else "Back to island",func(): page="deck" if page=="map" else "map"; swap_index=-1; render())
+			var nav=button_at(header,"Practice" if page=="map" else "Back to island",func(): page="deck" if page=="map" else "map"; swap_index=-1; render())
 			nav.size_flags_horizontal=Control.SIZE_SHRINK_END
+	if page=="map":
+		var mine=button_at(header,"Deck",func(): page="adeck"; render())
+		mine.size_flags_horizontal=Control.SIZE_SHRINK_END
+		mine.tooltip_text="Your 10-card adventure deck and the cards you have earned."
+	if page=="adeck":
+		var home=button_at(header,"Back to island",func(): page="map"; render())
+		home.size_flags_horizontal=Control.SIZE_SHRINK_END
 	if page=="settings":
 		var done=button_at(header,"Back",func(): page=settings_back; render())
 		done.size_flags_horizontal=Control.SIZE_SHRINK_END
-	elif not page in ["battle","result","intro"]:
+	elif not page in ["battle","result","intro","adeck"]:
 		var gear=button_at(header,"Settings",open_settings)
 		gear.size_flags_horizontal=Control.SIZE_SHRINK_END
 		gear.tooltip_text="Sound, fullscreen, look, attack feel and class. F11 toggles fullscreen."
@@ -471,6 +579,9 @@ func render():
 		return
 	if page == "intro":
 		intro_screen()
+		return
+	if page == "adeck":
+		adventure_deck_screen()
 		return
 	if page == "map": map_screen()
 	elif page == "deck": deck_screen()
@@ -632,7 +743,10 @@ func map_screen():
 	info.get_parent().size_flags_horizontal=Control.SIZE_SHRINK_BEGIN
 	info.add_theme_constant_override("separation",0)
 	label_at(info,"Home Island",24).autowrap_mode=TextServer.AUTOWRAP_OFF
-	muted(info,"♥ %d / 30   ◆ %d resin" % [p.hp,p.resin],14).autowrap_mode=TextServer.AUTOWRAP_OFF
+	var adv=adventure()
+	var beaten=adv.cleared.has("warden")
+	muted(info,"Island cleared" if beaten else ("Objective: defeat the Warden" if camps_cleared()==CAMPS.size() else "Objective: clear 3 camps, then the Warden"),14).autowrap_mode=TextServer.AUTOWRAP_OFF
+	muted(info,"Camps %d / %d   ◆ %d resin" % [camps_cleared(),CAMPS.size(),int(adv.get("resin",0))],14).autowrap_mode=TextServer.AUTOWRAP_OFF
 	world_clock=muted(info,clock_text(),14)
 	world_clock.autowrap_mode=TextServer.AUTOWRAP_OFF
 	if touch_controls:
@@ -666,7 +780,7 @@ func map_screen():
 		speech.get_parent().name="Dialogue"
 		speech.get_parent().size_flags_horizontal=Control.SIZE_SHRINK_CENTER
 		speech.get_parent().custom_minimum_size.x=640
-		var speaker={"home":"Your family","friend":"Mira","crop":"Resin garden","camp":"Campfire","dock":"Lookout"}.get(spoken,"")
+		var speaker={"home":"Your family","friend":"Mira","crop":"Resin garden","camp":"Campfire","dock":"Lookout","warden":"Hearth Warden"}.get(spoken,"")
 		eyebrow(speech,speaker.to_upper())
 		var line=label_at(speech,note,18)
 		line.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
@@ -711,21 +825,25 @@ func update_world_prompt(id: String):
 	world_action.visible=not id.is_empty()
 	if is_instance_valid(world_plate): world_plate.visible=not id.is_empty()
 	var names={"home":"Home","friend":"Mira","crop":"Garden","encounter":"Resin Crab","camp":"Campfire","dock":"Lookout"}
-	world_prompt.text=names.get(id,"")
+	world_prompt.text=ENCOUNTERS[id].name if ENCOUNTERS.has(id) else names.get(id,"")
 	world_prompt.tooltip_text=note
 	for mark in model.world.landmarks:
 		if mark.id==id: world_prompt.tooltip_text=mark.dialogue
-	world_action.text="Battle Resin Crab · E" if id=="encounter" else ("Rest · E" if id=="camp" else "Interact · E")
+	world_action.text=("Battle %s · E" % ENCOUNTERS[id].name) if ENCOUNTERS.has(id) else ("Rest · E" if id=="camp" else "Interact · E")
 
 func world_interact(id: String):
 	if page!="map" or id.is_empty() or not near_location(id): return
-	if id=="encounter": enter_battle(); return
+	if ENCOUNTERS.has(id):
+		if id=="warden" and camps_cleared()<CAMPS.size():
+			note="The Hearth Warden does not even look at you. Clear the three camps first (%d of %d so far)." % [camps_cleared(),CAMPS.size()]
+			spoken="" if spoken==id else id
+			render()
+		else: enter_battle(-1,id)
+		return
 	if id=="camp":
 		model.profile.hp=30
 		model.save()
 		note="The fire warms your hands. You and your companion are ready again. Health restored to 30."
-		if quest()==5: note+=" From the dock you can see what lies beyond the island."
-		advance_quest(5)
 	else:
 		for mark in model.world.landmarks:
 			if mark.id==id: note=mark.dialogue
@@ -740,7 +858,7 @@ func world_interact(id: String):
 				1: note="Mira: Before you face that Crab, let me show you how cards work. First lesson: creatures."
 				2: note="Mira: Good. Next, spells, and creatures with Taunt."
 				3: note="Mira: Last lesson. Every class has a power of its own."
-		if id=="dock": advance_quest(6)
+		if id=="dock": advance_quest(9)
 	# pressing E again closes the box
 	spoken="" if spoken==id else id
 	render()
@@ -896,25 +1014,33 @@ func replace_card(id: String):
 	swap_index=-1
 	render()
 
-func enter_battle(starting_player: int=-1):
-	if page!="map" or not near_location("encounter"): return
-	if not constructed.valid(constructed.deck):
-		page="deck"; adventure_deck_view=false; render(); return
+func enter_battle(starting_player: int=-1,id: String="encounter"):
+	if page!="map" or not ENCOUNTERS.has(id) or not near_location(id): return
+	var adv=adventure()
+	if adv.deck.size()!=DECK_SIZE:
+		page="adeck"; render(); return
+	var plan=ENCOUNTERS[id]
 	practice_mode=false
 	lesson=0
+	encounter_id=id
+	spoken=""
 	var p=model.profile
-	p.battle_pending=true
 	p.seed = (int(p.seed)%1000000)+1
 	model.save()
 	var class_data=model.world.classes.filter(func(c): return c.id==p.job)[0]
 	match_seed=p.seed
-	battle=Battle.new(model.cards,constructed.deck,Collection.practice_deck(model.cards,"earth"),30,30,class_data,p.seed,true,starting_player)
+	# small and quick: no opening-hand choice, you go first, and wild creatures have no class power
+	battle=Battle.new(model.cards,adv.deck,plan.deck,START_HP,plan.hp,class_data,p.seed,false,0 if starting_player==-1 else starting_player)
+	battle.sides[0].max_hp=START_HP
+	battle.enemy_name=plan.name
+	battle.enemy_power=false
 	mulligan_picks=[]
 	page="battle"
 	clock_left=75
 	selection=""
-	thinking=false
+	thinking=battle.active==1
 	render()
+	if thinking: run_opponent_turn()
 
 func stage_active() -> bool:
 	return is_instance_valid(battle_stage)
@@ -938,7 +1064,7 @@ func ensure_stage():
 		battle_host.add_child(viewport)
 		battle_stage=World3DScene.new()
 		battle_stage.stage=true
-		battle_stage.stage_enemy="mira" if lesson>0 else ("keeper" if practice_mode else "crab")
+		battle_stage.stage_enemy="mira" if lesson>0 else ("keeper" if practice_mode else ENCOUNTERS[encounter_id].stage)
 		battle_stage.element=model.profile.get("element","fire")
 		battle_stage.job=model.profile.get("job","warrior")
 		battle_stage.muted=battle_audio.muted
@@ -964,8 +1090,8 @@ func confirm_retreat():
 	retreat_dialog_open=true
 	var dialog=ConfirmationDialog.new()
 	dialog.title="Leave the lesson?" if lesson>0 else ("Leave practice?" if practice_mode else "Return to camp?")
-	dialog.dialog_text="Leave practice? Your adventure is unchanged." if practice_mode else "You will return with 1 health. Your collected cards and resin are safe."
-	dialog.ok_button_text="Leave practice" if practice_mode else "Return to camp"
+	dialog.dialog_text="Leave practice? Your adventure is unchanged." if practice_mode else "There is no penalty. Your cards are safe."
+	dialog.ok_button_text="Leave practice" if practice_mode else "Leave the battle"
 	dialog.cancel_button_text="Keep battling"
 	dialog.confirmed.connect(func(): retreat_dialog_open=false; retreat(); dialog.queue_free())
 	dialog.canceled.connect(func(): retreat_dialog_open=false; dialog.queue_free())
@@ -1063,15 +1189,7 @@ func after_action():
 	if battle.outcome!=-1:
 		settled_battle=battle
 		if lesson>0 and battle.outcome==0: advance_quest(lesson)
-		if not practice_mode:
-			if battle.outcome==0 and quest()<5:
-				model.profile.quest=5
-				goal_changed_at=Time.get_ticks_msec()
-			last_reward=model.finish(battle.outcome==0,battle.sides[0].hp)
-			if battle.outcome!=0:
-				model.profile.world_position=[0,2,6]
-				model.save()
-			avatar_position=Vector2(model.profile.x+.5,model.profile.y+.5)
+		if not practice_mode: finish_encounter()
 		var has_effect=battle_effects.any(func(node): return is_instance_valid(node))
 		has_effect=has_effect or secret_reveal.showing or battle.timeline.slice(creature_feedback.timeline_cursor).any(func(event): return event.kind in ["summon","death"])
 		if has_effect:
@@ -1178,20 +1296,27 @@ func result_screen():
 	var content=panel(layout)
 	content.get_parent().custom_minimum_size.x=600
 	content.get_parent().size_flags_horizontal=Control.SIZE_FILL
+	var plan=ENCOUNTERS[encounter_id]
+	content.get_parent().name="EncounterResult"
 	label_at(content,"Draw" if battle.outcome==2 else ("Victory" if victory else "Defeat"),38)
 	if last_reward:
 		var reward_row=row_at(content)
 		reward_row.alignment=BoxContainer.ALIGNMENT_CENTER
-		card_button(reward_row,"home-resin-crab",func(): pass,true,"ADDED TO COLLECTION")
+		card_button(reward_row,plan.reward,func(): pass,true,"NEW CARD")
 		var reward_text=VBoxContainer.new()
 		reward_text.custom_minimum_size.x=230
 		reward_row.add_child(reward_text)
-		label_at(reward_text,"+1 Resin Crab",28)
-		label_at(reward_text,"+2 luminous resin",25)
-		primary(content,"Make room in your deck",func(): page="deck"; swap_index=-1; render())
+		label_at(reward_text,"+%d %s" % [plan.copies,model.cards[plan.reward].name],26)
+		label_at(reward_text,"+%d luminous resin" % plan.resin,22)
+		if encounter_id=="warden": label_at(reward_text,"Home Island is safe.",18)
+		primary(content,"Add it to your deck",func(): page="adeck"; render())
 	else:
-		art_at(content,model.starter(model.profile.element),230)
-		if not victory: primary(content,"Rest at camp",func(): page="map"; rest()).tooltip_text="You returned with 1 health. Rest restores you to 30."
+		art_at(content,model.starter(model.profile.element) if victory else plan.reward,230)
+		if victory: muted(content,"A rematch. You already hold this creature's card.",14)
+		else:
+			muted(content,"No harm done. Change your deck, or go again.",14)
+			primary(content,"Try again",func(): page="map"; enter_battle(-1,encounter_id))
+			button_at(content,"Change my deck",func(): page="adeck"; render())
 	button_at(content,"Continue to island",func(): page="map"; note="Your adventure is saved."; render())
 	var right=Control.new()
 	right.size_flags_horizontal=Control.SIZE_EXPAND_FILL

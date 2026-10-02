@@ -90,19 +90,13 @@ func run():
 	check(game.page=="map" and game.world3d.goal_id=="encounter" and not game.practice_mode,"After the lessons the goal is the Resin Crab")
 	await stand_at(game,"encounter")
 	game.world_interact("encounter"); await create_timer(.5).timeout
-	check(game.page=="battle" and game.lesson==0 and game.battle.sides[1].hp==30,"The Crab fight is a real thirty-health battle")
-	game.confirm_opening()
+	check(game.page=="battle" and game.lesson==0 and game.battle.sides[0].hp==10 and game.battle.sides[1].hp==5,"The Crab fight is small: ten health against five")
 	game.battle.damage_hero(1,99); game.battle.check_outcome(); game.after_action()
 	await create_timer(1.6).timeout
-	check(game.model.profile.won and game.quest()==5,"Beating the Crab moves the goal to the campfire")
+	check(game.model.profile.won and game.quest()==5,"Beating the Crab moves the goal to adding its card")
 	game.page="map"; game.render()
 	await create_timer(1.2).timeout
-	await stand_at(game,"camp")
-	game.world_interact("camp"); await process_frame
-	check(game.quest()==6 and game.world3d.goal_id=="dock","Resting points at the dock")
-	await stand_at(game,"dock")
-	game.world_interact("dock"); await process_frame
-	check(game.quest()==7 and game.body.find_child("Goal",true,false)==null and not game.world3d.goal_marker.visible,"The lookout ends the opening goals")
+	check(game.body.find_child("Goal",true,false)!=null and (not is_instance_valid(game.world3d.goal_marker) or not game.world3d.goal_marker.visible),"A goal with no place shows no marker")
 	# the goal survives a reload
 	var path=game.model.save_path
 	game.queue_free(); await process_frame; await create_timer(.2).timeout
@@ -110,7 +104,7 @@ func run():
 	again.model.save_path=path
 	root.add_child(again)
 	await process_frame
-	check(again.quest()==7 and again.model.error.is_empty(),"Goal progress is kept in the save")
+	check(again.quest()==5 and again.model.error.is_empty(),"Goal progress is kept in the save")
 	again.queue_free(); await process_frame; await create_timer(.2).timeout
 	print("ONBOARDING: %d / %d passed" % [checks-failed,checks])
 	quit(1 if failed else 0)

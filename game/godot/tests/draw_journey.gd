@@ -51,7 +51,7 @@ func run():
 	await wait_for_result()
 	check(game.page=="result" and find_text(game.body,"Draw"),"Island result labels draw")
 	check(not game.last_reward and not game.model.profile.won and game.model.profile.resin==0 and not game.model.profile.owned.has("home-resin-crab"),"Draw grants no victory loot")
-	check(game.model.profile.hp==1 and not game.model.profile.battle_pending,"Draw clears pending battle and returns at one health")
+	check(game.model.profile.hp==30 and not game.model.profile.battle_pending,"Draw leaves no pending battle and no penalty")
 	var reloaded=preload("res://model.gd").new()
 	reloaded.save_path=game.model.save_path
 	var loaded=reloaded.load_profile()
@@ -59,7 +59,7 @@ func run():
 	if loaded:
 		for id in original.owned:
 			same_owned=same_owned and reloaded.profile.owned.get(id,0)==original.owned[id]
-	check(loaded and reloaded.profile.hp==1 and not reloaded.profile.won and reloaded.profile.resin==0 and not reloaded.profile.battle_pending and same_owned,"Draw recovery persists across reload")
+	check(loaded and reloaded.profile.hp==30 and not reloaded.profile.won and reloaded.profile.resin==0 and not reloaded.profile.battle_pending and same_owned,"Draw recovery persists across reload")
 	await process_frame; await process_frame
 	if DisplayServer.get_name()!="headless":
 		RenderingServer.force_draw()
