@@ -47,6 +47,10 @@ knowledge-private/
 game/builds/
 
 eafc/sbc/club.json
+eafc/sbc/club_futbin.json
+eafc/sbc/club-report.md
+eafc/sbc/club_notes.json
+eafc/sbc/futbin_tab.txt
 eafc/sbc/.sid
 eafc/sbc/result.json
 eafc/sbc/sbc-report.html

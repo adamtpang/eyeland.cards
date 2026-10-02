@@ -38,79 +38,59 @@ static func dropdown(game,parent,key: String,labels: Array,values: Array):
 	parent.add_child(control)
 	return control
 
-static func build(game):
-	var title=game.row_at(game.body)
-	game.label_at(title,"Collection",38)
-	game.muted(title,"%d cards · Playtest library" % game.model.cards.size() if not game.adventure_deck_view else "%d / %d owned" % [game.model.profile.owned.size(),game.model.cards.size()],14)
+## The card book, laid out like Hearthstone's collection: element tabs across the top, a
+## page of eight large cards, mana filters underneath, and the deck as a slim list on the
+## right. Clicking a card adds it to the deck, clicking a deck row removes it, and a right
+## click opens the card. The same screen edits the 30-card practice deck (every card) and
+## the 10-card adventure deck (only earned cards).
+static func build(game): book(game,false)
+
+static func book(game,adventure: bool):
+	var adv=game.adventure() if adventure else {}
+	var deck: Array=adv.deck if adventure else game.constructed.deck
+	var capacity: int=game.DECK_SIZE if adventure else 30
+	var limit=func(id: String) -> int:
+		if adventure: return int(adv.cards.get(id,0))
+		return 1 if game.model.cards[id].rarity=="legendary" else 2
+	var add=func(id: String):
+		if deck.size()>=capacity or deck.count(id)>=limit.call(id): return
+		if adventure:
+			deck.append(id); game.settle_quest(); game.model.save()
+		else: game.constructed.add(id)
+		game.render()
+	var remove=func(id: String):
+		if adventure:
+			deck.erase(id); game.model.save()
+		else: game.constructed.remove(id)
+		game.render()
+	var filters: Dictionary=game.collection_filters
 	var layout=game.row_at(game.body)
-	var sidebar=game.panel(layout)
-	sidebar.get_parent().custom_minimum_size.x=224
-	sidebar.get_parent().size_flags_horizontal=Control.SIZE_FILL
-	game.label_at(sidebar,"Your deck",27)
-	game.muted(sidebar,"%d / 30 cards" % game.constructed.deck.size(),14)
-	var play=game.button_at(sidebar,"Play",func(): game.start_practice(game.constructed.element,"",true),not game.constructed.valid(game.constructed.deck))
-	game.UIStyle.primary(play)
-	play.tooltip_text="30 health each. 2-mana hero power. 10 maximum mana. All cards available for playtesting."
-	var presets=OptionButton.new()
-	presets.add_item("Load a starter deck…")
-	for e in ELEMENTS: presets.add_item(e.capitalize())
-	presets.item_selected.connect(func(index):
-		if index>0:
-			var confirm=ConfirmationDialog.new()
-			confirm.dialog_text="Replace this deck with the "+ELEMENTS[index-1].capitalize()+" starter deck?"
-			confirm.confirmed.connect(func(): game.constructed.preset(ELEMENTS[index-1]); confirm.queue_free(); game.render())
-			confirm.canceled.connect(confirm.queue_free)
-			game.add_child(confirm); confirm.popup_centered()
-	)
-	sidebar.add_child(presets)
-	var deck_scroll=ScrollContainer.new()
-	deck_scroll.custom_minimum_size=Vector2(210,390)
-	deck_scroll.horizontal_scroll_mode=ScrollContainer.SCROLL_MODE_DISABLED
-	sidebar.add_child(deck_scroll)
-	var entries=VBoxContainer.new()
-	entries.size_flags_horizontal=Control.SIZE_EXPAND_FILL
-	deck_scroll.add_child(entries)
-	var unique={}
-	for id in game.constructed.deck: unique[id]=unique.get(id,0)+1
-	for id in query(game.model.cards,unique,{"owned":true}):
-		var c=game.model.cards[id]
-		var remove=game.button_at(entries,"%d  %s  ×%d" % [c.cost,c.name,unique[id]],func(): game.constructed.remove(id); game.render())
-		remove.text_overrun_behavior=TextServer.OVERRUN_TRIM_ELLIPSIS
-		remove.alignment=HORIZONTAL_ALIGNMENT_LEFT
-		remove.custom_minimum_size.y=32
-		remove.icon=game.UIStyle.art(id)
-		remove.expand_icon=true
-		remove.add_theme_constant_override("icon_max_width",28)
-		remove.tooltip_text=c.name+"\n"+c.text+"\nClick to remove one copy."
-	game.button_at(sidebar,"Earned collection",func(): game.collection_filters={"owned":true}; game.collection_page=0; game.render()).tooltip_text="Your original adventure inventory is preserved separately."
-	var element=game.collection_filters.get("element","")
-	var right=VBoxContainer.new()
-	right.size_flags_horizontal=Control.SIZE_EXPAND_FILL
-	right.add_theme_constant_override("separation",10)
-	layout.add_child(right)
-	var filters=game.row_at(right)
-	var search=LineEdit.new()
-	search.name="CollectionSearch"
-	search.placeholder_text="Search cards…"
-	search.text=game.collection_filters.get("search","")
-	search.size_flags_horizontal=Control.SIZE_EXPAND_FILL
-	search.custom_minimum_size=Vector2(125,38)
-	search.tooltip_text="Search names, rules, elements or rarities. Press Enter to search."
-	search.text_submitted.connect(func(value): game.collection_filters.search=value; game.collection_page=0; game.render())
-	filters.add_child(search)
-	dropdown(game,filters,"type",["All types","Minions","Spells","Weapons"],["","minion","spell","weapon"])
-	dropdown(game,filters,"rarity",["All rarities","Common","Rare","Epic","Legendary"],["","common","rare","epic","legendary"])
-	dropdown(game,filters,"cost",["All mana","0","1","2","3","4","5","6","7+"],[-1,0,1,2,3,4,5,6,7])
-	var tabs=game.row_at(right)
+	layout.add_theme_constant_override("separation",16)
+	var pages=VBoxContainer.new()
+	pages.size_flags_horizontal=Control.SIZE_EXPAND_FILL
+	pages.add_theme_constant_override("separation",10)
+	layout.add_child(pages)
+	# element tabs and search
+	var tabs=game.row_at(pages)
+	var element=filters.get("element","")
 	for e in [""]+ELEMENTS:
 		var tab=game.button_at(tabs,"All" if e=="" else e.capitalize(),func(): game.collection_filters.element=e; game.collection_page=0; game.render())
+		tab.custom_minimum_size=Vector2(84,38)
 		if e==element: game.UIStyle.primary(tab)
-	dropdown(game,tabs,"owned",["All cards","Owned"],[false,true])
-	if not game.collection_filters.is_empty():
-		var reset=game.button_at(tabs,"Reset",func(): game.collection_filters={}; game.collection_page=0; game.render())
-		reset.tooltip_text="Clear search and all filters."
-	var ids=query(game.model.cards,game.model.profile.owned,game.collection_filters)
-	var columns=clampi(int((game.size.x-310)/158),3,5)
+	var gap=Control.new()
+	gap.size_flags_horizontal=Control.SIZE_EXPAND_FILL
+	tabs.add_child(gap)
+	var search=LineEdit.new()
+	search.name="CollectionSearch"
+	search.placeholder_text="Search"
+	search.text=filters.get("search","")
+	search.custom_minimum_size=Vector2(190,38)
+	search.tooltip_text="Search names and rules. Press Enter."
+	search.text_submitted.connect(func(value): game.collection_filters.search=value; game.collection_page=0; game.render())
+	tabs.add_child(search)
+	# one page of cards
+	var ids=query(game.model.cards,adv.cards if adventure else game.model.profile.owned,filters.merged({"owned":true},true) if adventure else filters)
+	var columns=4 if game.size.x>=1180 else 3
 	var per_page=columns*2
 	var page_count=maxi(1,ceili(float(ids.size())/per_page))
 	game.collection_page=clampi(game.collection_page,0,page_count-1)
@@ -118,35 +98,103 @@ static func build(game):
 	grid.name="CollectionGrid"
 	grid.columns=columns
 	grid.size_flags_horizontal=Control.SIZE_SHRINK_CENTER
-	grid.add_theme_constant_override("h_separation",8)
-	grid.add_theme_constant_override("v_separation",8)
-	right.add_child(grid)
+	grid.custom_minimum_size.y=2*224+12
+	grid.add_theme_constant_override("h_separation",14)
+	grid.add_theme_constant_override("v_separation",12)
+	pages.add_child(grid)
 	for id in ids.slice(game.collection_page*per_page,(game.collection_page+1)*per_page):
-		var cell=VBoxContainer.new()
-		grid.add_child(cell)
-		var count=game.model.profile.owned.get(id,0)
-		var c=game.card_button(cell,id,func():
-			var candidate=game.model.profile.deck.duplicate()
-			if game.swap_index>=0: candidate[game.swap_index]=id
-			if game.swap_index>=0 and game.model.deck_valid(candidate,game.model.profile): game.replace_card(id)
-			else: inspect(game,id)
-		,false,"Owned: %d" % count if count>0 else "Not owned · Available in practice")
+		var held=deck.count(id)
+		var most: int=limit.call(id)
+		var full=held>=most
+		var c=game.card_button(grid,id,add.bind(id),false,"")
 		c.name="Catalog_"+id
-		c.custom_minimum_size=Vector2(148,204)
+		c.custom_minimum_size=Vector2(163,224)
 		c.active_hint=false
-		var quantity=game.muted(cell,"×%d" % count if count>0 else "Not owned",11) if game.adventure_deck_view else game.button_at(cell,"Add · %d/%d" % [game.constructed.deck.count(id),1 if game.model.cards[id].rarity=="legendary" else 2],func(): game.constructed.add(id); game.render(),game.constructed.deck.size()>=30 or game.constructed.deck.count(id)>=(1 if game.model.cards[id].rarity=="legendary" else 2))
-		if quantity is Button:
-			quantity.custom_minimum_size.y=30
-			quantity.tooltip_text="Remove a card from your deck first." if game.constructed.deck.size()>=30 else ("Maximum copies already in your deck." if quantity.disabled else "Add one copy to your deck.")
-		if quantity is Label: quantity.horizontal_alignment=HORIZONTAL_ALIGNMENT_CENTER
+		c.tooltip_text+="\nClick to add. Right-click to look closer."
+		if full: c.modulate=Color(1,1,1,.55)
+		c.gui_input.connect(func(event):
+			if event is InputEventMouseButton and event.pressed and event.button_index==MOUSE_BUTTON_RIGHT: inspect(game,id))
+		if held>0 or adventure:
+			var badge=Label.new()
+			badge.text="%d / %d" % [held,most]
+			badge.add_theme_font_size_override("font_size",12)
+			badge.add_theme_color_override("font_color",game.UIStyle.P.text)
+			badge.add_theme_stylebox_override("normal",game.UIStyle.plate(game.UIStyle.P.accent if held>0 else game.UIStyle.P.panel,game.UIStyle.P.panel_edge,8,5))
+			badge.mouse_filter=Control.MOUSE_FILTER_IGNORE
+			c.add_child(badge)
+			badge.position=Vector2(163-50,-8)
 	if ids.is_empty():
-		game.label_at(right,"No matching cards",25)
-		game.button_at(right,"Clear filters",func(): game.collection_filters={}; game.collection_page=0; game.render())
-	var paging=game.row_at(right)
-	game.button_at(paging,"←",func(): game.collection_page-=1; game.render(),game.collection_page==0).tooltip_text="Previous page"
-	var count_label=game.muted(paging,"%d cards · %d / %d" % [ids.size(),game.collection_page+1,page_count],12)
-	count_label.horizontal_alignment=HORIZONTAL_ALIGNMENT_CENTER
-	game.button_at(paging,"→",func(): game.collection_page+=1; game.render(),game.collection_page==page_count-1).tooltip_text="Next page"
+		game.muted(pages,"No cards match." if not adventure or not filters.is_empty() else "No cards yet.",16).horizontal_alignment=HORIZONTAL_ALIGNMENT_CENTER
+	# page arrows with the mana filter between them
+	var foot=game.row_at(pages)
+	foot.alignment=BoxContainer.ALIGNMENT_CENTER
+	var back=game.button_at(foot,"<",func(): game.collection_page-=1; game.render(),game.collection_page==0)
+	back.custom_minimum_size=Vector2(44,38)
+	back.size_flags_horizontal=Control.SIZE_SHRINK_CENTER
+	back.tooltip_text="Previous page"
+	var cost=int(filters.get("cost",-1))
+	for value in range(8):
+		var gem=game.button_at(foot,"7+" if value==7 else str(value),func():
+			if cost==value: game.collection_filters.erase("cost")
+			else: game.collection_filters.cost=value
+			game.collection_page=0; game.render())
+		gem.name="Mana%d" % value
+		gem.custom_minimum_size=Vector2(38,38)
+		gem.size_flags_horizontal=Control.SIZE_SHRINK_CENTER
+		gem.tooltip_text="Show only cards that cost %s mana." % gem.text
+		if cost==value: game.UIStyle.primary(gem)
+	var forward=game.button_at(foot,">",func(): game.collection_page+=1; game.render(),game.collection_page==page_count-1)
+	forward.custom_minimum_size=Vector2(44,38)
+	forward.size_flags_horizontal=Control.SIZE_SHRINK_CENTER
+	forward.tooltip_text="Next page"
+	game.muted(foot,"Page %d of %d" % [game.collection_page+1,page_count],12)
+	# the deck list
+	var sidebar=game.panel(layout)
+	sidebar.get_parent().name="AdventureDeck" if adventure else "PracticeDeck"
+	sidebar.get_parent().custom_minimum_size.x=236
+	sidebar.get_parent().size_flags_horizontal=Control.SIZE_FILL
+	sidebar.add_theme_constant_override("separation",8)
+	var heading=game.row_at(sidebar)
+	game.label_at(heading,"Your deck",20).size_flags_horizontal=Control.SIZE_EXPAND_FILL
+	game.label_at(heading,"%d / %d" % [deck.size(),capacity],16)
+	var deck_scroll=ScrollContainer.new()
+	deck_scroll.custom_minimum_size=Vector2(212,382)
+	deck_scroll.size_flags_vertical=Control.SIZE_EXPAND_FILL
+	deck_scroll.horizontal_scroll_mode=ScrollContainer.SCROLL_MODE_DISABLED
+	sidebar.add_child(deck_scroll)
+	var entries=VBoxContainer.new()
+	entries.size_flags_horizontal=Control.SIZE_EXPAND_FILL
+	entries.add_theme_constant_override("separation",3)
+	deck_scroll.add_child(entries)
+	var unique={}
+	for id in deck: unique[id]=unique.get(id,0)+1
+	for id in query(game.model.cards,unique,{"owned":true}):
+		var c=game.model.cards[id]
+		var row=game.button_at(entries,"%d   %s%s" % [c.cost,c.name,"   x%d" % unique[id] if unique[id]>1 else ""],remove.bind(id))
+		row.text_overrun_behavior=TextServer.OVERRUN_TRIM_ELLIPSIS
+		row.alignment=HORIZONTAL_ALIGNMENT_LEFT
+		row.custom_minimum_size.y=30
+		row.add_theme_font_size_override("font_size",13)
+		row.tooltip_text=c.name+"\n"+c.text+"\nClick to take one out."
+	if adventure:
+		var done=game.button_at(sidebar,"Done" if deck.size()==capacity else "Add %d more" % (capacity-deck.size()),func(): game.page="map"; game.render())
+		if deck.size()==capacity: game.UIStyle.primary(done)
+	else:
+		var play=game.button_at(sidebar,"Play",func(): game.start_practice(game.constructed.element,"",true),not game.constructed.valid(game.constructed.deck))
+		game.UIStyle.primary(play)
+		play.tooltip_text="A full 30-card battle with every card available. Your adventure is not affected."
+		var presets=OptionButton.new()
+		presets.add_item("Starter decks")
+		for e in ELEMENTS: presets.add_item(e.capitalize())
+		presets.item_selected.connect(func(index):
+			if index>0:
+				var confirm=ConfirmationDialog.new()
+				confirm.dialog_text="Replace this deck with the "+ELEMENTS[index-1].capitalize()+" starter deck?"
+				confirm.confirmed.connect(func(): game.constructed.preset(ELEMENTS[index-1]); confirm.queue_free(); game.render())
+				confirm.canceled.connect(confirm.queue_free)
+				game.add_child(confirm); confirm.popup_centered()
+		)
+		sidebar.add_child(presets)
 
 static func inspect(game,id: String):
 	game.close_inspection()

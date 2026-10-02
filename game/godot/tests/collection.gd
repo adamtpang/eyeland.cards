@@ -105,7 +105,7 @@ func run():
 	game.model.new_profile("wizard","air")
 	game.page="deck"; game.render()
 	await capture("collection-all")
-	check(game.body.find_child("CollectionGrid",true,false).get_child_count()==10,"paginated grid")
+	check(game.body.find_child("CollectionGrid",true,false).get_child_count()==8,"paginated grid shows eight cards a page")
 	Collection.inspect(game,"air-aella-open-sky")
 	await capture("collection-inspect")
 	check(game.inspection.get_child(0).get_child(0).size.y<game.size.y,"inspection fits viewport")

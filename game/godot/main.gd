@@ -228,34 +228,7 @@ func finish_encounter():
 	model.save()
 
 func adventure_deck_screen():
-	var adv=adventure()
-	var split=row_at(body)
-	var left=panel(split)
-	left.get_parent().name="AdventureDeck"
-	label_at(left,"Your deck   %d / %d" % [adv.deck.size(),DECK_SIZE],28)
-	muted(left,"Click a card to take it out." if adv.deck.size()>=DECK_SIZE else "Add %d more to battle." % (DECK_SIZE-adv.deck.size()))
-	var slots=HFlowContainer.new()
-	slots.add_theme_constant_override("h_separation",8)
-	slots.add_theme_constant_override("v_separation",8)
-	left.add_child(slots)
-	for i in range(adv.deck.size()):
-		var held=card_button(slots,adv.deck[i],func(): adv.deck.remove_at(i); model.save(); render())
-		held.custom_minimum_size=Vector2(118,162)
-	var right=panel(split,UIStyle.P.panel2)
-	label_at(right,"Spare cards",28)
-	muted(right,"Click a card to put it in your deck. Beat creatures to earn theirs.")
-	var spare=HFlowContainer.new()
-	spare.add_theme_constant_override("h_separation",8)
-	spare.add_theme_constant_override("v_separation",8)
-	right.add_child(spare)
-	var any=false
-	for id in adv.cards:
-		var free=int(adv.cards[id])-adv.deck.count(id)
-		if free<=0: continue
-		any=true
-		var extra=card_button(spare,id,func(): adv.deck.append(id); settle_quest(); model.save(); render(),adv.deck.size()>=DECK_SIZE,"x%d" % free)
-		extra.custom_minimum_size=Vector2(118,162)
-	if not any: muted(right,"No spare cards yet.")
+	Collection.book(self,true)
 
 func advance_quest(from: int):
 	if quest()!=from: return
@@ -550,11 +523,11 @@ func render():
 			var nav=button_at(header,"Practice" if page=="map" else "Back to island",func(): page="deck" if page=="map" else "map"; swap_index=-1; render())
 			nav.size_flags_horizontal=Control.SIZE_SHRINK_END
 	if page=="map":
-		var mine=button_at(header,"Deck",func(): page="adeck"; render())
+		var mine=button_at(header,"Deck",func(): page="adeck"; collection_filters={}; collection_page=0; render())
 		mine.size_flags_horizontal=Control.SIZE_SHRINK_END
 		mine.tooltip_text="Your 10-card adventure deck and the cards you have earned."
 	if page=="adeck":
-		var home=button_at(header,"Back to island",func(): page="map"; render())
+		var home=button_at(header,"Back to island",func(): page="map"; collection_filters={}; collection_page=0; render())
 		home.size_flags_horizontal=Control.SIZE_SHRINK_END
 	if page=="settings":
 		var done=button_at(header,"Back",func(): page=settings_back; render())
