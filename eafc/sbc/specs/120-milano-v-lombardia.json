@@ -1,0 +1,23 @@
+{
+  "id": 120,
+  "name": "Milano v Lombardia",
+  "sequence": 2,
+  "formation": "f532",
+  "slots": ["GK", "RB", "CB", "CB", "CB", "LB", "CDM", "CM", "CM", "ST", "ST"],
+  "n": 11,
+  "chem": 22,
+  "minr": 65,
+  "anchor": {"clubs": [131681, 131682], "min": 2},
+  "nation": {"id": 27, "min": 2},
+  "same_league_max": 5,
+  "same_nation_min": 3,
+  "requirements_text": [
+    "Min. 2 Players Milano FC OR Lombardia FC",
+    "Min. 2 Players Italy",
+    "Players from the same League: Max 5",
+    "Players from the same Countries/Regions: Min. 3",
+    "Player Quality: Min. Silver",
+    "Total Chemistry: Min. 22"
+  ],
+  "source": "Canonical hard-coded spec id 120. Public sbcs?setId=78, formation f532. Nation 27 is Italy. These two clubs use the higher 6000 market price cap."
+}

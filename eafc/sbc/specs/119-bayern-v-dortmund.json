@@ -1,0 +1,23 @@
+{
+  "id": 119,
+  "name": "Bayern v Dortmund",
+  "sequence": 1,
+  "formation": "f451",
+  "slots": ["GK", "RB", "CB", "CB", "LB", "RM", "CM", "LM", "CAM", "CAM", "ST"],
+  "n": 11,
+  "chem": 18,
+  "minr": 65,
+  "anchor": {"clubs": [21, 22], "min": 1},
+  "nation": {"id": 21, "min": 1},
+  "leagues_max": 6,
+  "same_nation_min": 2,
+  "requirements_text": [
+    "Min. 1 Player FC Bayern München OR Borussia Dortmund",
+    "Min. 1 Player Germany",
+    "Leagues in Squad: Max. 6",
+    "Players from the same Countries/Regions: Min. 2",
+    "Player Quality: Min. Silver",
+    "Total Chemistry: Min. 18"
+  ],
+  "source": "Canonical hard-coded spec id 119. Public sbcs?setId=78, formation f451. Nation 21 is Germany."
+}

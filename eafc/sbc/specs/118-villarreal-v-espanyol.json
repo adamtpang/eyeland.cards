@@ -1,0 +1,23 @@
+{
+  "id": 118,
+  "name": "Villarreal v Espanyol",
+  "sequence": 0,
+  "formation": "f442",
+  "slots": ["GK", "RB", "CB", "CB", "LB", "RM", "CM", "CM", "LM", "ST", "ST"],
+  "n": 11,
+  "chem": 14,
+  "minr": 0,
+  "anchor": {"clubs": [483, 452], "min": 1},
+  "nation": {"id": 45, "min": 1},
+  "clubs_min": 2,
+  "leagues_min": 3,
+  "requirements_text": [
+    "Min. 1 Player Villarreal CF OR RCD Espanyol",
+    "Min. 1 Player Spain",
+    "Clubs in Squad: Min. 2",
+    "Leagues in Squad: Min. 3",
+    "Player Quality: Min. Bronze",
+    "Total Chemistry: Min. 14"
+  ],
+  "source": "Canonical hard-coded spec id 118. Public sbcs?setId=78 names this challenge Villarreal CF v RCD Espanyol, formation f442. Nation 45 is Spain."
+}

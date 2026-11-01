@@ -59,6 +59,23 @@ eafc/sbc/report-*.html
 eafc/sbc/result-*.json
 eafc/sbc/bought.json
 
+# Shared SBC solver: club exports, profiles, protect/consumed name lists,
+# done lists, and plans. Commit only *.example.json placeholders.
+eafc/sbc/local/
+eafc/sbc/shared/config.json
+eafc/sbc/**/easy-inventory.json
+eafc/sbc/**/club_futbin.json
+eafc/sbc/**/protect.json
+eafc/sbc/**/consumed.json
+eafc/sbc/**/done.json
+eafc/sbc/**/plan.json
+eafc/sbc/**/base.json
+eafc/sbc/**/sets.json
+eafc/sbc/**/requirements.json
+eafc/sbc/**/requirements-*.json
+eafc/sbc/**/solution-*.json
+eafc/sbc/**/player-*.json
+
 # local scratch and caches
 __pycache__/
 eafc/sbc/cache/

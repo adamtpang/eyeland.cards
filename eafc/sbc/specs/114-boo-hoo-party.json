@@ -1,0 +1,24 @@
+{
+  "id": 114,
+  "name": "Boo Hoo Party",
+  "sequence": 4,
+  "formation": "f451",
+  "slots": ["GK", "RB", "CB", "CB", "LB", "RM", "CM", "LM", "CAM", "CAM", "ST"],
+  "n": 9,
+  "chem": 18,
+  "minr": 65,
+  "same_club_max": 3,
+  "same_league_min": 4,
+  "leagues_max": 5,
+  "gold_min": 3,
+  "requirements_text": [
+    "Players from the same Club: Max 3",
+    "Players from the same League: Min. 4",
+    "Leagues in Squad: Max. 5",
+    "Min. 3 Players Gold",
+    "Player Quality: Min. Silver",
+    "Total Chemistry: Min. 18"
+  ],
+  "notes": "Eleven formation slots, nine players submitted. The canonical script skipped this id after it was submitted and decremented the cards it believed were used. Those names are not in this repo: put the id on the local done list and the used names in the local consumed file.",
+  "source": "Canonical hard-coded spec id 114. Public sbcs?setId=74, formation f451."
+}
