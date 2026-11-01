@@ -1,0 +1,24 @@
+{
+  "id": 121,
+  "name": "Liverpool v Arsenal",
+  "sequence": 3,
+  "formation": "f5212",
+  "slots": ["GK", "RB", "CB", "CB", "CB", "LB", "CM", "CM", "CAM", "ST", "ST"],
+  "n": 11,
+  "chem": 26,
+  "minr": 0,
+  "anchor": {"clubs": [9, 1], "min": 2},
+  "league": {"id": 13, "min": 2},
+  "same_league_min": 4,
+  "same_club_min": 3,
+  "rating_sum": 825,
+  "requirements_text": [
+    "Min. 2 Players Liverpool OR Arsenal",
+    "Min. 2 Players Premier League",
+    "Players from the same League: Min. 4",
+    "Players from the same Club: Min. 3",
+    "Team Rating: Min. 75",
+    "Total Chemistry: Min. 26"
+  ],
+  "source": "Canonical hard-coded spec id 121. Public sbcs?setId=78, formation f5212. League 13 is the Premier League. Team Rating 75 is encoded as a raw rating sum of 825, which is what the canonical model constrains. That is not the EA over-average squad-rating formula used by the older FUTBIN checker."
+}

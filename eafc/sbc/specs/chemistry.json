@@ -1,0 +1,6 @@
+{
+  "club": [2, 4, 7],
+  "league": [3, 5, 8],
+  "nation": [2, 5, 8],
+  "notes": "Canonical Marquee solver thresholds. One point per step, only for an in-position player, capped at 3. Club is 2/4/7, not the 2/5/8 table used by the older FUTBIN checker in solve.py."
+}

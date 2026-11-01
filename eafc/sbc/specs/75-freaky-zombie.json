@@ -1,0 +1,23 @@
+{
+  "id": 75,
+  "name": "Freaky Zombie",
+  "sequence": 5,
+  "slots": ["GK", "RB", "CB", "CB", "LB", "CM", "CM"],
+  "n": 7,
+  "chem": 20,
+  "minr": 65,
+  "same_nation_min": 4,
+  "same_league_max": 5,
+  "leagues_min": 2,
+  "gold_min": 4,
+  "requirements_text": [
+    "Players from the same Countries/Regions: Min. 4",
+    "Players from the same League: Max 5",
+    "Leagues in Squad: Min. 2",
+    "Min. 4 Players Gold",
+    "Player Quality: Min. Silver",
+    "Total Chemistry: Min. 20"
+  ],
+  "notes": "Canonical spec fills seven slots, not a full formation. The public challenge id for this requirement moves when the SBC rotates; this file keeps the canonical id 75.",
+  "source": "Canonical hard-coded spec id 75."
+}

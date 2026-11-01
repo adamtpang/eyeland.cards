@@ -1,5 +1,7 @@
 # Our own EasySBC
 
+Daily EasySBC challenges use the shared PuLP/HiGHS solver in `shared/` (`python -m eafc.sbc.shared`). See `SHARED-SOLVER.md`. `solve.py` remains the FUTBIN squad checker.
+
 **One command:** `python sbc.py sbcs/<sbc>.json [--exclude "Name"] [--budget 180]`
 club import (if the web app is open) -> solve -> live price check -> `sbc-report.html` with card images and 3 ready-made swaps per card.
 

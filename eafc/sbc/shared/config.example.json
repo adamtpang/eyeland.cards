@@ -1,0 +1,18 @@
+{
+  "inventory_paths": [
+    "../local/easy-inventory.json",
+    "../local/club_futbin.json"
+  ],
+  "profiles_dir": "../local/profiles",
+  "base_path": "../local/base.json",
+  "protect_path": "../local/protect.json",
+  "consumed_path": "../local/consumed.json",
+  "done_path": "../local/done.json",
+  "sets_path": "../local/sets.json",
+  "plan_path": "../local/plan.json",
+  "specs_dir": "../specs",
+  "chemistry_path": "../specs/chemistry.json",
+  "price_cap": 1300,
+  "anchor_big_clubs": [131681, 131682],
+  "anchor_big_cap": 6000
+}
