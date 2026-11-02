@@ -95,6 +95,21 @@ class _HiGHSStart(pulp.HiGHS):
         lp.solverModel.run()
 
 
+def _quote_fields(card):
+    """Price provenance copied onto a plan row when the pool card has it."""
+    return {
+        key: card[key]
+        for key in (
+            "price_source",
+            "price_platform",
+            "price_fetched_at",
+            "price_quality",
+            "price_stale",
+        )
+        if key in card
+    }
+
+
 def _finite(value):
     if value is None:
         return None
@@ -582,6 +597,7 @@ def _solve_legacy(
                     "league": card["league"],
                     "nation": card["nation"],
                     "rid": card["rid"],
+                    **_quote_fields(card),
                 }
             )
         rows.sort(key=lambda row: (not row["owned"], -row["rating"], row["name"]))

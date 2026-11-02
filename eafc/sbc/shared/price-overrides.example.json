@@ -1,0 +1,7 @@
+{
+  "platform": "pc",
+  "note": "Spot prices that replace the catalogue or the bin file for this platform only. A file for a different platform is ignored.",
+  "prices": [
+    {"resource_id": 900001, "amount": 1550, "fetched_at": "2026-11-02T01:05:00+00:00"}
+  ]
+}

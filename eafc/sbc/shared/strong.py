@@ -19,6 +19,7 @@ import os
 import pulp
 
 from eafc.sbc.shared.model import (
+    _quote_fields,
     _HiGHSStart,
     _assign_slots,
     _gap_report,
@@ -206,6 +207,7 @@ def _rows_from(spec, pool, left, storage, chosen, placed, chemistry):
                 "league": card["league"],
                 "nation": card["nation"],
                 "rid": card["rid"],
+                **_quote_fields(card),
             }
         )
     rows.sort(key=lambda row: (not row["owned"], -row["rating"], row["name"]))

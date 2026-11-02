@@ -85,6 +85,26 @@ The old default `1000 * coins + fodder` is no longer used. That weight matched c
 
 When both stages prove optimality the printed objective is `1000 * cash + fodder` so it can be compared with an exact-model run. The squad's `cash` and `fodder` are the two stages.
 
+## Prices and platform
+
+`platform` in `config.json` is required and must be `ps`, `xbox`, or `pc`. The solver stops if it is missing. It does not guess. Every quote is stamped with that platform, a source, and `fetched_at`. The plan prints the platform.
+
+`price_provider` chooses where buy prices come from:
+
+| Provider | What it is |
+| --- | --- |
+| `easysbc` | The catalogue `priceInfo.displayPrice` already on the profile. `quality` is `approximate`. It is not a lowest BIN, and the catalogue is not split by platform. The profile file's mtime is `fetched_at`. |
+| `futbin` | Local `bin-prices.json` only. Live fetches are not performed. |
+| `futgg` | The same local file. Live fetches are not performed. |
+
+`price-overrides.json` replaces either source for matching resource ids when its `platform` matches. A file for a different platform is ignored. Copy `bin-prices.example.json` and `price-overrides.example.json`. Those real files are gitignored, as is `price-cache.json`.
+
+FUTBIN's terms, section 13, prohibit scraping or data mining without written permission (https://www.futbin.com/tos). Its `robots.txt` disallows query-string URLs. A direct request from this environment got HTTP 403 with a Cloudflare challenge. fut.gg is covered by the Stormstrike terms (https://stormstrike.gg/terms), which prohibit automated access or scraping unless expressly permitted, and its `robots.txt` disallows `/api/*`. No express permission for price fetches was found. Neither site is fetched. Fill the local BIN file from your own browser.
+
+A quote older than `price_staleness_minutes` (default 15), or one with no timestamp, is stale and flagged. It is still usable. A market card with no current amount is left out of buys and listed. It is not priced at 0. Owned cards stay; a missing quote does not make their fodder free.
+
+After each solve, every buy is quoted again. If a price moves by more than `price_tolerance_pct` (default 5) or more than `price_tolerance_coins` (default 100), the pool is updated and solved again, up to `price_recheck_rounds` (default 3). The plan's `rechecks` list is what moved. A move on the last round is reported as unresolved and is not solved again.
+
 ## Linked clubs and Clubs min/max
 
 Chemistry uses the linked-club root from `base.json` `linkedClubIds`. EA's FC 24 Ultimate Team pitch notes say affiliated men's and women's clubs link for chemistry ("you'll also be able to link women's footballers to men's footballers who play for their affiliated Club"), and the same note says league links stay inside each league. FIFPlay's FC 27 chemistry guide says the same: affiliated clubs contribute chemistry together, and men's and women's players do not link through their leagues.
@@ -161,9 +181,10 @@ On your machine, from the private folder that already contains `easy-inventory.j
 2. Put your protect names in `local/protect.json` (substring match, same strings the canonical `PROTECT` list used).
 3. If you want the post-submission state the canonical script baked in, add the submitted SBC id to `local/done.json` and the used names to `local/consumed.json`. Leave both empty for a fresh club. An empty done list will still try Boo Hoo Party. The canonical script skipped it.
 4. Run the canonical script the way you usually do, and keep its `plan.json`.
-5. Run `python -m eafc.sbc.shared solve --exact-model --secs 180` and open `eafc/sbc/local/plan.json`.
-6. Compare, per SBC that both actually solved: status, cash, chemistry, and the multiset of `(name, rating, owned, cash)`. A tie between equal-price cards can swap names. With `--exact-model` the scaled objective should match (`1000 * cash + fodder`, or `100 * cash + 95 * fodder` with `--net`).
-7. Run the default solver (no `--exact-model`) on the same files and time it, including one `--keep84` run. Expect the same coins and fodder as `--exact-model` when no owned card in the tradeoff is priced at 1000 or more. Above that, the default keeps the zero-coin card and `--exact-model` can spend coins to avoid the fodder. Record status, gap, cash, fodder, and seconds. That is the run this cloud benchmark could not do.
-8. If `--exact-model` matches the canonical script and the default run differs only on cards priced at 1000 or more, the difference is the lexicographic objective, not a chemistry or club-count change.
+5. Set `platform` in that config to `ps`, `xbox`, or `pc`. The solve stops if it is blank. Put spot BIN rows in the gitignored bin or override file if you do not want the approximate catalogue.
+6. Run `python -m eafc.sbc.shared solve --exact-model --secs 180` and open `eafc/sbc/local/plan.json`. The plan's `platform` is the one you set.
+7. Compare, per SBC that both actually solved: status, cash, chemistry, and the multiset of `(name, rating, owned, cash)`. A tie between equal-price cards can swap names. With `--exact-model` the scaled objective should match (`1000 * cash + fodder`, or `100 * cash + 95 * fodder` with `--net`).
+8. Run the default solver (no `--exact-model`) on the same files and time it, including one `--keep84` run. Expect the same coins and fodder as `--exact-model` when no owned card in the tradeoff is priced at 1000 or more. Above that, the default keeps the zero-coin card and `--exact-model` can spend coins to avoid the fodder. Record status, gap, cash, fodder, and seconds. That is the run this cloud benchmark could not do.
+9. If `--exact-model` matches the canonical script and the default run differs only on cards priced at 1000 or more, the difference is the lexicographic objective, not a chemistry or club-count change.
 
 Do not paste the real `plan.json` or protect list into the public repo.

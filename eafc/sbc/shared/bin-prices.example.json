@@ -1,0 +1,7 @@
+{
+  "platform": "pc",
+  "note": "Local lowest-BIN rows for the configured platform. Live FUTBIN and fut.gg fetches are not performed. Copy to the gitignored bin-prices path and fill resource ids you looked up yourself. Use ISO timestamps. Amounts of 0 or missing are treated as no quote.",
+  "prices": [
+    {"resource_id": 900001, "amount": 1400, "fetched_at": "2026-11-02T01:00:00+00:00"}
+  ]
+}

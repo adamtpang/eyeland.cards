@@ -667,6 +667,8 @@ class CliTests(unittest.TestCase):
                 "plan_path": "../local/plan.json",
                 "specs_dir": "../specs",
                 "chemistry_path": "../specs/chemistry.json",
+                "platform": "pc",
+                "price_provider": "easysbc",
                 "price_cap": 1300,
                 "anchor_big_clubs": [131681, 131682],
                 "anchor_big_cap": 6000,
@@ -688,7 +690,10 @@ class CliTests(unittest.TestCase):
             plan = json.loads((local / "plan.json").read_text(encoding="utf-8"))
             self.assertEqual(plan["squads"][0]["status"], "Optimal")
             self.assertEqual(plan["squads"][0]["mip_gap"], 0)
+            self.assertEqual(plan["platform"], "pc")
             self.assertEqual(plan["squads"][0]["players"][0]["name"], "Zed Synthetic")
+            self.assertEqual(plan["squads"][0]["players"][0]["price_platform"], "pc")
+            self.assertEqual(plan["squads"][0]["players"][0]["price_quality"], "approximate")
             self.assertIn("easy-inventory.json", plan["inventory"]["path"])
 
 

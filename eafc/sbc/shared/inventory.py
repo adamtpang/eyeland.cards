@@ -23,7 +23,7 @@ not protection rules in the canonical solver, so they are not rules here.
 
 import json
 import unicodedata
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
 
 # Canonical market caps: ordinary cards above 1300 are not worth searching,
@@ -59,6 +59,8 @@ def load_profiles(directory):
         return profiles
     for path in sorted(folder.glob("player-*.json")):
         profile = with_meta(read_json(path))
+        modified = datetime.fromtimestamp(path.stat().st_mtime, tz=timezone.utc)
+        profile["_price_file_mtime"] = modified.isoformat(timespec="seconds")
         profiles[profile["resourceId"]] = profile
     return profiles
 
@@ -399,6 +401,17 @@ def build_pool(
                 "rating": int(profile.get("rating") or 0),
                 "price": price,
                 "own": copies,
+                **{
+                    key: profile[key]
+                    for key in (
+                        "price_source",
+                        "price_platform",
+                        "price_fetched_at",
+                        "price_quality",
+                        "price_stale",
+                    )
+                    if key in profile
+                },
                 "club": root(profile["clubId"]),
                 "club_raw": int(profile["clubId"]),
                 "version": int(profile.get("versionId") or 0),

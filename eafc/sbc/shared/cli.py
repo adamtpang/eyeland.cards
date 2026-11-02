@@ -13,6 +13,7 @@ import json
 import os
 import sys
 from collections import Counter
+from datetime import datetime, timezone
 from pathlib import Path
 
 from eafc.sbc.shared.clubs import link_root
@@ -21,10 +22,12 @@ from eafc.sbc.shared.fetch_public import fetch_base, fetch_challenges, fetch_pla
 from eafc.sbc.shared.inventory import (
     apply_consumed,
     build_pool,
+    classify_inventory,
     load_inventory,
     load_name_list,
     load_profiles,
 )
+from eafc.sbc.shared.prices import apply_quotes, build_provider, recheck_buys, require_platform, write_cache
 from eafc.sbc.shared.model import solve_squads
 from eafc.sbc.shared.specs import load_chemistry, load_specs, read_json
 
@@ -59,6 +62,9 @@ def load_config(path):
         "plan_path",
         "specs_dir",
         "chemistry_path",
+        "price_cache_path",
+        "price_overrides_path",
+        "price_bin_path",
     ):
         if key in raw and raw[key]:
             config[key] = _resolve(file, raw[key])
@@ -88,6 +94,7 @@ def _num(value):
 
 
 def run_solve(config, args):
+    platform = require_platform(config.get("platform"))
     base_path = config.get("base_path")
     if base_path is None or not Path(base_path).is_file():
         raise SystemExit(f"missing base.json at {base_path}. Run: python -m eafc.sbc.shared fetch")
@@ -96,6 +103,25 @@ def run_solve(config, args):
     profiles = load_profiles(config["profiles_dir"])
     loaded = load_inventory(config["inventory_paths"], profiles)
     protect = load_name_list(config.get("protect_path"))
+    owned_map, _, _, _ = classify_inventory(
+        loaded["players"], profiles, protect, net=args.net, keep84=args.keep84
+    )
+    provider = build_provider(
+        config.get("price_provider") or "easysbc",
+        profiles,
+        bin_path=config.get("price_bin_path"),
+        overrides_path=config.get("price_overrides_path"),
+    )
+    priced_at = datetime.now(timezone.utc)
+    staleness = float(config.get("price_staleness_minutes", 15))
+    quotes = provider.quotes(list(profiles), platform, now=priced_at)
+    if getattr(provider, "warning", None):
+        print(provider.warning, flush=True)
+    print(f"platform {platform} prices {provider.name}: {provider.live_reason}", flush=True)
+    unquoted, stale_quotes = apply_quotes(
+        profiles, set(owned_map), quotes, platform, priced_at, staleness
+    )
+    write_cache(config.get("price_cache_path"), platform, quotes, source=provider.name)
     pool, kept, storage = build_pool(
         loaded["players"],
         profiles,
@@ -124,15 +150,23 @@ def run_solve(config, args):
         except (OSError, ValueError, json.JSONDecodeError):
             print(f"plan ignored (unreadable): {plan_path}", flush=True)
     jobs = args.jobs if args.jobs is not None else min(8, os.cpu_count() or 1)
+    if unquoted:
+        print(f"no current quote, excluded from buys: {len(unquoted)}", flush=True)
+        for row in unquoted:
+            print(f"  unquoted {row['name']} {row['rating']} rid {row['rid']}", flush=True)
+    if stale_quotes:
+        print(f"stale prices: {len(stale_quotes)}", flush=True)
     print(
         f"pool {len(pool)} owned cards usable {sum(left.values())} kept {len(kept)}",
         flush=True,
     )
-    try:
-        squads, skipped = solve_squads(
+    starting_left = Counter(left)
+
+    def solve_once(current_pool, left0):
+        return solve_squads(
             specs,
-            pool,
-            left,
+            current_pool,
+            Counter(left0),
             storage,
             net=args.net,
             seconds=args.secs,
@@ -143,6 +177,20 @@ def run_solve(config, args):
             engine=args.engine,
             threads=args.threads,
             plan_squads=plan_squads,
+        )
+
+    try:
+        squads, skipped, rechecks = recheck_buys(
+            solve_once,
+            pool,
+            starting_left,
+            provider,
+            platform,
+            rounds=int(config.get("price_recheck_rounds", 3)),
+            pct=float(config.get("price_tolerance_pct", 5)),
+            coins=int(config.get("price_tolerance_coins", 100)),
+            now=priced_at,
+            staleness_minutes=staleness,
         )
     except RuntimeError as exc:
         raise SystemExit(str(exc)) from exc
@@ -167,10 +215,24 @@ def run_solve(config, args):
             else:
                 source = f"BUY {row['cash']:,}"
             oop = "" if row["inpos"] else " (OOP)"
+            stale = " STALE" if row.get("price_stale") else ""
+            quote = ""
+            if row.get("price_source"):
+                quote = f"  {row['price_source']}/{row.get('price_platform', platform)}{stale}"
             print(
-                f"  {row['name']:32} {row['rating']} chem {row['chem']}{oop}  {source}  value {row['value']:,}",
+                f"  {row['name']:32} {row['rating']} chem {row['chem']}{oop}  {source}  value {row['value']:,}{quote}",
                 flush=True,
             )
+    for note in rechecks:
+        for move in note["moves"]:
+            print(
+                f"price moved round {note['round']}: {move['name']} {move['old']} -> {move['new']}",
+                flush=True,
+            )
+        for item in note["excluded"]:
+            print(f"recheck excluded round {note['round']}: {item['name']} ({item['reason']})", flush=True)
+        if note.get("unresolved"):
+            print(f"price recheck stopped after {note['round']} solves with prices still moving", flush=True)
     print("\nTOTAL CASH", sum(squad["cash"] for squad in squads), flush=True)
     plan = {
         "inventory": {
@@ -178,6 +240,11 @@ def run_solve(config, args):
             "kind": loaded["kind"],
             "mtime": loaded["mtime_iso"],
         },
+        "platform": platform,
+        "price_provider": provider.name,
+        "price_quality": "approximate" if provider.name == "easysbc" else "file",
+        "price_live": False,
+        "price_live_reason": provider.live_reason,
         "objective": "net" if args.net else "coins",
         "keep84": bool(args.keep84),
         "exact_model": bool(args.exact_model),
@@ -186,6 +253,9 @@ def run_solve(config, args):
         "jobs": jobs,
         "seconds": args.secs,
         "skipped_done": skipped,
+        "unquoted": unquoted,
+        "stale_prices": stale_quotes,
+        "rechecks": rechecks,
         "squads": squads,
         "kept": kept,
     }

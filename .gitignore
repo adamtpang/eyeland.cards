@@ -69,6 +69,9 @@ eafc/sbc/**/protect.json
 eafc/sbc/**/consumed.json
 eafc/sbc/**/done.json
 eafc/sbc/**/plan.json
+eafc/sbc/**/price-overrides.json
+eafc/sbc/**/bin-prices.json
+eafc/sbc/**/price-cache.json
 eafc/sbc/**/base.json
 eafc/sbc/**/sets.json
 eafc/sbc/**/requirements.json
