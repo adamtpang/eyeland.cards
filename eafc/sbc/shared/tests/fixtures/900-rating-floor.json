@@ -1,0 +1,18 @@
+{
+  "id": 900,
+  "name": "Synthetic Rating Floor",
+  "slots": ["ST", "ST", "ST", "ST", "ST", "CM", "CM", "CM"],
+  "n": 8,
+  "chem": 0,
+  "minr": 75,
+  "rating_floors": [{"min": 80, "count": 5}],
+  "team_rating_min": 78,
+  "item_score_floors": [{"min": 10, "count": 8}],
+  "requirements_text": [
+    "At least 5 players rated 80 or higher",
+    "Team rating min 78",
+    "Item score min 10 on every card"
+  ],
+  "notes": "Synthetic upgrade SBC. Every name in the matching test is invented.",
+  "source": "Synthetic fixture. Not a live challenge."
+}

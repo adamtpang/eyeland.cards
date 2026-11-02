@@ -22,6 +22,7 @@ not protection rules in the canonical solver, so they are not rules here.
 """
 
 import json
+import unicodedata
 from datetime import datetime
 from pathlib import Path
 
@@ -108,33 +109,145 @@ def _futbin_version_id(version):
     return 0
 
 
-def futbin_to_inventory(document, profiles):
-    """Map a FUTBIN club export onto EasySBC profile ids.
+def fold_name(name):
+    """Case-fold, strip accents, and collapse punctuation to spaces."""
+    text = unicodedata.normalize("NFKD", name or "")
+    text = "".join(ch for ch in text if not unicodedata.combining(ch))
+    cleaned = []
+    for ch in text.casefold():
+        cleaned.append(ch if ch.isalnum() else " ")
+    return " ".join("".join(cleaned).split())
 
-    SBC Storage is not in this export, so every mapped card has
-    ``sbcStorage`` false. Starting XI names become ``activeSquad``. A FUTBIN
-    row that matches no profile is kept with a synthetic id and later
-    protected as "no profile" so it cannot be spent by accident.
+
+def _row_resource_ids(row):
+    found = []
+    for key in ("resourceId", "resource_id", "playerResourceId", "player_resource_id"):
+        value = row.get(key)
+        if value in (None, ""):
+            continue
+        try:
+            found.append(int(value))
+        except (TypeError, ValueError):
+            continue
+    return found
+
+
+def _short_name_match(row_folded, profile_folded):
+    """A single-token name may match the other side's first token.
+
+    'Rafa' against 'Rafa Northwind' is the shape this covers. Tokens shorter
+    than 3 characters are ignored so a one-letter export cannot attach itself
+    to every card.
     """
-    by_name_rating = {}
+    row_tokens = row_folded.split()
+    profile_tokens = profile_folded.split()
+    if len(row_tokens) == 1 and len(profile_tokens) > 1 and len(row_tokens[0]) >= 3:
+        return row_tokens[0] == profile_tokens[0]
+    if len(profile_tokens) == 1 and len(row_tokens) > 1 and len(profile_tokens[0]) >= 3:
+        return profile_tokens[0] == row_tokens[0]
+    return False
+
+
+def _tie_score(row, profile):
+    score = 0
+    club = row.get("club_id", row.get("clubId"))
+    nation = row.get("nation_id", row.get("countryId", row.get("nationId")))
+    try:
+        if club is not None and int(club) == int(profile.get("clubId")):
+            score += 2
+    except (TypeError, ValueError):
+        pass
+    try:
+        if nation is not None and int(nation) == int(profile.get("countryId")):
+            score += 1
+    except (TypeError, ValueError):
+        pass
+    return score
+
+
+def _prefer_normal(profiles):
+    normals = [profile for profile in profiles if profile.get("versionId") in (0, 1)]
+    return normals or list(profiles)
+
+
+def match_futbin_players(rows, profiles, xi_rows=()):
+    """Join FUTBIN club rows onto EasySBC profiles.
+
+    Order: resource id, then accent-folded exact name plus rating, then a
+    single-token short name plus rating. Rating is required for name matches.
+    Club id and nation id break ties when the row carries them. Ambiguous
+    name matches are not guessed. Every unmatched row is returned with a
+    synthetic id and an issue record; nothing is dropped.
+    """
+    by_id = {}
+    by_exact = {}
+    by_rating = {}
     for profile in profiles.values():
-        key = ((profile.get("name") or "").casefold(), profile.get("rating"))
-        by_name_rating.setdefault(key, []).append(profile)
-    xi_rows = document.get("xi") or []
+        resource_id = profile.get("resourceId")
+        if resource_id is None:
+            continue
+        by_id[int(resource_id)] = profile
+        folded = fold_name(profile.get("name") or profile.get("displayName") or "")
+        rating = profile.get("rating")
+        by_exact.setdefault((folded, rating), []).append(profile)
+        by_rating.setdefault(rating, []).append(profile)
+
     items = []
+    issues = []
     synthetic = -1
-    for row in document.get("players") or []:
-        name = row.get("name") or ""
+    for row in rows or []:
+        name = row.get("name") or row.get("displayName") or ""
         rating = row.get("rating") or 0
-        matches = by_name_rating.get((name.casefold(), rating), [])
-        normals = [profile for profile in matches if profile.get("versionId") in (0, 1)]
-        profile = (normals or matches or [None])[0]
+        profile = None
+        reason = None
+        for resource_id in _row_resource_ids(row):
+            profile = by_id.get(resource_id)
+            if profile is not None:
+                break
+        if profile is None and row.get("id") not in (None, ""):
+            try:
+                profile = by_id.get(int(row.get("id")))
+            except (TypeError, ValueError):
+                profile = None
+        if profile is None:
+            folded = fold_name(name)
+            exact = _prefer_normal(by_exact.get((folded, rating), []))
+            if len(exact) == 1:
+                profile = exact[0]
+            elif len(exact) > 1:
+                ranked = sorted(exact, key=lambda item: _tie_score(row, item), reverse=True)
+                if _tie_score(row, ranked[0]) > _tie_score(row, ranked[1]):
+                    profile = ranked[0]
+                else:
+                    reason = "ambiguous"
+            else:
+                short = [
+                    item
+                    for item in by_rating.get(rating, [])
+                    if _short_name_match(folded, fold_name(item.get("name") or ""))
+                ]
+                short = _prefer_normal(short)
+                if len(short) == 1:
+                    profile = short[0]
+                elif len(short) > 1:
+                    ranked = sorted(short, key=lambda item: _tie_score(row, item), reverse=True)
+                    if _tie_score(row, ranked[0]) > 0 and _tie_score(row, ranked[0]) > _tie_score(row, ranked[1]):
+                        profile = ranked[0]
+                    else:
+                        reason = "ambiguous"
+                else:
+                    reason = "unmatched"
         version_id = _futbin_version_id(row.get("version"))
         if profile is not None and version_id in (0, 1):
             version_id = profile.get("versionId", 0)
-        resource_id = profile["resourceId"] if profile is not None else synthetic
         if profile is None:
+            if reason is None:
+                reason = "unmatched"
+            issues.append({"name": name, "rating": rating, "reason": reason})
+            resource_id = synthetic
             synthetic -= 1
+        else:
+            resource_id = profile["resourceId"]
         items.append(
             {
                 "resourceId": resource_id,
@@ -147,6 +260,26 @@ def futbin_to_inventory(document, profiles):
                 "untradeable": not row.get("tradeable", True),
             }
         )
+    return items, issues
+
+
+def futbin_to_inventory(document, profiles):
+    """Map a FUTBIN club export onto EasySBC profile ids.
+
+    SBC Storage is not in this export, so every mapped card has
+    ``sbcStorage`` false. Starting XI names become ``activeSquad``. A FUTBIN
+    row that matches no profile is kept with a synthetic id and later
+    protected as "no profile" so it cannot be spent by accident. Unmatched
+    and ambiguous rows are printed; they are not dropped.
+    """
+    items, issues = match_futbin_players(document.get("players") or [], profiles or {}, document.get("xi") or [])
+    for issue in issues:
+        print(
+            f"futbin {issue['reason']}: {issue['name']!r} rating {issue['rating']}",
+            flush=True,
+        )
+    if issues:
+        print(f"futbin name match: {len(issues)} unmatched or ambiguous row(s)", flush=True)
     return items
 
 
@@ -267,6 +400,8 @@ def build_pool(
                 "price": price,
                 "own": copies,
                 "club": root(profile["clubId"]),
+                "club_raw": int(profile["clubId"]),
+                "version": int(profile.get("versionId") or 0),
                 "league": profile.get("leagueId"),
                 "nation": profile.get("countryId"),
                 "pos": set(positions),

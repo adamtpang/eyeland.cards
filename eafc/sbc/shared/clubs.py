@@ -1,9 +1,14 @@
 """Linked-club union-find, matching the canonical Marquee solver.
 
 ``parent[root(v)] = root(club id)`` is applied once per linkedClubIds entry,
-in the order clubs appear in base.json. Chemistry and every same-club /
-club-count constraint use this root, so a men's club and its linked women's
-club count as one club.
+in the order clubs appear in base.json. Chemistry, same-club constraints and
+anchor clubs use this root.
+
+EA's chemistry notes say affiliated men's and women's clubs link for
+chemistry. They do not say whether a Clubs min/max requirement counts those
+clubs as one. The default here stays the current behavior (one club). A spec
+can set ``count_linked_clubs`` false to count raw club ids for clubs min/max
+only.
 """
 
 

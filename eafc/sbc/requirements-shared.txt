@@ -1,2 +1,4 @@
 pulp>=3.3.0,<3.4
 highspy>=1.15.0,<1.16
+# Optional CP-SAT cross-check: eafc/sbc/requirements-cpsat.txt
+# The default HiGHS engine does not import ortools.
