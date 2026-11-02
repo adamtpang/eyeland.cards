@@ -10,6 +10,7 @@ local inventory, profiles, base data, and the protect / done files.
 
 import argparse
 import json
+import os
 import sys
 from collections import Counter
 from pathlib import Path
@@ -114,29 +115,48 @@ def run_solve(config, args):
         specs = [spec for spec in specs if spec["id"] in wanted]
     done = load_done(config.get("done_path"))
     chemistry = load_chemistry(config.get("chemistry_path"))
+    plan_squads = None
+    plan_path = Path(config["plan_path"])
+    if plan_path.is_file() and not args.exact_model:
+        try:
+            previous = read_json(plan_path)
+            plan_squads = previous.get("squads") if isinstance(previous, dict) else None
+        except (OSError, ValueError, json.JSONDecodeError):
+            print(f"plan ignored (unreadable): {plan_path}", flush=True)
+    jobs = args.jobs if args.jobs is not None else min(8, os.cpu_count() or 1)
     print(
         f"pool {len(pool)} owned cards usable {sum(left.values())} kept {len(kept)}",
         flush=True,
     )
-    squads, skipped = solve_squads(
-        specs,
-        pool,
-        left,
-        storage,
-        net=args.net,
-        seconds=args.secs,
-        chemistry=chemistry,
-        exact_model=args.exact_model,
-        done=done,
-    )
+    try:
+        squads, skipped = solve_squads(
+            specs,
+            pool,
+            left,
+            storage,
+            net=args.net,
+            seconds=args.secs,
+            chemistry=chemistry,
+            exact_model=args.exact_model,
+            done=done,
+            jobs=jobs,
+            engine=args.engine,
+            threads=args.threads,
+            plan_squads=plan_squads,
+        )
+    except RuntimeError as exc:
+        raise SystemExit(str(exc)) from exc
     if skipped:
         print("skipped done ids", ",".join(str(item) for item in skipped), flush=True)
     for squad in squads:
         print(
-            f"\n== {squad['name']}: {squad['status']}, pool {squad['pool']} "
-            f"(canonical {squad['canonical_pool']}), cash {squad['cash']:,}, chem {squad['chem']}, "
+            f"\n== {squad['name']}: {squad['status']}, {squad.get('engine', 'highs')} "
+            f"{squad.get('objective_mode', 'weighted')}, pool {squad['pool']} "
+            f"(canonical {squad['canonical_pool']}, groups {squad.get('groups', squad['pool'])}), "
+            f"cash {squad['cash']:,}, fodder {squad.get('fodder', 0):,}, chem {squad['chem']}, "
             f"objective {_num(squad['objective'])}, bound {_num(squad['best_bound'])}, "
-            f"gap {_gap_text(squad['mip_gap'])}",
+            f"gap {_gap_text(squad['mip_gap'])}"
+            + (f" on {squad['gap_metric']}" if squad.get("gap_metric") else ""),
             flush=True,
         )
         for row in squad["players"]:
@@ -161,6 +181,9 @@ def run_solve(config, args):
         "objective": "net" if args.net else "coins",
         "keep84": bool(args.keep84),
         "exact_model": bool(args.exact_model),
+        "engine": "highs" if args.exact_model else args.engine,
+        "threads": args.threads,
+        "jobs": jobs,
         "seconds": args.secs,
         "skipped_done": skipped,
         "squads": squads,
@@ -251,7 +274,15 @@ def build_parser():
     parser.add_argument("--config", type=Path, help="path to config.json (default: shared/config.json)")
     parser.add_argument("--net", action="store_true", help="minimize coins + 95%% of owned card value")
     parser.add_argument("--keep84", action="store_true", help="keep club 84+ and inventory prices above 2000")
-    parser.add_argument("--secs", type=float, default=180, help="HiGHS time limit per SBC (default 180)")
+    parser.add_argument("--secs", type=float, default=180, help="time limit per SBC stage (default 180)")
+    parser.add_argument("--engine", choices=("highs", "cpsat"), default="highs", help="highs (default) or cpsat")
+    parser.add_argument("--threads", type=int, default=None, help="HiGHS threads, or CP-SAT workers (default 8)")
+    parser.add_argument(
+        "--jobs",
+        type=int,
+        default=None,
+        help="solve independent SBCs in this many processes (default min(8, cpu))",
+    )
     parser.add_argument("--ids", help="comma-separated spec ids to solve")
     parser.add_argument(
         "--exact-model",

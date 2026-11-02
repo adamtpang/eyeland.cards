@@ -1,0 +1,6 @@
+# Optional CP-SAT cross-check. Not required for the default PuLP / HiGHS engine,
+# and not imported by that engine. OR-Tools and highspy each ship HiGHS, so
+# `python -m eafc.sbc.shared solve --engine cpsat` runs OR-Tools in a separate
+# process. Python 3.14 may not have an ortools wheel; the HiGHS path does not
+# need one.
+ortools>=9.11

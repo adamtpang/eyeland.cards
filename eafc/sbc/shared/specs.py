@@ -51,6 +51,10 @@ SPEC_KEYS = {
     "same_nation_max",
     "gold_min",
     "rating_sum",
+    "rating_floors",
+    "team_rating_min",
+    "item_score_floors",
+    "count_linked_clubs",
     "requirements_text",
     "source",
     "notes",
@@ -108,6 +112,18 @@ def prepare_spec(spec, root=identity_root):
         prepared["nation"] = (int(spec["nation"]["id"]), int(spec["nation"]["min"]))
     if "league" in spec and isinstance(spec["league"], dict):
         prepared["league"] = (int(spec["league"]["id"]), int(spec["league"]["min"]))
+    prepared["count_linked_clubs"] = bool(spec.get("count_linked_clubs", True))
+    for key in ("rating_floors", "item_score_floors"):
+        if key not in spec or spec[key] is None:
+            continue
+        rules = []
+        for row in spec[key]:
+            if not isinstance(row, dict) or "min" not in row or "count" not in row:
+                raise ValueError(f"{key} entries must be objects with min and count")
+            rules.append({"min": int(row["min"]), "count": int(row["count"])})
+        prepared[key] = rules
+    if spec.get("team_rating_min") is not None and "team_rating_min" in spec:
+        prepared["team_rating_min"] = int(spec["team_rating_min"])
     return prepared
 
 

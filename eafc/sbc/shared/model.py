@@ -1,20 +1,17 @@
-"""PuLP / HiGHS SBC model.
+"""SBC models.
 
-The constraints, canonical trim, and objective match the Marquee solver.
-Three optimality-preserving extras are on unless ``exact_model`` is set:
+``exact_model`` and ``formulation="legacy"`` keep the previous per-card PuLP
+model. The legacy objective is ``1000 * coins + fodder`` (or the net weight).
+The default formulation collapses identical cards, counts chemistry once per
+club, league and nation, and solves lexicographically: coins, then fodder.
 
-* dominance drops a card when at least ``n`` strictly cheaper cards share its
-  rating, club, league and nation and can play every position it can play
-* identical slots are ordered by card index
-* a feasible greedy squad is passed to HiGHS with ``setSolution``
-
-HiGHS is always run with a time limit. The result reports the HiGHS status,
-the scaled objective, the dual bound, and the MIP gap. PuLP labels a feasible
-time-limit stop as Optimal; the status here stays TimeLimit unless the gap is
-effectively zero.
+HiGHS is always run with a time limit. The result reports status, objective,
+dual bound, and MIP gap. PuLP labels a feasible time-limit stop as Optimal;
+the status here stays TimeLimit unless the gap is effectively zero.
 """
 
 import collections
+import multiprocessing
 import warnings
 
 import pulp
@@ -32,6 +29,7 @@ except Exception:
         category=DeprecationWarning,
     )
 
+from eafc.sbc.shared.rating import add_team_rating, squad_rating
 from eafc.sbc.shared.specs import DEFAULT_CHEMISTRY
 
 try:
@@ -56,6 +54,24 @@ class _HiGHSStart(pulp.HiGHS):
     def __init__(self, *args, start=None, **kwargs):
         self._start = start or {}
         super().__init__(*args, **kwargs)
+
+    def createAndConfigureSolver(self, lp):
+        # HiGHS keeps one process-wide thread scheduler. A later solve that
+        # asks for a different thread count is rejected unless that scheduler
+        # is cleared first.
+        if self.threads is not None and highspy is not None:
+            reset = getattr(highspy.Highs, "resetGlobalScheduler", None)
+            if reset is not None:
+                try:
+                    reset(True)
+                except TypeError:
+                    try:
+                        reset()
+                    except Exception:
+                        pass
+                except Exception:
+                    pass
+        super().createAndConfigureSolver(lp)
 
     def callSolver(self, lp):
         if self._start and highspy is not None and np is not None:
@@ -232,12 +248,22 @@ def _meets(spec, chosen, in_position, chem_total):
         return False
     if "rating_sum" in spec and sum(card["rating"] for card in chosen) < spec["rating_sum"]:
         return False
+    for rule in spec.get("rating_floors") or []:
+        if count(lambda card, rule=rule: card["rating"] >= rule["min"]) < rule["count"]:
+            return False
+    for rule in spec.get("item_score_floors") or []:
+        if count(lambda card, rule=rule: card.get("score", 0) >= rule["min"]) < rule["count"]:
+            return False
+    if spec.get("team_rating_min") and squad_rating(card["rating"] for card in chosen) < spec["team_rating_min"]:
+        return False
+    club_field = "club" if spec.get("count_linked_clubs", True) else "club_raw"
     for key, lo, hi in (
         ("club", "clubs_min", "clubs_max"),
         ("league", "leagues_min", "leagues_max"),
         ("nation", "nations_min", "nations_max"),
     ):
-        distinct = {card[key] for card in chosen}
+        field = club_field if key == "club" else key
+        distinct = {card.get(field, card[key]) for card in chosen}
         if lo in spec and len(distinct) < spec[lo]:
             return False
         if hi in spec and len(distinct) > spec[hi]:
@@ -342,7 +368,12 @@ def _greedy_values(spec, indexes, pool, variables, left, net, chemistry):
         raw = sum(values[variables["bins"][key, card[key], step].name] for key, steps in chemistry.items() for step in steps)
         values[c[index].name] = min(3, raw)
     for (key, group), var in variables["ons"].items():
-        total = sum(1 for index in chosen if pool[index][key] == group)
+        if key == "club" and not spec.get("count_linked_clubs", True):
+            total = sum(
+                1 for index in chosen if pool[index].get("club_raw", pool[index]["club"]) == group
+            )
+        else:
+            total = sum(1 for index in chosen if pool[index][key] == group)
         values[var.name] = 1 if total >= 1 else 0
     for (key, group), var in variables["zs"].items():
         values[var.name] = 0
@@ -383,7 +414,9 @@ def _add_count_bounds(model, spec, groups, prefix):
         yield key, flags
 
 
-def solve_sbc(spec, pool, left, storage, *, net=False, seconds=180, chemistry=None, exact_model=False):
+def _solve_legacy(
+    spec, pool, left, storage, *, net=False, seconds=180, chemistry=None, exact_model=False, threads=None
+):
     """Solve one SBC. ``left`` is decremented only when a full squad is returned."""
     chemistry = chemistry or DEFAULT_CHEMISTRY
     canonical = canonical_trim(pool, spec, left)
@@ -441,10 +474,31 @@ def solve_sbc(spec, pool, left, storage, *, net=False, seconds=180, chemistry=No
         model += selected(lambda card: card["rating"] >= 75) >= spec["gold_min"]
     if "rating_sum" in spec:
         model += pulp.lpSum(pool[i]["rating"] * y[i] for i in indexes) >= spec["rating_sum"]
+    for rule in spec.get("rating_floors") or []:
+        model += selected(lambda card, rule=rule: card["rating"] >= rule["min"]) >= int(rule["count"])
+    for rule in spec.get("item_score_floors") or []:
+        model += selected(lambda card, rule=rule: card.get("score", 0) >= rule["min"]) >= int(rule["count"])
+    if spec.get("team_rating_min"):
+        add_team_rating(
+            model,
+            [(y[i], pool[i]["rating"], 1) for i in indexes],
+            spec["n"],
+            int(spec["team_rating_min"]),
+            prefix,
+        )
 
     groups = {key: grouped(key) for key in ("club", "league", "nation")}
+    count_groups = dict(groups)
+    if not spec.get("count_linked_clubs", True):
+        raw_ids = {pool[i].get("club_raw", pool[i]["club"]) for i in indexes}
+        count_groups["club"] = {
+            raw: pulp.lpSum(
+                y[i] for i in indexes if pool[i].get("club_raw", pool[i]["club"]) == raw
+            )
+            for raw in raw_ids
+        }
     ons = {}
-    for key, flags in _add_count_bounds(model, spec, groups, prefix):
+    for key, flags in _add_count_bounds(model, spec, count_groups, prefix):
         ons[key] = flags
     # Flatten ons to (key, group) -> var for the warm start.
     on_vars = {(key, group): var for key, flags in ons.items() for group, var in flags.items()}
@@ -492,7 +546,7 @@ def solve_sbc(spec, pool, left, storage, *, net=False, seconds=180, chemistry=No
             net,
             chemistry,
         )
-    solver = _HiGHSStart(msg=False, timeLimit=float(seconds), start=start)
+    solver = _HiGHSStart(msg=False, timeLimit=float(seconds), start=start, threads=threads)
     model.solve(solver)
     pulp_status = pulp.LpStatus.get(model.status, "NotSolved")
     try:
@@ -551,15 +605,123 @@ def solve_sbc(spec, pool, left, storage, *, net=False, seconds=180, chemistry=No
         "cash": cash_total,
         "fodder": fodder_total,
         "warm_start": bool(start) and not exact_model,
+        "warm_start_source": "greedy" if start and not exact_model else None,
+        "engine": "highs",
+        "objective_mode": "net" if net else "weighted",
+        "formulation": "legacy",
         "players": rows,
     }
 
 
-def solve_squads(specs, pool, left, storage, *, net=False, seconds=180, chemistry=None, exact_model=False, done=()):
+def solve_sbc(
+    spec,
+    pool,
+    left,
+    storage,
+    *,
+    net=False,
+    seconds=180,
+    chemistry=None,
+    exact_model=False,
+    formulation=None,
+    objective_mode=None,
+    engine="highs",
+    threads=None,
+    plan_squads=None,
+):
+    """Solve one SBC.
+
+    ``formulation="legacy"`` is the previous per-card model and the scaled
+    objective. The default formulation is the tighter integer model. Its
+    default objective is lexicographic (coins, then owned value). ``--net``
+    and ``objective_mode="net"`` keep the single weighted net objective.
+    ``exact_model`` forces the legacy constraints with dominance, slot
+    symmetry and the greedy start turned off.
+    """
+    if exact_model or formulation == "legacy":
+        return _solve_legacy(
+            spec,
+            pool,
+            left,
+            storage,
+            net=net,
+            seconds=seconds,
+            chemistry=chemistry,
+            exact_model=bool(exact_model),
+            threads=threads,
+        )
+    mode = objective_mode or ("net" if net else "lex")
+    from eafc.sbc.shared.strong import solve_strong
+
+    result = solve_strong(
+        spec,
+        pool,
+        left,
+        storage,
+        net=net,
+        seconds=seconds,
+        chemistry=chemistry,
+        objective_mode=mode,
+        engine=engine,
+        threads=threads,
+        plan_squads=plan_squads,
+    )
+    result["formulation"] = "strong"
+    return result
+
+
+def _solve_squad_payload(payload):
+    """Process entry point. ``left`` is copied by the parent before the call."""
+    spec, pool, left, storage, options = payload
+    return solve_sbc(spec, pool, collections.Counter(left), set(storage), **options)
+
+
+def _squad_fits(squad, spec, left):
+    if squad.get("status") == "Infeasible":
+        return True
+    if squad.get("status") != "Optimal":
+        return False
+    if len(squad.get("players") or []) != spec["n"]:
+        return False
+    need = collections.Counter()
+    for row in squad["players"]:
+        if row["owned"]:
+            need[row["rid"]] += 1
+    return all(left[rid] >= count for rid, count in need.items())
+
+
+def _consume_squad(squad, left):
+    for row in squad["players"]:
+        if row["owned"]:
+            left[row["rid"]] -= 1
+
+
+def solve_squads(
+    specs,
+    pool,
+    left,
+    storage,
+    *,
+    net=False,
+    seconds=180,
+    chemistry=None,
+    exact_model=False,
+    done=(),
+    jobs=1,
+    engine="highs",
+    threads=None,
+    plan_squads=None,
+    formulation=None,
+    objective_mode=None,
+):
     """Solve specs from highest chemistry to lowest, skipping done ids.
 
-    Equal chemistry keeps ``sequence`` order, which for the committed specs is
-    the canonical list order.
+    Equal chemistry keeps ``sequence`` order. Owned copies are consumed in
+    that order. With ``jobs`` above 1, each pending SBC is solved in its own
+    process against the starting inventory, then accepted in order when its
+    owned cards are still free. A squad that needs a card an earlier SBC took
+    is solved again on the reduced inventory, so the objective matches the
+    sequential run. Equal-cost cards can still swap.
     """
     skipped = []
     pending = []
@@ -570,18 +732,52 @@ def solve_squads(specs, pool, left, storage, *, net=False, seconds=180, chemistr
         else:
             pending.append(spec)
     pending.sort(key=lambda spec: (-spec["chem"], spec.get("sequence", spec["id"])))
+    options = {
+        "net": net,
+        "seconds": seconds,
+        "chemistry": chemistry,
+        "exact_model": exact_model,
+        "formulation": formulation,
+        "objective_mode": objective_mode,
+        "engine": engine,
+        "threads": threads,
+        "plan_squads": plan_squads,
+    }
+
+    def sequential(items):
+        solved = []
+        for spec in items:
+            solved.append(solve_sbc(spec, pool, left, storage, **options))
+        return solved
+
+    if jobs <= 1 or len(pending) <= 1 or exact_model:
+        return sequential(pending), skipped
+
+    payloads = [
+        (spec, pool, dict(left), set(storage), options)
+        for spec in pending
+    ]
+    try:
+        ctx = multiprocessing.get_context("spawn")
+        with ctx.Pool(processes=min(int(jobs), len(pending))) as pool_workers:
+            parallel = pool_workers.map(_solve_squad_payload, payloads)
+    except Exception as exc:
+        print(f"parallel solve unavailable ({exc}); solving sequentially", flush=True)
+        return sequential(pending), skipped
+
+    by_id = {int(spec["id"]): (spec, squad) for spec, squad in zip(pending, parallel)}
     squads = []
     for spec in pending:
-        squads.append(
-            solve_sbc(
-                spec,
-                pool,
-                left,
-                storage,
-                net=net,
-                seconds=seconds,
-                chemistry=chemistry,
-                exact_model=exact_model,
-            )
-        )
+        _spec, squad = by_id[int(spec["id"])]
+        if _squad_fits(squad, spec, left):
+            if squad.get("status") != "Infeasible":
+                _consume_squad(squad, left)
+            squad = dict(squad)
+            squad["search"] = "parallel"
+            squads.append(squad)
+        else:
+            resolved = solve_sbc(spec, pool, left, storage, **options)
+            resolved = dict(resolved)
+            resolved["search"] = "resolved"
+            squads.append(resolved)
     return squads, skipped
